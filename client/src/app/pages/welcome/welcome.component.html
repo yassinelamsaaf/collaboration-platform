@@ -1,0 +1,15 @@
+<section class="page">
+  <div class="welcome-card">
+    <div>
+      <h1>Welcome</h1>
+      <p>You now have access to the protected area.</p>
+    </div>
+
+    <app-alert type="error" [message]="errorMessage" />
+
+    <button class="button" type="button" [disabled]="loading" (click)="onLogout()">
+      Sign out
+    </button>
+    <span class="loading-text" *ngIf="loading">Signing you out...</span>
+  </div>
+</section>

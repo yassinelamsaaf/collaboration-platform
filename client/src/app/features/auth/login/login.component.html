@@ -1,0 +1,49 @@
+<section class="page">
+  <div class="page-card">
+    <div class="page-header">
+      <h1 class="page-title">Sign in</h1>
+      <p class="page-subtitle">Access your workspace securely.</p>
+    </div>
+
+    <app-alert type="success" [message]="successMessage" />
+    <app-alert type="error" [message]="errorMessage" />
+
+    <form class="form-grid" [formGroup]="form" (ngSubmit)="onSubmit()">
+      <div class="form-field">
+        <label class="form-label" for="email">Email</label>
+        <input
+          id="email"
+          type="email"
+          class="input"
+          [class.is-invalid]="emailError"
+          formControlName="email"
+          autocomplete="email"
+        />
+        <span class="form-error" *ngIf="emailError">{{ emailError }}</span>
+      </div>
+
+      <div class="form-field">
+        <label class="form-label" for="password">Password</label>
+        <input
+          id="password"
+          type="password"
+          class="input"
+          [class.is-invalid]="passwordError"
+          formControlName="password"
+          autocomplete="current-password"
+        />
+        <span class="form-error" *ngIf="passwordError">{{ passwordError }}</span>
+      </div>
+
+      <button class="button" type="submit" [disabled]="loading">
+        Sign in
+      </button>
+      <span class="loading-text" *ngIf="loading">Signing you in...</span>
+    </form>
+
+    <div class="auth-footer">
+      <span class="muted">New here?</span>
+      <a class="link" routerLink="/auth/register">Create account</a>
+    </div>
+  </div>
+</section>

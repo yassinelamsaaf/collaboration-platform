@@ -1,0 +1,22 @@
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Node
+**/node_modules/
+**/dist/
+**/.angular/cache/
+**/coverage/
+
+# Java / Maven
+**/target/
+**/build/
+
+# IDEs
+**/.idea/
+**/.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
