@@ -2,8 +2,10 @@ import { ChangeDetectionStrategy, Component, DestroyRef, HostListener, inject } 
 import { Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { finalize } from 'rxjs';
+import Swal from 'sweetalert2';
 
 import { AuthService } from '../../../../core/services/auth.service';
+import { ToastService } from '../../../../core/services/toast.service';
 import { UserProfile } from '../../../../shared/models/auth.models';
 import { mapHttpError } from '../../../../shared/utils/error-mapper';
 
@@ -18,6 +20,7 @@ export class NavbarComponent {
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly toast = inject(ToastService);
 
   profile: UserProfile | null = null;
   menuOpen = false;
@@ -76,25 +79,47 @@ export class NavbarComponent {
   }
 
   onLogout(): void {
-    this.loading = true;
-    this.errorMessage = '';
+    void Swal.fire({
+      title: 'Log out?',
+      text: 'Are you sure you want to log out?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Log out',
+      cancelButtonText: 'Cancel',
+      buttonsStyling: false,
+      customClass: {
+        popup: 'swal-app-popup',
+        title: 'swal-app-title',
+        htmlContainer: 'swal-app-text',
+        confirmButton: 'swal-app-confirm',
+        cancelButton: 'swal-app-cancel'
+      }
+    }).then((result) => {
+      if (!result.isConfirmed) {
+        return;
+      }
 
-    this.authService
-      .logout()
-      .pipe(
-        finalize(() => (this.loading = false)),
-        takeUntilDestroyed(this.destroyRef)
-      )
-      .subscribe({
-        next: () => {
-          this.menuOpen = false;
-          this.mobileMenuOpen = false;
-          this.router.navigate(['/']);
-        },
-        error: (error: unknown) => {
-          this.errorMessage = mapHttpError(error, 'Unable to log out.');
-        }
-      });
+      this.loading = true;
+      this.errorMessage = '';
+
+      this.authService
+        .logout()
+        .pipe(
+          finalize(() => (this.loading = false)),
+          takeUntilDestroyed(this.destroyRef)
+        )
+        .subscribe({
+          next: () => {
+            this.menuOpen = false;
+            this.mobileMenuOpen = false;
+            this.toast.neutral('Logged out successfully.');
+            this.router.navigate(['/auth/login']);
+          },
+          error: (error: unknown) => {
+            this.errorMessage = mapHttpError(error, 'Unable to log out.');
+          }
+        });
+    });
   }
 
   scrollToSection(id: string): void {

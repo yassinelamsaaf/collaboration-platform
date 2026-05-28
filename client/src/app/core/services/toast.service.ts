@@ -20,4 +20,8 @@ export class ToastService {
   warning(message: string, title = 'Warning'): void {
     this.toastr.warning(message, title);
   }
+
+  neutral(message: string, title = 'Notice'): void {
+    this.toastr.show(message, title, { toastClass: 'ngx-toastr toast-neutral' });
+  }
 }
