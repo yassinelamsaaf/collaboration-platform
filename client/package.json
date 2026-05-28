@@ -11,6 +11,7 @@
   "private": true,
   "packageManager": "npm@11.13.0",
   "dependencies": {
+    "@angular/animations": "^21.2.11",
     "@angular/common": "21.2.11",
     "@angular/compiler": "21.2.11",
     "@angular/core": "21.2.11",
@@ -19,6 +20,7 @@
     "@angular/platform-browser-dynamic": "21.2.11",
     "@angular/router": "21.2.11",
     "lucide-angular": "^0.525.0",
+    "ngx-toastr": "^20.0.5",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0"
   },

@@ -5,6 +5,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { finalize } from 'rxjs';
 
 import { AuthService } from '../../../../core/services/auth.service';
+import { ToastService } from '../../../../core/services/toast.service';
 import { getControlError, markAllTouched } from '../../../../shared/utils/form-helpers';
 import { mapHttpError } from '../../../../shared/utils/error-mapper';
 
@@ -19,6 +20,7 @@ export class LoginComponent {
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly toast = inject(ToastService);
   private readonly fb = inject(FormBuilder);
 
   readonly form = this.fb.nonNullable.group({
@@ -27,8 +29,6 @@ export class LoginComponent {
     rememberMe: [false]
   });
   loading = false;
-  errorMessage = '';
-  successMessage = '';
 
   onSubmit(): void {
     if (this.form.invalid) {
@@ -37,8 +37,6 @@ export class LoginComponent {
     }
 
     this.loading = true;
-    this.errorMessage = '';
-    this.successMessage = '';
 
     const { email, password } = this.form.getRawValue();
 
@@ -50,11 +48,11 @@ export class LoginComponent {
       )
       .subscribe({
         next: () => {
-          this.successMessage = 'Signed in successfully. Redirecting...';
+            this.toast.success('Signed in successfully. Redirecting...');
             window.setTimeout(() => this.router.navigate(['/']), 700);
         },
         error: (error: unknown) => {
-          this.errorMessage = mapHttpError(error, 'Unable to sign in. Please try again.');
+            this.toast.error(mapHttpError(error, 'Unable to sign in. Please try again.'));
         }
       });
   }

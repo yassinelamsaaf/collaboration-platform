@@ -5,6 +5,7 @@ import { finalize } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { AuthService } from '../../../../core/services/auth.service';
+import { ToastService } from '../../../../core/services/toast.service';
 import { getControlError, markAllTouched } from '../../../../shared/utils/form-helpers';
 import { mapHttpError } from '../../../../shared/utils/error-mapper';
 import { matchFields } from '../../../../shared/utils/validators';
@@ -21,6 +22,7 @@ export class RegisterComponent {
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly toast = inject(ToastService);
   private readonly fb = inject(FormBuilder);
 
   readonly form = this.fb.nonNullable.group(
@@ -34,8 +36,6 @@ export class RegisterComponent {
   );
 
   loading = false;
-  errorMessage = '';
-  successMessage = '';
 
   onSubmit(): void {
     if (this.form.invalid) {
@@ -44,8 +44,6 @@ export class RegisterComponent {
     }
 
     this.loading = true;
-    this.errorMessage = '';
-    this.successMessage = '';
 
     const payload = this.form.getRawValue();
 
@@ -57,13 +55,13 @@ export class RegisterComponent {
       )
       .subscribe({
         next: (response: MessageResponse) => {
-          this.successMessage = response.message;
+            this.toast.success(response.message);
           window.setTimeout(() => {
             this.router.navigate(['/auth/verify-email'], { queryParams: { email: payload.email } });
           }, 900);
         },
         error: (error: unknown) => {
-          this.errorMessage = mapHttpError(error, 'Unable to register. Please try again.');
+            this.toast.error(mapHttpError(error, 'Unable to register. Please try again.'));
         }
       });
   }

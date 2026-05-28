@@ -14,6 +14,7 @@ import { finalize } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { AuthService } from '../../../../core/services/auth.service';
+import { ToastService } from '../../../../core/services/toast.service';
 import { getControlError, markAllTouched } from '../../../../shared/utils/form-helpers';
 import { mapHttpError } from '../../../../shared/utils/error-mapper';
 import { MessageResponse } from '../../../../shared/models/auth.models';
@@ -30,6 +31,7 @@ export class VerifyEmailComponent implements OnInit {
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly toast = inject(ToastService);
   private readonly fb = inject(FormBuilder);
 
   @ViewChildren('otpInput') private readonly otpInputs!: QueryList<ElementRef<HTMLInputElement>>;
@@ -46,8 +48,6 @@ export class VerifyEmailComponent implements OnInit {
 
   loading = false;
   resending = false;
-  errorMessage = '';
-  successMessage = '';
 
   ngOnInit(): void {
     const email = this.route.snapshot.queryParamMap.get('email');
@@ -63,12 +63,10 @@ export class VerifyEmailComponent implements OnInit {
     }
 
     this.loading = true;
-    this.errorMessage = '';
-    this.successMessage = '';
 
     const code = this.getCode();
     if (!code) {
-      this.errorMessage = 'Enter the 6-digit verification code.';
+      this.toast.error('Enter the 6-digit verification code.');
       this.loading = false;
       return;
     }
@@ -81,11 +79,11 @@ export class VerifyEmailComponent implements OnInit {
       )
       .subscribe({
         next: (response: MessageResponse) => {
-          this.successMessage = response.message;
+            this.toast.success(response.message);
           window.setTimeout(() => this.router.navigate(['/auth/login']), 800);
         },
         error: (error: unknown) => {
-          this.errorMessage = mapHttpError(error, 'Verification failed. Please try again.');
+            this.toast.error(mapHttpError(error, 'Verification failed. Please try again.'));
         }
       });
   }
@@ -94,12 +92,11 @@ export class VerifyEmailComponent implements OnInit {
     const emailControl = this.form.get('email');
     if (!emailControl || emailControl.invalid) {
       markAllTouched(this.form);
-      this.errorMessage = 'Enter your email to resend the verification code.';
+      this.toast.error('Enter your email to resend the verification code.');
       return;
     }
 
     this.resending = true;
-    this.errorMessage = '';
 
     this.authService
       .resendCode(emailControl.value)
@@ -109,10 +106,10 @@ export class VerifyEmailComponent implements OnInit {
       )
       .subscribe({
         next: (response: MessageResponse) => {
-          this.successMessage = response.message;
+          this.toast.success(response.message);
         },
         error: (error: unknown) => {
-          this.errorMessage = mapHttpError(error, 'Unable to resend the code.');
+          this.toast.error(mapHttpError(error, 'Unable to resend the code.'));
         }
       });
   }

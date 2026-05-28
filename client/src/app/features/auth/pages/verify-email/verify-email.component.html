@@ -9,9 +9,6 @@
       activate your account.
     </p>
 
-    <app-alert type="success" [message]="successMessage" />
-    <app-alert type="error" [message]="errorMessage" />
-
     <form class="form-stack" [formGroup]="form" (ngSubmit)="onSubmit()">
       <div class="form-field" *ngIf="!form.get('email')?.value">
         <label class="form-label" for="verify-email">Email Address</label>

@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
+import { ToastService } from '../../../../core/services/toast.service';
 
 @Component({
   selector: 'app-forgot-password',
@@ -10,20 +11,18 @@ import { FormBuilder, Validators } from '@angular/forms';
 })
 export class ForgotPasswordComponent {
   private readonly fb = inject(FormBuilder);
+  private readonly toast = inject(ToastService);
 
   readonly form = this.fb.nonNullable.group({
     email: ['', [Validators.required, Validators.email]]
   });
-
-  successMessage = '';
 
   onSubmit(): void {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       return;
     }
-
-    this.successMessage = 'If an account exists, a reset link has been sent.';
+    this.toast.success('If an account exists, a reset link has been sent.');
   }
 
   get emailError(): string | null {
