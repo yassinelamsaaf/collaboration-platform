@@ -1,0 +1,32 @@
+@use '../abstracts/colors' as *;
+@use '../abstracts/variables' as *;
+
+body {
+  background: $bg-soft;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.app-shell {
+  min-height: 100vh;
+}
+
+lucide-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 0;
+  vertical-align: middle;
+}
+
+lucide-icon svg {
+  display: block;
+}
+

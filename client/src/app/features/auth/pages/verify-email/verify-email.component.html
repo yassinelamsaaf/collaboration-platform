@@ -1,0 +1,113 @@
+<section class="auth-center">
+  <div class="auth-card">
+    <div class="auth-card__icon auth-card__icon--square">
+      <lucide-icon class="email-verif-icon" name="mail"></lucide-icon>
+    </div>
+    <h1 class="auth-card__title">Verify your email</h1>
+    <p class="auth-card__subtitle">
+      We've sent a 6-digit verification code to your email. Please enter it below to
+      activate your account.
+    </p>
+
+    <app-alert type="success" [message]="successMessage" />
+    <app-alert type="error" [message]="errorMessage" />
+
+    <form class="form-stack" [formGroup]="form" (ngSubmit)="onSubmit()">
+      <div class="form-field" *ngIf="!form.get('email')?.value">
+        <label class="form-label" for="verify-email">Email Address</label>
+        <input
+          id="verify-email"
+          type="email"
+          class="input"
+          [class.is-invalid]="emailError"
+          formControlName="email"
+          autocomplete="email"
+        />
+        <span class="form-error" *ngIf="emailError">{{ emailError }}</span>
+      </div>
+
+      <div class="otp-grid" role="group" aria-label="Verification code" (paste)="onOtpPaste($event)">
+        <input
+          #otpInput
+          class="otp-input"
+          type="text"
+          inputmode="numeric"
+          maxlength="1"
+          formControlName="code1"
+          [class.is-filled]="form.get('code1')?.value"
+          (input)="onOtpInput(0, $event)"
+          (keydown)="onOtpKeydown(0, $event)"
+        />
+        <input
+          #otpInput
+          class="otp-input"
+          type="text"
+          inputmode="numeric"
+          maxlength="1"
+          formControlName="code2"
+          [class.is-filled]="form.get('code2')?.value"
+          (input)="onOtpInput(1, $event)"
+          (keydown)="onOtpKeydown(1, $event)"
+        />
+        <input
+          #otpInput
+          class="otp-input"
+          type="text"
+          inputmode="numeric"
+          maxlength="1"
+          formControlName="code3"
+          [class.is-filled]="form.get('code3')?.value"
+          (input)="onOtpInput(2, $event)"
+          (keydown)="onOtpKeydown(2, $event)"
+        />
+        <input
+          #otpInput
+          class="otp-input"
+          type="text"
+          inputmode="numeric"
+          maxlength="1"
+          formControlName="code4"
+          [class.is-filled]="form.get('code4')?.value"
+          (input)="onOtpInput(3, $event)"
+          (keydown)="onOtpKeydown(3, $event)"
+        />
+        <input
+          #otpInput
+          class="otp-input"
+          type="text"
+          inputmode="numeric"
+          maxlength="1"
+          formControlName="code5"
+          [class.is-filled]="form.get('code5')?.value"
+          (input)="onOtpInput(4, $event)"
+          (keydown)="onOtpKeydown(4, $event)"
+        />
+        <input
+          #otpInput
+          class="otp-input"
+          type="text"
+          inputmode="numeric"
+          maxlength="1"
+          formControlName="code6"
+          [class.is-filled]="form.get('code6')?.value"
+          (input)="onOtpInput(5, $event)"
+          (keydown)="onOtpKeydown(5, $event)"
+        />
+      </div>
+      <span class="form-error" *ngIf="codeError">{{ codeError }}</span>
+
+      <button class="btn btn--primary" type="submit" [disabled]="loading">
+        Verify Account
+      </button>
+      <span class="loading-text" *ngIf="loading">Verifying your code...</span>
+
+      <div class="auth-inline">
+        <span>Didn't receive the code?</span>
+        <button class="link-button" type="button" [disabled]="resending" (click)="onResend()">
+          Resend code
+        </button>
+      </div>
+      <span class="loading-text" *ngIf="resending">Sending a new code...</span>
+    </form>
+  </div>
+</section>

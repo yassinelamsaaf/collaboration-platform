@@ -1,0 +1,15 @@
+<svg width="760" height="520" viewBox="0 0 760 520" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Workflow preview">
+  <rect width="760" height="520" rx="28" fill="#ffffff" />
+  <rect x="40" y="50" width="300" height="140" rx="18" fill="#eef2ff" />
+  <rect x="420" y="50" width="300" height="140" rx="18" fill="#e0f2fe" />
+  <rect x="40" y="230" width="300" height="140" rx="18" fill="#fef3c7" />
+  <rect x="420" y="230" width="300" height="140" rx="18" fill="#dcfce7" />
+  <rect x="40" y="410" width="680" height="60" rx="16" fill="#f1f5f9" />
+  <circle cx="350" cy="120" r="20" fill="#1d4ed8" />
+  <circle cx="390" cy="120" r="20" fill="#2563eb" />
+  <circle cx="430" cy="120" r="20" fill="#3b82f6" />
+  <rect x="70" y="80" width="160" height="14" rx="7" fill="#94a3b8" />
+  <rect x="450" y="80" width="160" height="14" rx="7" fill="#94a3b8" />
+  <rect x="70" y="260" width="160" height="14" rx="7" fill="#a3a3a3" />
+  <rect x="450" y="260" width="160" height="14" rx="7" fill="#16a34a" />
+</svg>

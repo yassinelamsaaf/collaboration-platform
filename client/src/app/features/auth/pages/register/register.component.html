@@ -1,0 +1,163 @@
+<section class="auth-layout auth-layout--split auth-layout--login">
+  <div class="auth-layout__panel auth-layout__panel--media">
+    <div class="auth-media">
+      <div class="auth-media__bg"></div>
+      <div class="auth-media__content">
+        <div class="auth-brand">NexusFlow</div>
+        <p class="auth-media__copy">
+          The ultimate high-performance hub for enterprise velocity and executive oversight.
+        </p>
+
+        <div class="testimonial-card">
+          <div class="testimonial-card__stars">
+            <img src="/assets/images/icon-star.png" alt="" />
+            <img src="/assets/images/icon-star.png" alt="" />
+            <img src="/assets/images/icon-star.png" alt="" />
+            <img src="/assets/images/icon-star.png" alt="" />
+            <img src="/assets/images/icon-star.png" alt="" />
+          </div>
+          <p class="testimonial-card__quote">
+            "NexusFlow has fundamentally transformed how our executive team tracks project
+            velocity. It's the most precise tool we've ever used."
+          </p>
+          <div class="testimonial-card__author">
+            <div class="testimonial-card__avatar">
+              <img src="/assets/images/login-avatar.png" alt="" />
+            </div>
+            <div>
+              <div class="testimonial-card__name">Marcus Thorne</div>
+              <div class="testimonial-card__role">CTO, Vertex Dynamics</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="auth-layout__panel auth-layout__panel--form">
+    <div class="auth-form">
+      <div class="auth-form__header">
+        <h1>Create your account</h1>
+        <p>Enter your details below to get started with NexusFlow.</p>
+      </div>
+
+      <div class="auth-tabs">
+        <a
+          class="auth-tabs__item"
+          routerLink="/auth/login"
+          routerLinkActive="is-active"
+          [routerLinkActiveOptions]="{ exact: true }"
+        >
+          <lucide-icon name="log-in"></lucide-icon>
+          Sign In
+        </a>
+        <a
+          class="auth-tabs__item"
+          routerLink="/auth/register"
+          routerLinkActive="is-active"
+          [routerLinkActiveOptions]="{ exact: true }"
+        >
+          <lucide-icon name="user-plus"></lucide-icon>
+          Sign Up
+        </a>
+      </div>
+
+      <div class="auth-form__panel is-signup">
+        <div class="auth-social">
+          <button class="btn btn--social btn--social-google" type="button">
+            <span class="social-icon social-icon--google" aria-hidden="true">
+              <lucide-icon name="globe"></lucide-icon>
+            </span>
+            Sign up with Google
+          </button>
+          <button class="btn btn--social btn--social-github" type="button">
+            <span class="social-icon" aria-hidden="true">
+              <lucide-icon name="github"></lucide-icon>
+            </span>
+            Sign up with GitHub
+          </button>
+        </div>
+
+        <div class="auth-divider">
+          <span>OR EMAIL</span>
+        </div>
+
+        <app-alert type="success" [message]="successMessage" />
+        <app-alert type="error" [message]="errorMessage" />
+
+        <form class="form-stack" [formGroup]="form" (ngSubmit)="onSubmit()">
+          <div class="form-field">
+            <label class="form-label" for="register-username">Username</label>
+            <input
+              id="register-username"
+              type="text"
+              class="input"
+              [class.is-invalid]="usernameError"
+              formControlName="username"
+              autocomplete="username"
+            />
+            <span class="form-error" *ngIf="usernameError">{{ usernameError }}</span>
+          </div>
+
+          <div class="form-field">
+            <label class="form-label" for="register-email">Email Address</label>
+            <input
+              id="register-email"
+              type="email"
+              class="input"
+              [class.is-invalid]="emailError"
+              formControlName="email"
+              autocomplete="email"
+            />
+            <span class="form-error" *ngIf="emailError">{{ emailError }}</span>
+          </div>
+
+          <div class="form-field">
+            <label class="form-label" for="register-password">Password</label>
+            <input
+              id="register-password"
+              type="password"
+              class="input"
+              [class.is-invalid]="passwordError"
+              formControlName="password"
+              autocomplete="new-password"
+            />
+            <span class="form-error" *ngIf="passwordError">{{ passwordError }}</span>
+          </div>
+
+          <div class="form-field">
+            <label class="form-label" for="register-confirm">Confirm Password</label>
+            <input
+              id="register-confirm"
+              type="password"
+              class="input"
+              [class.is-invalid]="confirmPasswordError"
+              formControlName="confirmPassword"
+              autocomplete="new-password"
+            />
+            <span class="form-error" *ngIf="confirmPasswordError">{{ confirmPasswordError }}</span>
+          </div>
+
+          <button class="btn btn--primary" type="submit" [disabled]="loading">
+            Create Account
+            <lucide-icon name="arrow-right"></lucide-icon>
+          </button>
+          <span class="loading-text" *ngIf="loading">Creating your account...</span>
+        </form>
+
+        <div class="auth-links">
+          <span>Already have an account?</span>
+          <a class="link" routerLink="/auth/login">Sign In</a>
+        </div>
+
+        <div class="auth-legal">
+          <span>&copy; 2024 NexusFlow Enterprise Solutions. All rights reserved.</span>
+          <div class="auth-legal__links">
+            <a class="link" href="#">Privacy Policy</a>
+            <a class="link" href="#">Terms of Service</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

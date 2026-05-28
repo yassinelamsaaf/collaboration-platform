@@ -1,0 +1,19 @@
+@use '../abstracts/variables' as *;
+@use '../abstracts/colors' as *;
+
+body {
+  font-family: $font-base;
+  color: $gray-900;
+}
+
+h1,
+h2,
+h3 {
+  font-family: $font-display;
+  margin: 0;
+}
+
+p {
+  margin: 0;
+}
+

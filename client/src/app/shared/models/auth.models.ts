@@ -6,6 +6,14 @@ export interface AuthResponse {
   id: string;
   email: string;
   role: string;
+  username?: string;
+}
+
+export interface UserProfile {
+  id: string;
+  email: string;
+  role: string;
+  username?: string;
 }
 
 export interface LoginRequest {
@@ -14,6 +22,7 @@ export interface LoginRequest {
 }
 
 export interface RegisterRequest {
+  username: string;
   email: string;
   password: string;
 }

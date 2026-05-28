@@ -1,0 +1,140 @@
+@use 'sass:color';
+@use '../abstracts/colors' as *;
+@use '../abstracts/variables' as *;
+@use '../abstracts/mixins' as *;
+
+.btn {
+  border: 1px solid transparent;
+  border-radius: $radius-sm;
+  min-height: 46px;
+  padding: 12px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+  text-transform: none;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+  @include flex-center;
+  gap: 8px;
+}
+
+.btn lucide-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 16px;
+  width: 16px;
+  height: 16px;
+  line-height: 0;
+}
+
+.btn--primary {
+  justify-content: center;
+}
+
+.btn--primary lucide-icon {
+  order: 2;
+}
+
+.btn--primary {
+  background: $blue-600;
+  color: $white;
+  border-color: $blue-600;
+  box-shadow: $shadow-soft;
+}
+
+.btn--primary:hover {
+  background: color.adjust($blue-600, $lightness: -6%);
+}
+
+.btn--social {
+  background: $white;
+  color: $gray-900;
+  border-color: $gray-900;
+  font-size: 13px;
+  text-transform: none;
+  letter-spacing: 0;
+  justify-content: center;
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease, transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.social-icon {
+  width: 18px;
+  height: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 18px;
+  line-height: 0;
+}
+
+.social-icon svg,
+.social-icon lucide-icon {
+  width: 16px;
+  height: 16px;
+  display: block;
+}
+
+.btn--social-github {
+  background: $gray-900;
+  color: $white;
+  border-color: $gray-900;
+}
+
+.btn--social-github:hover {
+  background: $white;
+  color: $gray-900;
+  border-color: $gray-900;
+}
+
+.btn--social-google {
+  background: $white;
+  color: $gray-900;
+  border-color: $gray-900;
+}
+
+.btn--social-google:hover {
+  background: $gray-900;
+  color: $white;
+  border-color: $gray-900;
+}
+
+.btn--social:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+}
+
+.btn--dark {
+  background: #24292f;
+  color: $white;
+  border-color: #24292f;
+}
+
+.btn--ghost {
+  background: transparent;
+  border-color: transparent;
+  color: $gray-900;
+  box-shadow: none;
+}
+
+.btn--ghost:hover {
+  background: $gray-100;
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
+.link-button {
+  border: none;
+  background: transparent;
+  color: $blue-600;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+}
+

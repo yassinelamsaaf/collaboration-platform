@@ -55,12 +55,16 @@ public class AuthService {
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new EmailAlreadyExistsException("Email already registered");
         }
+        if (userRepository.existsByUsername(request.getUsername())) {
+            throw new EmailAlreadyExistsException("Username already taken");
+        }
 
         // Generate a cryptographically random 6-digit code (000000–999999)
         String code = String.format("%06d", new SecureRandom().nextInt(1_000_000));
 
         User user = User.builder()
                 .email(request.getEmail())
+                .username(request.getUsername())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .verificationCode(code)
                 // Code expires in 10 minutes
@@ -162,7 +166,7 @@ public class AuthService {
         response.addHeader(HttpHeaders.SET_COOKIE,
                 cookieService.createRefreshTokenCookie(refreshToken).toString());
 
-        return new AuthResponse(user.getId(), user.getEmail(), user.getRole().name());
+        return new AuthResponse(user.getId(), user.getEmail(), user.getRole().name(), user.getUsername());
     }
 
     // ─── REFRESH TOKEN ────────────────────────────────────────────────────────

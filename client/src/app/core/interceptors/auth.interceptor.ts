@@ -1,11 +1,16 @@
-import { HttpInterceptorFn } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
+import { Observable } from 'rxjs';
 
-import { AUTH_API_BASE_URL } from '../api/api.constants';
+import { AUTH_API_BASE_URL } from '../services/api.constants';
 
-export const authInterceptor: HttpInterceptorFn = (req, next) => {
-  if (req.url.startsWith(AUTH_API_BASE_URL)) {
-    req = req.clone({ withCredentials: true });
+@Injectable()
+export class AuthInterceptor implements HttpInterceptor {
+  intercept(req: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
+    if (req.url.startsWith(AUTH_API_BASE_URL)) {
+      req = req.clone({ withCredentials: true });
+    }
+
+    return next.handle(req);
   }
-
-  return next(req);
-};
+}
