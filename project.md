@@ -21,7 +21,169 @@ Deployment target: Docker Compose locally, Railway/Render/Fly.io in production.
 
 ---
 
-## 2. MVP Specification (5 Phases)
+## 2. Global Architecture — Main Folders & Their Roles
+
+This section gives a high-level map of every top-level folder in both `client/` and `server/`, explaining what goes in each one and how files should be organized going forward.
+
+---
+
+### 2.1 Client (`client/`) — Angular Frontend Folder Structure
+
+```
+client/
+├── angular.json                  # Angular CLI config (builder, assets, budgets, environments)
+├── package.json                  # npm dependencies & scripts (ng serve, build, test)
+├── tsconfig.json                 # Root TypeScript config (strict mode, ES2022)
+├── tsconfig.app.json             # App TS config (extends root, excludes spec files)
+├── tsconfig.spec.json            # Test TS config (vitest globals, jsdom)
+├── .env                          # NOT consumed by Angular (UI-only reference)
+├── .env.example                  # Template for environment variables
+├── .prettierrc                   # Code formatting rules
+├── .editorconfig                 # Editor settings
+│
+├── public/                       # Static assets copied as-is to build output
+│   ├── favicon.ico               #   Browser tab icon
+│   └── assets/images/            #   Icons, backgrounds, illustrations
+│
+├── node_modules/                 # npm dependencies (installed, not committed)
+├── dist/                         # Build output (generated, not committed)
+│
+└── src/                          # Application source code
+    ├── index.html                #   SPA shell (root HTML)
+    ├── main.ts                   #   Angular bootstrap entry point
+    ├── styles.scss               #   Root SCSS entry (imports global styles)
+    │
+    ├── styles/                   #   Global SCSS architecture (NOT component-scoped)
+    │   ├── abstracts/            #     Variables, colors, functions, mixins
+    │   ├── base/                 #     Reset, typography, global utilities
+    │   ├── themes/               #     Theme CSS custom properties (light/dark)
+    │   └── components/           #     Global BEM component styles (buttons, forms, alerts, auth, landing)
+    │
+    └── app/                      # All Angular application code
+        ├── app.module.ts         #   Root module (imports BrowserModule, HttpClientModule, etc.)
+        ├── app-routing.module.ts #   Root routing (lazy-loads features)
+        ├── app.component.ts      #   Root component (<router-outlet> shell)
+        ├── app.component.html    #   Root template
+        ├── app.component.scss    #   Root styles
+        │
+        ├── core/                 #   ★ Singleton services & cross-cutting concerns
+        │   ├── services/         #       ApiService, AuthService, ToastService
+        │   └── interceptors/     #       AuthInterceptor (withCredentials)
+        │
+        ├── shared/               #   ★ Reusable UI & utilities across features
+        │   ├── shared.module.ts  #       Exports CommonModule, AlertComponent, icons
+        │   ├── components/       #       Reusable dumb components (AlertComponent)
+        │   ├── models/           #       TypeScript interfaces & types
+        │   └── utils/            #       Pure functions (error-mapper, validators, form-helpers)
+        │
+        └── features/             #   ★ Lazy-loaded feature modules
+            ├── landing/          #       Landing page (public, no auth required)
+            │   ├── landing.module.ts
+            │   ├── landing-routing.module.ts
+            │   ├── pages/        #         Page-level components (composition roots)
+            │   └── components/   #         Section components (navbar, hero, features, etc.)
+            │
+            ├── auth/             #       Authentication pages
+            │   ├── auth.module.ts
+            │   ├── auth-routing.module.ts
+            │   └── pages/        #         Login, Register, VerifyEmail, ForgotPassword
+            │
+            ├── dashboard/        #   ⬚ NOT YET CREATED — Personal & project dashboards
+            ├── projects/         #   ⬚ NOT YET CREATED — Project CRUD, settings, member management
+            ├── tasks/            #   ⬚ NOT YET CREATED — Task CRUD, Kanban board view
+            └── notifications/    #   ⬚ NOT YET CREATED — In-app notification center
+```
+
+#### Rule of thumb for the frontend:
+- **`core/`** → Services used app-wide (auth state, API wrapper, toast). Only import in `AppModule`. Singleton services.
+- **`shared/`** → Dumb components, models, utility functions. Import in feature modules. Never import `core/` services here.
+- **`features/`** → Each business domain gets its own lazy-loaded module. Contains `pages/` (routed, page-level) and `components/` (section-level, reused within the feature). Never import `features/` into each other.
+- Each feature module imports `SharedModule` for common components/icons and `ReactiveFormsModule` if it uses forms.
+
+---
+
+### 2.2 Server (`server/`) — Spring Boot Backend Folder Structure
+
+```
+server/
+├── pom.xml                       # Maven build config (dependencies, plugins, Java 17)
+├── Dockerfile                    # Multi-stage Docker build (Maven → JRE)
+├── mvnw / mvnw.cmd               # Maven wrapper scripts
+├── HELP.md                       # Spring Boot generated help
+│
+├── .env                          # Environment variables (read by application.yaml at runtime)
+├── .env.example                  # Template for environment variables
+│
+├── target/                       # Build artifacts (JAR, compiled classes)
+│
+└── src/
+    ├── main/
+    │   ├── resources/
+    │   │   └── application.yaml  # All Spring Boot config (DB, Redis, Mail, JWT, CORS)
+    │   │
+    │   └── java/com/inpt/collaborationplatform/
+    │       ├── CollaborationPlatformApplication.java   # @SpringBootApplication entry point
+    │       │
+    │       ├── auth/             #   ★ Authentication domain
+    │       │   ├── entity/       #       JPA entities (User, Role enum)
+    │       │   ├── repository/   #       Spring Data repositories (UserRepository)
+    │       │   ├── dto/          #       Request/Response DTOs
+    │       │   │   ├── request/  #         RegisterRequest, LoginRequest, VerifyCodeRequest
+    │       │   │   └── response/ #         AuthResponse
+    │       │   ├── service/      #       Business logic (AuthService, EmailService)
+    │       │   └── controller/   #       REST endpoints (AuthController — /api/auth)
+    │       │
+    │       ├── projects/         #   ⬚ NOT YET CREATED — Project domain (entity, repo, dto, service, controller)
+    │       ├── tasks/            #   ⬚ NOT YET CREATED — Task domain
+    │       ├── teams/            #   ⬚ NOT YET CREATED — Team & role domain
+    │       └── notifications/    #   ⬚ NOT YET CREATED — Notification domain
+    │       │
+    │       └── shared/           #   ★ Cross-cutting infrastructure
+    │           ├── config/       #       Bean configurations (CorsConfig, RedisConfig)
+    │           ├── dto/          #       Shared DTOs (MessageResponse)
+    │           ├── exception/    #       Custom exceptions & GlobalExceptionHandler
+    │           └── security/     #       JWT, cookies, filters, SecurityConfig
+    │
+    └── test/
+        └── java/com/inpt/collaborationplatform/
+            └── CollaborationPlatformApplicationTests.java   # Default context load test
+```
+
+#### Rule of thumb for the backend:
+- **Domain packages** (`auth/`, `projects/`, `tasks/`, `teams/`, `notifications/`) → Each business domain has its own package containing `entity/`, `repository/`, `dto/` (with `request/` and `response/` sub-packages), `service/`, and `controller/`. Domains never import each other's internals — they reference only entity classes by ID.
+- **`shared/`** → Infrastructure used by all domain packages: security (JWT, filters, cookies), configuration (CORS, Redis), shared DTOs, and the global exception handler. Domain services may import `shared/` classes but `shared/` never imports domain packages.
+- **DTOs are split by direction** → `request/` for incoming payloads (with validation annotations), `response/` for outgoing payloads. Never use entities directly as request/response bodies.
+- **Controllers are thin** → They validate input, call a service method, and return the response. All business logic lives in services.
+- **Test structure mirrors `main/`** → Each domain should have corresponding test classes in the same package structure under `test/`.
+
+---
+
+### 2.3 Standard Package Layout (New Domain Example)
+
+When adding a new domain (e.g., `projects/`), follow this exact pattern:
+
+```
+com.inpt.collaborationplatform.projects/
+├── entity/
+│   ├── Project.java             # JPA entity with @Entity, @Table, relationships
+│   └── ProjectStatus.java       # Enum (ACTIVE, ARCHIVED, etc.)
+├── repository/
+│   └── ProjectRepository.java   # Extends JpaRepository<Project, UUID>
+├── dto/
+│   ├── request/
+│   │   ├── CreateProjectRequest.java    # @NotBlank, @Size, etc.
+│   │   └── UpdateProjectRequest.java
+│   └── response/
+│       └── ProjectResponse.java         # Safe DTO (no internal fields exposed)
+├── service/
+│   └── ProjectService.java      # @Service — business logic, transaction management
+└── controller/
+    └── ProjectController.java   # @RestController — /api/projects CRUD endpoints
+```
+
+---
+
+## 3. MVP Specification (5 Phases)
 
 ### PHASE 1 : Fondations
 - Authentification : Inscription → Confirmation email → Connexion → Déconnexion → Reset mot de passe
