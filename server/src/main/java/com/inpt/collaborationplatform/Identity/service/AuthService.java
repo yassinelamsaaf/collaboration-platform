@@ -28,6 +28,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
@@ -51,6 +52,7 @@ public class AuthService {
 
     // ─── REGISTER ────────────────────────────────────────────────────────────────
 
+    @Transactional
     public MessageResponse register(RegisterRequest request) {
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new EmailAlreadyExistsException("Email already registered");
@@ -80,6 +82,7 @@ public class AuthService {
 
     // ─── VERIFY CODE ──────────────────────────────────────────────────────────────
 
+    @Transactional
     public MessageResponse verifyCode(VerifyCodeRequest request) {
         // Look up by email — user submits both email + code together
         User user = userRepository.findByEmail(request.getEmail())
@@ -111,6 +114,7 @@ public class AuthService {
 
     // ─── RESEND CODE // VERIFY EMAIL ──────────────────────────────────────────────────────────────
 
+    @Transactional
     public MessageResponse resendCode(String email) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new InvalidTokenException("No account found with this email"));

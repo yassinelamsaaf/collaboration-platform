@@ -29,12 +29,16 @@ spring:
     properties:
       mail:
         smtp:
-          auth: true
+          auth: ${SPRING_MAIL_SMTP_AUTH:false}
           starttls:
-            enable: true
+            enable: ${SPRING_MAIL_SMTP_STARTTLS_ENABLE:false}
 
 # Custom app properties
 app:
+  mail:
+    from: ${APP_MAIL_FROM:no-reply@collaboration-platform.local}
+  cookie:
+    secure: ${APP_COOKIE_SECURE:false}
   jwt:
     secret: ${APP_JWT_SECRET}
     access-token-expiration: ${APP_JWT_ACCESS_TOKEN_EXPIRATION}

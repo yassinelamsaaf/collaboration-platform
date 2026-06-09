@@ -17,6 +17,13 @@ services:
     ports:
       - "6379:6379"
 
+  mailhog:
+    image: mailhog/mailhog:v1.0.1
+    container_name: cp-mailhog
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+
   server:
     build:
       context: ./server
@@ -29,6 +36,7 @@ services:
     depends_on:
       - db
       - redis
+      - mailhog
 
 volumes:
   cp_postgres_data:

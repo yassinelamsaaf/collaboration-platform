@@ -14,8 +14,11 @@ public class EmailService {
 
     private final JavaMailSender mailSender;
 
-    @Value("${spring.mail.username}")
+    @Value("${app.mail.from:no-reply@collaboration-platform.local}")
     private String fromEmail;
+
+    @Value("${app.frontend-url}")
+    private String frontendUrl;
 
     public void sendVerificationCode(String toEmail, String code) {
         try {
@@ -35,6 +38,28 @@ public class EmailService {
         } catch (Exception e) {
             log.error("Failed to send verification code to {}: {}", toEmail, e.getMessage());
             throw new RuntimeException("Failed to send verification email");
+        }
+    }
+
+    public void sendProjectInvitation(String toEmail, String projectName, String invitedByEmail, String token) {
+        try {
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setFrom(fromEmail);
+            message.setTo(toEmail);
+            message.setSubject("You're invited to join " + projectName);
+            message.setText(
+                    invitedByEmail + " invited you to join the project \"" + projectName + "\".\n\n" +
+                            "Accept the invitation here:\n" +
+                            frontendUrl + "/invitations/" + token + "\n\n" +
+                            "If you do not have an account yet, register with this email first, then open the link again."
+            );
+
+            mailSender.send(message);
+            log.info("Project invitation sent to {}", toEmail);
+
+        } catch (Exception e) {
+            log.error("Failed to send project invitation to {}: {}", toEmail, e.getMessage());
+            throw new RuntimeException("Failed to send project invitation email");
         }
     }
 }

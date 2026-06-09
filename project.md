@@ -1425,9 +1425,9 @@ Frontend (NavbarComponent)
 
 ### Critical (Blocking MVP Completion)
 
-1. **No domain entities beyond User** — Missing: `Project`, `Task`, `TaskStatus`, `Priority`, `Team`, `TeamMember`, `Notification`, `Invitation`. These are required for all 5 MVP phases.
+1. **Core domain still incomplete** — Implemented: `User`, `Project`, `ProjectMember`, `ProjectRole`, `ProjectInvitation`. Still missing: `Task`, `TaskStatus`, `Priority`, `Team`, `Notification`, and later collaboration/activity entities.
 
-2. **No Project CRUD** — No `ProjectController`, `ProjectService`, `ProjectRepository`. Phase 1 requires project creation, editing, archiving, and listing.
+2. **Project CRUD exists; remaining project work is refinement** — `ProjectController`, `ProjectService`, and repositories now support creation, listing, reading, updating, archiving, membership listing, role changes, removal, and invitation-based membership.
 
 3. **No Task CRUD** — No `TaskController`, `TaskService`, `TaskRepository`. Phase 2 requires full task management with priority and due dates.
 
@@ -1437,7 +1437,7 @@ Frontend (NavbarComponent)
 
 6. **No Notification system** — No `Notification` entity, no in-app notifications, no WebSocket/STOMP for real-time delivery. Phase 3 requires in-app + email notifications.
 
-7. **No Team/Role management** — No `TeamMember` entity, no `ProjectRole` enum (Owner/TeamLead/Member/Observer), no invitation flow. Phase 4 requires all of this.
+7. **Team management not implemented yet** — Project roles and invitation flow exist. Dedicated teams/team membership are still not implemented.
 
 8. **Password reset** — Frontend has a UI-only form. Missing backend endpoint (`POST /api/auth/forgot-password`, `POST /api/auth/reset-password`), email template, token generation.
 

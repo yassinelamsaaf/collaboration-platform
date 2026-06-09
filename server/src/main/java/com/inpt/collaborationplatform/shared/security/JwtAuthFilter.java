@@ -1,7 +1,5 @@
 package com.inpt.collaborationplatform.shared.security;
 
-import com.inpt.collaborationplatform.auth.entity.User;
-import com.inpt.collaborationplatform.auth.repository.UserRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
@@ -17,6 +15,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+
+import com.inpt.collaborationplatform.Identity.entity.User;
+import com.inpt.collaborationplatform.Identity.repository.UserRepository;
 
 import java.io.IOException;
 import java.util.Arrays;

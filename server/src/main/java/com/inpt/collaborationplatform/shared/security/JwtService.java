@@ -1,13 +1,17 @@
 package com.inpt.collaborationplatform.shared.security;
 
-import com.inpt.collaborationplatform.auth.entity.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.io.DecodingException;
 import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.WeakKeyException;
+import jakarta.annotation.PostConstruct;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
+import com.inpt.collaborationplatform.Identity.entity.User;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
@@ -27,10 +31,26 @@ public class JwtService {
     @Value("${app.jwt.refresh-token-expiration}")
     private long refreshTokenExpiration;
 
-    // Build the signing key from the secret string
+    private SecretKey signingKey;
+
+    @PostConstruct
+    void validateJwtSecret() {
+        signingKey = buildSigningKey();
+    }
+
+    // Build the signing key from the Base64-encoded secret string.
     private SecretKey getSigningKey() {
-        // The secretKey is a base64-encoded string, so we decode it first
-        return Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretKey));
+        return signingKey;
+    }
+
+    private SecretKey buildSigningKey() {
+        try {
+            return Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretKey));
+        } catch (DecodingException e) {
+            throw new IllegalStateException("APP_JWT_SECRET must be a valid Base64-encoded HMAC key.", e);
+        } catch (WeakKeyException e) {
+            throw new IllegalStateException("APP_JWT_SECRET must decode to at least 32 bytes for HS256.", e);
+        }
     }
 
     // Generate a short-lived access token
