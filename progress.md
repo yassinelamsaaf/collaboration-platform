@@ -29,8 +29,15 @@ Current boundaries:
 - Project-scoped permissions are not owned by IAM; they belong to the Projects module.
 
 Known gaps:
-- Password reset backend is not implemented yet.
 - Frontend route guard is not implemented yet.
+
+Password reset:
+- `POST /api/auth/forgot-password` sends a 6-digit code to the user's email.
+- `POST /api/auth/reset-password` validates the code and updates the password.
+- `POST /api/auth/resend-reset-code` sends a new code.
+- Rate limiting: 60-second cooldown between requests, max 5 requests per hour per email.
+- Reset codes expire after 10 minutes.
+- Errors: invalid email, unverified account, invalid code, expired code, rate limit cooldown, rate limit max exceeded.
 
 ### Projects
 
@@ -92,6 +99,12 @@ Known gaps:
 - Projects frontend is not implemented yet.
 - Auth guard is not implemented yet.
 - API service is currently auth-centric and should be generalized before adding project screens.
+
+Password reset frontend:
+- `/auth/forgot-password` — email form → calls `POST /api/auth/forgot-password` → navigates to reset-password.
+- `/auth/reset-password?email=...` — 6-digit OTP (same style as verify-email), new password, confirm password → calls `POST /api/auth/reset-password`.
+- "Resend verification code" link with 60-second countdown cooldown.
+- Reuses existing SCSS classes: `.auth-center`, `.auth-card`, `.otp-grid`, `.input-with-icon`, `.link-button`, `.btn--primary`, `.auth-inline`.
 
 ## Seeds / Testing Notes
 

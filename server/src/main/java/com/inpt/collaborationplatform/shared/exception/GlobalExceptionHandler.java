@@ -43,6 +43,11 @@ public class GlobalExceptionHandler {
         return errorResponse(HttpStatus.FORBIDDEN, e.getMessage());
     }
 
+    @ExceptionHandler(RateLimitExceededException.class)
+    public ResponseEntity<?> handleRateLimit(RateLimitExceededException e) {
+        return errorResponse(HttpStatus.TOO_MANY_REQUESTS, e.getMessage());
+    }
+
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<?> handleBadCredentials(BadCredentialsException e) {
         // Always return a vague message — never tell the caller which field was wrong

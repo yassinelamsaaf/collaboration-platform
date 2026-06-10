@@ -1,6 +1,14 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, inject } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
+import { finalize } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+
+import { AuthService } from '../../../../core/services/auth.service';
 import { ToastService } from '../../../../core/services/toast.service';
+import { markAllTouched } from '../../../../shared/utils/form-helpers';
+import { mapHttpError } from '../../../../shared/utils/error-mapper';
+import { MessageResponse } from '../../../../shared/models/auth.models';
 
 @Component({
   selector: 'app-forgot-password',
@@ -11,18 +19,41 @@ import { ToastService } from '../../../../core/services/toast.service';
 })
 export class ForgotPasswordComponent {
   private readonly fb = inject(FormBuilder);
+  private readonly authService = inject(AuthService);
   private readonly toast = inject(ToastService);
+  private readonly router = inject(Router);
+  private readonly destroyRef = inject(DestroyRef);
 
   readonly form = this.fb.nonNullable.group({
     email: ['', [Validators.required, Validators.email]]
   });
 
+  loading = false;
+
   onSubmit(): void {
     if (this.form.invalid) {
-      this.form.markAllAsTouched();
+      markAllTouched(this.form);
       return;
     }
-    this.toast.success('If an account exists, a reset link has been sent.');
+
+    this.loading = true;
+    const email = this.form.get('email')?.value ?? '';
+
+    this.authService
+      .forgotPassword({ email })
+      .pipe(
+        finalize(() => (this.loading = false)),
+        takeUntilDestroyed(this.destroyRef)
+      )
+      .subscribe({
+        next: (response: MessageResponse) => {
+          this.toast.success(response.message);
+          window.setTimeout(() => this.router.navigate(['/auth/reset-password'], { queryParams: { email } }), 600);
+        },
+        error: (error: unknown) => {
+          this.toast.error(mapHttpError(error, 'Unable to send reset code.'));
+        }
+      });
   }
 
   get emailError(): string | null {

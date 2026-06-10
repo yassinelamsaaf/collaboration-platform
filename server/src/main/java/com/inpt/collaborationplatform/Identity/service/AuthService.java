@@ -7,9 +7,12 @@ import com.inpt.collaborationplatform.Identity.dto.response.AuthResponse;
 import com.inpt.collaborationplatform.Identity.entity.User;
 import com.inpt.collaborationplatform.Identity.repository.UserRepository;
 import com.inpt.collaborationplatform.shared.dto.MessageResponse;
+import com.inpt.collaborationplatform.Identity.dto.request.ForgotPasswordRequest;
+import com.inpt.collaborationplatform.Identity.dto.request.ResetPasswordRequest;
 import com.inpt.collaborationplatform.shared.exception.AccountNotVerifiedException;
 import com.inpt.collaborationplatform.shared.exception.EmailAlreadyExistsException;
 import com.inpt.collaborationplatform.shared.exception.InvalidTokenException;
+import com.inpt.collaborationplatform.shared.exception.RateLimitExceededException;
 import com.inpt.collaborationplatform.shared.security.CookieService;
 import com.inpt.collaborationplatform.shared.security.JwtService;
 import io.jsonwebtoken.Claims;
@@ -134,6 +137,111 @@ public class AuthService {
 
 
     // ─── LOGIN ────────────────────────────────────────────────────────────────
+
+    private static final String RESET_COOLDOWN_PREFIX = "reset-cooldown:";
+    private static final String RESET_COUNT_PREFIX = "reset-count:";
+    private static final long RESET_COOLDOWN_SECONDS = 60;
+    private static final long RESET_MAX_COUNT = 5;
+    private static final long RESET_COUNT_WINDOW_SECONDS = 3600;
+
+    @Transactional
+    public MessageResponse forgotPassword(ForgotPasswordRequest request) {
+        String email = request.getEmail();
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new InvalidTokenException("No account found with this email"));
+
+        if (!user.isEnabled()) {
+            throw new AccountNotVerifiedException("Please verify your email before resetting your password");
+        }
+
+        checkResetRateLimit(email);
+
+        String code = String.format("%06d", new SecureRandom().nextInt(1_000_000));
+        user.setResetCode(code);
+        user.setResetCodeExpiry(LocalDateTime.now().plusMinutes(10));
+        userRepository.save(user);
+
+        emailService.sendResetCode(email, code);
+        return new MessageResponse("A password reset code has been sent to your email.");
+    }
+
+    @Transactional
+    public MessageResponse resetPassword(ResetPasswordRequest request) {
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new InvalidTokenException("No account found with this email"));
+
+        if (!user.isEnabled()) {
+            throw new AccountNotVerifiedException("Please verify your email before resetting your password");
+        }
+
+        if (user.getResetCode() == null || user.getResetCodeExpiry() == null) {
+            throw new InvalidTokenException("No password reset has been requested");
+        }
+
+        if (!request.getCode().equals(user.getResetCode())) {
+            throw new InvalidTokenException("Invalid reset code");
+        }
+
+        if (user.getResetCodeExpiry().isBefore(LocalDateTime.now())) {
+            throw new InvalidTokenException("Reset code has expired. Please request a new one.");
+        }
+
+        user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+        user.setResetCode(null);
+        user.setResetCodeExpiry(null);
+        userRepository.save(user);
+
+        return new MessageResponse("Password has been reset successfully. You can now log in with your new password.");
+    }
+
+    @Transactional
+    public MessageResponse resendResetCode(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new InvalidTokenException("No account found with this email"));
+
+        if (!user.isEnabled()) {
+            throw new AccountNotVerifiedException("Please verify your email before resetting your password");
+        }
+
+        checkResetRateLimit(email);
+
+        String newCode = String.format("%06d", new SecureRandom().nextInt(1_000_000));
+        user.setResetCode(newCode);
+        user.setResetCodeExpiry(LocalDateTime.now().plusMinutes(10));
+        userRepository.save(user);
+
+        emailService.sendResetCode(email, newCode);
+        return new MessageResponse("A new password reset code has been sent to your email.");
+    }
+
+    private void checkResetRateLimit(String email) {
+        String cooldownKey = RESET_COOLDOWN_PREFIX + email;
+        String countKey = RESET_COUNT_PREFIX + email;
+
+        Boolean hasCooldown = redisTemplate.hasKey(cooldownKey);
+        if (Boolean.TRUE.equals(hasCooldown)) {
+            long ttl = redisTemplate.getExpire(cooldownKey);
+            throw new RateLimitExceededException(
+                    "Please wait " + ttl + " seconds before requesting another code"
+            );
+        }
+
+        String countStr = redisTemplate.opsForValue().get(countKey);
+        long count = countStr == null ? 0 : Long.parseLong(countStr);
+        if (count >= RESET_MAX_COUNT) {
+            throw new RateLimitExceededException(
+                    "Too many password reset requests. Please try again later."
+            );
+        }
+
+        redisTemplate.opsForValue().set(cooldownKey, "true", RESET_COOLDOWN_SECONDS, TimeUnit.SECONDS);
+
+        if (countStr == null) {
+            redisTemplate.opsForValue().set(countKey, "1", RESET_COUNT_WINDOW_SECONDS, TimeUnit.SECONDS);
+        } else {
+            redisTemplate.opsForValue().increment(countKey);
+        }
+    }
 
     public AuthResponse login(LoginRequest request, HttpServletResponse response) {
         // Find user

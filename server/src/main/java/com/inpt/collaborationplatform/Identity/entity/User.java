@@ -37,6 +37,10 @@ public class User {
 
     private LocalDateTime verificationCodeExpiry;
 
+    private String resetCode;
+
+    private LocalDateTime resetCodeExpiry;
+
     @Enumerated(EnumType.STRING)
     @Builder.Default
     private Role role = Role.USER;

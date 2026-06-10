@@ -103,14 +103,19 @@
                 Forgot password?
               </a>
             </div>
-            <input
-              id="login-password"
-              type="password"
-              class="input"
-              [class.is-invalid]="passwordError"
-              formControlName="password"
-              autocomplete="current-password"
-            />
+            <div class="password-wrapper">
+              <input
+                id="login-password"
+                [type]="showPassword ? 'text' : 'password'"
+                class="input"
+                [class.is-invalid]="passwordError"
+                formControlName="password"
+                autocomplete="current-password"
+              />
+              <button type="button" class="toggle-password" (click)="showPassword = !showPassword">
+                <lucide-icon [name]="showPassword ? 'eye-off' : 'eye'"></lucide-icon>
+              </button>
+            </div>
             <span class="form-error" *ngIf="passwordError">{{ passwordError }}</span>
           </div>
 

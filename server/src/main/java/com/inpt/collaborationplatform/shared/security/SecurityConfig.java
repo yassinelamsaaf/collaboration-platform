@@ -35,13 +35,16 @@ public class SecurityConfig {
 
                 // Define which endpoints are public vs protected
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(
-                                "/api/auth/register",
-                                "/api/auth/verify-code",
-                                "/api/auth/resend-code",
-                                "/api/auth/login",
-                                "/api/auth/refresh"
-                        ).permitAll()
+                .requestMatchers(
+                        "/api/auth/register",
+                        "/api/auth/verify-code",
+                        "/api/auth/resend-code",
+                        "/api/auth/forgot-password",
+                        "/api/auth/reset-password",
+                        "/api/auth/resend-reset-code",
+                        "/api/auth/login",
+                        "/api/auth/refresh"
+                ).permitAll()
                         .requestMatchers("/api/projects/invitations/*").permitAll()
                         .requestMatchers("/api/auth/me", "/api/auth/logout").authenticated()
                         .anyRequest().authenticated()

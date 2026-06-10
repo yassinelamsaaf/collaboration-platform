@@ -1,7 +1,9 @@
 package com.inpt.collaborationplatform.Identity.controller;
 
+import com.inpt.collaborationplatform.Identity.dto.request.ForgotPasswordRequest;
 import com.inpt.collaborationplatform.Identity.dto.request.LoginRequest;
 import com.inpt.collaborationplatform.Identity.dto.request.RegisterRequest;
+import com.inpt.collaborationplatform.Identity.dto.request.ResetPasswordRequest;
 import com.inpt.collaborationplatform.Identity.dto.request.VerifyCodeRequest;
 import com.inpt.collaborationplatform.Identity.dto.response.AuthResponse;
 import com.inpt.collaborationplatform.Identity.entity.User;
@@ -39,6 +41,21 @@ public class AuthController {
     @PostMapping("/resend-code")
     public ResponseEntity<MessageResponse> resendCode(@RequestParam String email) {
         return ResponseEntity.ok(authService.resendCode(email));
+    }
+
+    @PostMapping("/forgot-password")
+    public ResponseEntity<MessageResponse> forgotPassword(@Valid @RequestBody ForgotPasswordRequest request) {
+        return ResponseEntity.ok(authService.forgotPassword(request));
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<MessageResponse> resetPassword(@Valid @RequestBody ResetPasswordRequest request) {
+        return ResponseEntity.ok(authService.resetPassword(request));
+    }
+
+    @PostMapping("/resend-reset-code")
+    public ResponseEntity<MessageResponse> resendResetCode(@RequestParam String email) {
+        return ResponseEntity.ok(authService.resendResetCode(email));
     }
 
     @PostMapping("/login")

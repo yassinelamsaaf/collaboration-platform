@@ -21,6 +21,18 @@ export class AuthService {
 
   constructor(private readonly api: ApiService) {}
 
+  forgotPassword(payload: { email: string }): Observable<MessageResponse> {
+    return this.api.post<MessageResponse>('forgot-password', payload);
+  }
+
+  resetPassword(payload: { email: string; code: string; newPassword: string }): Observable<MessageResponse> {
+    return this.api.post<MessageResponse>('reset-password', payload);
+  }
+
+  resendResetCode(email: string): Observable<MessageResponse> {
+    return this.api.post<MessageResponse>('resend-reset-code', null, { email });
+  }
+
   register(payload: RegisterRequest): Observable<MessageResponse> {
     return this.api.post<MessageResponse>('register', payload);
   }

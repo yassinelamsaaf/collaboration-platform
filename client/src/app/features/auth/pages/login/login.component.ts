@@ -29,6 +29,7 @@ export class LoginComponent {
     rememberMe: [false]
   });
   loading = false;
+  showPassword = false;
 
   onSubmit(): void {
     if (this.form.invalid) {

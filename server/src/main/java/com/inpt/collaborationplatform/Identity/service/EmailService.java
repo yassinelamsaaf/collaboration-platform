@@ -41,6 +41,27 @@ public class EmailService {
         }
     }
 
+    public void sendResetCode(String toEmail, String code) {
+        try {
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setFrom(fromEmail);
+            message.setTo(toEmail);
+            message.setSubject("Your password reset code");
+            message.setText(
+                    "Your password reset code is: " + code + "\n\n" +
+                            "This code expires in 10 minutes.\n" +
+                            "If you didn't request a password reset, please ignore this email."
+            );
+
+            mailSender.send(message);
+            log.info("Password reset code sent to {}", toEmail);
+
+        } catch (Exception e) {
+            log.error("Failed to send password reset code to {}: {}", toEmail, e.getMessage());
+            throw new RuntimeException("Failed to send password reset email");
+        }
+    }
+
     public void sendProjectInvitation(String toEmail, String projectName, String invitedByEmail, String token) {
         try {
             SimpleMailMessage message = new SimpleMailMessage();
