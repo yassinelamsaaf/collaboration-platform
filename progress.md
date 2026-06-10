@@ -97,8 +97,12 @@ Implemented:
 
 Known gaps:
 - Projects frontend is not implemented yet.
-- Auth guard is not implemented yet.
 - API service is currently auth-centric and should be generalized before adding project screens.
+
+Auth guard:
+- `core/guards/auth.guard.ts` — calls `AuthService.checkSession()` (POST /api/auth/refresh), redirects to `/auth/login` on failure.
+- Applied via `canActivate` on `/dashboard` route in `app-routing.module.ts`.
+- A minimal `DashboardComponent` placeholder exists in `features/dashboard/` as a protected route shell.
 
 Password reset frontend:
 - `/auth/forgot-password` — email form → calls `POST /api/auth/forgot-password` → navigates to reset-password.
