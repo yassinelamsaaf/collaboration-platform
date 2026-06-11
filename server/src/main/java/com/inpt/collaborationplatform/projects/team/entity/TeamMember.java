@@ -39,6 +39,7 @@ public class TeamMember {
     @JoinColumn(name = "team_id", nullable = false)
     private Team team;
 
+    // IAM owns User. Keep the id as the persisted boundary; add read-only User views later if member DTOs need profile data.
     @Column(name = "user_id", nullable = false)
     private String userId;
 

@@ -35,6 +35,8 @@ public class Project {
     @Column(length = 1000)
     private String description;
 
+    // HADO BEST PRACTICE of modular monoliths if we later want to switch towards a microse
+    // IAM owns User. Keep the id as the persisted boundary; add read-only User views later if DTOs need profile data.
     @Column(nullable = false)
     private String createdByUserId;
 

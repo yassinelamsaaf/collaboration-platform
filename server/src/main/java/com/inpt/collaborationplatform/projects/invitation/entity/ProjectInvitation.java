@@ -57,6 +57,7 @@ public class ProjectInvitation {
     @Column(nullable = false)
     private ProjectInvitationStatus status = ProjectInvitationStatus.PENDING;
 
+    // IAM owns User. Keep ids as the persisted boundary; add read-only User views later if invitation DTOs need profile data.
     @Column(nullable = false)
     private String invitedByUserId;
 

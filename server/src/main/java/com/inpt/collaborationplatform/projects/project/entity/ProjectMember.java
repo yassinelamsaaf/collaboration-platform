@@ -39,6 +39,7 @@ public class ProjectMember {
     @JoinColumn(name = "project_id", nullable = false)
     private Project project;
 
+    // IAM owns User. Keep the id as the persisted boundary; add read-only User views later if member DTOs need profile data.
     @Column(name = "user_id", nullable = false)
     private String userId;
 

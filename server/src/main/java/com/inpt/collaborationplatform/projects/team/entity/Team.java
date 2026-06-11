@@ -49,6 +49,7 @@ public class Team {
     @Column(length = 1000)
     private String description;
 
+    // IAM owns User. Keep the id as the persisted boundary; add read-only User views later if DTOs need profile data.
     @Column(nullable = false)
     private String createdByUserId;
 
