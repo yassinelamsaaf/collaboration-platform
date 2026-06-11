@@ -150,3 +150,134 @@ Local email testing:
 - Backend SMTP from an IDE/local process uses `localhost:1025`.
 - Local sender address uses `APP_MAIL_FROM=no-reply@collaboration-platform.local`.
 - MailHog web UI is available at `http://localhost:8025`.
+
+### Work Management
+
+Package: `server/src/main/java/com/inpt/collaborationplatform/tasks`
+
+Folders:
+- `task/` for `Task` entity, CRUD controller/service, DTOs, mapper, repository.
+- `subtask/` for `SubTask` entity, CRUD controller/service, DTOs, mapper, repository.
+- `label/` for `Label` entity, CRUD + task-assignment controller/service, DTOs, mapper, repository.
+- `comment/` for `Comment` entity, CRUD controller/service, DTOs, mapper, repository.
+- `attachment/` for `Attachment` entity, CRUD controller/service, DTOs, mapper, repository.
+- `timeentry/` for `TimeEntry` entity, CRUD controller/service, DTOs, mapper, repository.
+- Shared lookups live in `TeamLookupService` (projects module) and `TaskLookupService` (tasks module) so all services reuse consistent "require team / task / team-leader" behavior.
+
+Implemented:
+- **Task** entity with title, description, priority (`LOW`/`MEDIUM`/`HIGH`/`URGENT`), status (`TODO`/`IN_PROGRESS`/`IN_REVIEW`/`DONE`), dueDate (LocalDate), assigneeId (references TeamMember ID).
+- **SubTask** entity with title, isDone flag, assigneeId (references TeamMember ID).
+- **TimeEntry** entity with durationMinutes, date, description, linked to task + user.
+- **Label** entity with name, hex color, scoped to project, many-to-many with Task via `task_labels` join table.
+- **Comment** entity with content, linked to task + user.
+- **Attachment** entity with fileName, fileUrl, fileSize, linked to task + user.
+- Task response computed aggregates: `subTaskCount`, `completedSubTaskCount`, `commentCount`, `attachmentCount`, `totalTimeMinutes`.
+- Sub-tasks, comments, attachments, and time entries cascade-deleted when a task is deleted.
+- Own-resource ownership checks for comment, attachment, and time-entry deletion (author-only).
+- Label ↔ Task many-to-many add/remove endpoints.
+- Shared lookup services for Team, TeamMember, and Task eliminate private-helper duplication.
+- Aggregate computation lives in `TaskService.computeAggregates()`, not in the mapper.
+
+Access control rules:
+- **Task creation**: `OWNER` or `ADMIN` (`requireManager`).
+- **Task update / delete**: `OWNER` or `ADMIN` (`requireManager`).
+- **Task status update**: `MEMBER` or above (`requireContributor`).
+- **SubTask CRUD**: team `LEADER` only (`requireTeamLeader`).
+- **Comment / Attachment / TimeEntry create**: `MEMBER` or above (`requireContributor`).
+- **Comment / Attachment / TimeEntry delete**: `MEMBER` or above **and** must be the author.
+- **Label create**: `MEMBER` or above (`requireContributor`).
+- **Label delete**: `OWNER` or `ADMIN` (`requireManager`).
+- **Label–task assign / unassign**: `MEMBER` or above (`requireContributor`).
+- **All list / read operations**: `VIEWER` or above (`requireViewer`).
+
+Backend endpoints:
+
+| Method | Path | Description | Access |
+|--------|------|-------------|--------|
+| POST | `/api/projects/{projectRef}/labels` | Create label | Contributor+ |
+| GET | `/api/projects/{projectRef}/labels` | List labels | Viewer+ |
+| DELETE | `/api/projects/{projectRef}/labels/{labelId}` | Delete label | Manager+ |
+| POST | `/api/projects/{projectRef}/labels/{labelId}/tasks/{taskId}` | Add label to task | Contributor+ |
+| DELETE | `/api/projects/{projectRef}/labels/{labelId}/tasks/{taskId}` | Remove label from task | Contributor+ |
+| POST | `/api/projects/{projectRef}/teams/{teamRef}/tasks` | Create task | Manager+ (OWNER/ADMIN) |
+| GET | `/api/projects/{projectRef}/teams/{teamRef}/tasks` | List tasks (paginated) | Viewer+ |
+| GET | `/api/projects/{projectRef}/teams/{teamRef}/tasks/{taskId}` | Get task | Viewer+ |
+| PATCH | `/api/projects/{projectRef}/teams/{teamRef}/tasks/{taskId}` | Update task | Manager+ |
+| PATCH | `/api/projects/{projectRef}/teams/{teamRef}/tasks/{taskId}/status` | Update task status | Contributor+ |
+| DELETE | `/api/projects/{projectRef}/teams/{teamRef}/tasks/{taskId}` | Delete task + cascade | Manager+ |
+| POST | `.../tasks/{taskId}/subtasks` | Create sub-task | Team Leader only |
+| GET | `.../tasks/{taskId}/subtasks` | List sub-tasks | Viewer+ |
+| PATCH | `.../tasks/{taskId}/subtasks/{subTaskId}` | Update sub-task | Team Leader only |
+| DELETE | `.../tasks/{taskId}/subtasks/{subTaskId}` | Delete sub-task | Team Leader only |
+| POST | `.../tasks/{taskId}/comments` | Create comment | Contributor+ |
+| GET | `.../tasks/{taskId}/comments` | List comments (paginated) | Viewer+ |
+| DELETE | `.../tasks/{taskId}/comments/{commentId}` | Delete own comment | Author only |
+| POST | `.../tasks/{taskId}/attachments` | Add attachment | Contributor+ |
+| GET | `.../tasks/{taskId}/attachments` | List attachments | Viewer+ |
+| DELETE | `.../tasks/{taskId}/attachments/{attachmentId}` | Delete own attachment | Author only |
+| POST | `.../tasks/{taskId}/time-entries` | Log time | Contributor+ |
+| GET | `.../tasks/{taskId}/time-entries` | List time entries (paginated) | Viewer+ |
+| DELETE | `.../tasks/{taskId}/time-entries/{entryId}` | Delete own time entry | Author only |
+
+Current boundaries:
+- Tasks owns `tasks`, `sub_tasks`, `time_entries`, `labels`, `comments`, `attachments`.
+- Task `assigneeId` references `TeamMember` ID (not `User` ID), consistent with class diagram.
+- Labels are scoped to a project, not a team; label–task assignment uses project-scoped task lookup.
+- Subtasks are not deletable by the task assignee — only the team leader can manage them.
+- Comments, attachments, and time entries are owned by the creating user; only the author or a manager can delete them.
+- Aggregates are computed per-request (no caching); list endpoint does N+1 aggregate queries.
+
+Known gaps:
+- No batch aggregate query for the list endpoint (currently N+1).
+- `currentUserId()` utility duplicated across all 6 controllers — should be extracted.
+- No integration tests for access rules or cascading deletes.
+- Frontend for Work Management is not implemented yet.
+
+Verification:
+- `mvnw compile` passes.
+
+
+
+
+
+
+
+
+# 6 modules summary :
+Identity & Access
+│
+├── User
+├── RefreshToken
+└── PasswordResetToken
+
+Project Management
+│
+├── Project
+├── ProjectMember
+├── Team
+├── TeamMember
+├── Invitation
+├── ProjectRole
+└── TeamRole
+
+Work Management
+│
+├── Task
+├── SubTask
+├── TimeEntry
+├── Label
+├── Priority
+└── TaskStatus
+
+Collaboration
+│
+├── Comment
+└── Attachment
+
+Notifications
+│
+└── Notification
+
+Audit
+│
+└── ActivityLog

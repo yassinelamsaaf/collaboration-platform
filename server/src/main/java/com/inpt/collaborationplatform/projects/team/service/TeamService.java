@@ -36,6 +36,7 @@ public class TeamService {
     private final ProjectMemberRepository projectMemberRepository;
     private final TeamRepository teamRepository;
     private final TeamMemberRepository teamMemberRepository;
+    private final TeamLookupService teamLookupService;
     private final ProjectAccessService projectAccessService;
     private final ProjectLookupService projectLookupService;
     private final IdentityAccessService identityAccessService;
@@ -78,7 +79,7 @@ public class TeamService {
     public TeamResponse getTeam(String projectRef, String teamRef, String currentUserId) {
         Project project = projectLookupService.requireProject(projectRef);
         projectAccessService.requireViewer(project, currentUserId);
-        return teamMapper.toTeamResponse(requireTeam(project.getId(), teamRef));
+        return teamMapper.toTeamResponse(teamLookupService.requireTeam(project.getId(), teamRef));
     }
 
     @Transactional
@@ -86,7 +87,7 @@ public class TeamService {
         Project project = projectLookupService.requireProject(projectRef);
         projectAccessService.requireManager(project, currentUserId);
 
-        Team team = requireTeam(project.getId(), teamRef);
+        Team team = teamLookupService.requireTeam(project.getId(), teamRef);
         if (request.getName() != null) {
             String name = normalizeRequiredName(request.getName(), "Team name cannot be blank");
             String normalizedName = normalizeNameKey(name);
@@ -109,7 +110,7 @@ public class TeamService {
     public void deleteTeam(String projectRef, String teamRef, String currentUserId) {
         Project project = projectLookupService.requireProject(projectRef);
         projectAccessService.requireManager(project, currentUserId);
-        Team team = requireTeam(project.getId(), teamRef);
+        Team team = teamLookupService.requireTeam(project.getId(), teamRef);
         teamMemberRepository.deleteByTeam_Id(team.getId());
         teamRepository.delete(team);
     }
@@ -123,7 +124,7 @@ public class TeamService {
     ) {
         Project project = projectLookupService.requireProject(projectRef);
         projectAccessService.requireViewer(project, currentUserId);
-        Team team = requireTeam(project.getId(), teamRef);
+        Team team = teamLookupService.requireTeam(project.getId(), teamRef);
 
         return PageResponse.from(teamMemberRepository.findByTeam_Id(team.getId(), pageable)
                 .map(teamMapper::toTeamMemberResponse));
@@ -138,7 +139,7 @@ public class TeamService {
     ) {
         Project project = projectLookupService.requireProject(projectRef);
         projectAccessService.requireManager(project, currentUserId);
-        Team team = requireTeam(project.getId(), teamRef);
+        Team team = teamLookupService.requireTeam(project.getId(), teamRef);
 
         identityAccessService.requireUserExists(request.getUserId());
         ProjectMember projectMember = projectMemberRepository.findByProject_IdAndUserId(project.getId(), request.getUserId())
@@ -169,9 +170,9 @@ public class TeamService {
     ) {
         Project project = projectLookupService.requireProject(projectRef);
         projectAccessService.requireManager(project, currentUserId);
-        Team team = requireTeam(project.getId(), teamRef);
+        Team team = teamLookupService.requireTeam(project.getId(), teamRef);
 
-        TeamMember member = requireTeamMember(team.getId(), memberUserId);
+        TeamMember member = teamLookupService.requireTeamMemberByUser(team.getId(), memberUserId);
         member.setRole(request.getRole());
         return teamMapper.toTeamMemberResponse(teamMemberRepository.save(member));
     }
@@ -180,19 +181,8 @@ public class TeamService {
     public void removeTeamMember(String projectRef, String teamRef, String memberUserId, String currentUserId) {
         Project project = projectLookupService.requireProject(projectRef);
         projectAccessService.requireManager(project, currentUserId);
-        Team team = requireTeam(project.getId(), teamRef);
-        teamMemberRepository.delete(requireTeamMember(team.getId(), memberUserId));
-    }
-
-    private Team requireTeam(String projectId, String teamRef) {
-        return teamRepository.findByIdAndProject_Id(teamRef, projectId)
-                .or(() -> teamRepository.findBySlugAndProject_Id(teamRef, projectId))
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Team not found"));
-    }
-
-    private TeamMember requireTeamMember(String teamId, String userId) {
-        return teamMemberRepository.findByTeam_IdAndUserId(teamId, userId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Team member not found"));
+        Team team = teamLookupService.requireTeam(project.getId(), teamRef);
+        teamMemberRepository.delete(teamLookupService.requireTeamMemberByUser(team.getId(), memberUserId));
     }
 
     private String normalizeRequiredName(String value, String errorMessage) {
@@ -215,5 +205,4 @@ public class TeamService {
     private String normalizeNameKey(String value) {
         return value.trim().toLowerCase(Locale.ROOT);
     }
-
 }
