@@ -6,7 +6,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -17,5 +16,5 @@ public interface ProjectMemberRepository extends JpaRepository<ProjectMember, St
 
     Page<ProjectMember> findByUserId(String userId, Pageable pageable);
 
-    List<ProjectMember> findByProject_IdOrderByJoinedAtAsc(String projectId);
+    Page<ProjectMember> findByProject_Id(String projectId, Pageable pageable);
 }

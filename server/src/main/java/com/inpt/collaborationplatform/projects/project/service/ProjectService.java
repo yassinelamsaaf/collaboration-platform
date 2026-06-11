@@ -9,6 +9,7 @@ import com.inpt.collaborationplatform.projects.project.entity.Project;
 import com.inpt.collaborationplatform.projects.project.entity.ProjectMember;
 import com.inpt.collaborationplatform.projects.project.entity.ProjectRole;
 import com.inpt.collaborationplatform.projects.project.entity.ProjectStatus;
+import com.inpt.collaborationplatform.projects.project.mapper.ProjectMapper;
 import com.inpt.collaborationplatform.projects.project.repository.ProjectMemberRepository;
 import com.inpt.collaborationplatform.projects.project.repository.ProjectRepository;
 import com.inpt.collaborationplatform.projects.team.repository.TeamMemberRepository;
@@ -21,7 +22,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -31,6 +31,8 @@ public class ProjectService {
     private final ProjectMemberRepository projectMemberRepository;
     private final TeamMemberRepository teamMemberRepository;
     private final ProjectAccessService projectAccessService;
+    private final ProjectLookupService projectLookupService;
+    private final ProjectMapper projectMapper;
 
     @Transactional
     public ProjectResponse createProject(CreateProjectRequest request, String currentUserId) {
@@ -48,25 +50,25 @@ public class ProjectService {
                 .role(ProjectRole.OWNER)
                 .build());
 
-        return toProjectResponse(savedProject, ProjectRole.OWNER);
+        return projectMapper.toProjectResponse(savedProject, ProjectRole.OWNER);
     }
 
     @Transactional(readOnly = true)
     public PageResponse<ProjectResponse> listMyProjects(String currentUserId, Pageable pageable) {
         return PageResponse.from(projectMemberRepository.findByUserId(currentUserId, pageable)
-                .map((member) -> toProjectResponse(member.getProject(), member.getRole())));
+                .map((member) -> projectMapper.toProjectResponse(member.getProject(), member.getRole())));
     }
 
     @Transactional(readOnly = true)
     public ProjectResponse getProject(String projectId, String currentUserId) {
-        Project project = requireProject(projectId);
+        Project project = projectLookupService.requireProject(projectId);
         ProjectMember member = projectAccessService.requireViewer(project, currentUserId);
-        return toProjectResponse(project, member.getRole());
+        return projectMapper.toProjectResponse(project, member.getRole());
     }
 
     @Transactional
     public ProjectResponse updateProject(String projectId, UpdateProjectRequest request, String currentUserId) {
-        Project project = requireProject(projectId);
+        Project project = projectLookupService.requireProject(projectId);
         ProjectMember member = projectAccessService.requireManager(project, currentUserId);
 
         if (request.getName() != null) {
@@ -81,12 +83,12 @@ public class ProjectService {
             project.setDescription(normalizeOptionalText(request.getDescription()));
         }
 
-        return toProjectResponse(projectRepository.save(project), member.getRole());
+        return projectMapper.toProjectResponse(projectRepository.save(project), member.getRole());
     }
 
     @Transactional
     public ProjectResponse archiveProject(String projectId, String currentUserId) {
-        Project project = requireProject(projectId);
+        Project project = projectLookupService.requireProject(projectId);
         ProjectMember member = projectAccessService.requireOwner(project, currentUserId);
 
         if (project.getStatus() != ProjectStatus.ARCHIVED) {
@@ -94,18 +96,16 @@ public class ProjectService {
             project.setArchivedAt(LocalDateTime.now());
         }
 
-        return toProjectResponse(projectRepository.save(project), member.getRole());
+        return projectMapper.toProjectResponse(projectRepository.save(project), member.getRole());
     }
 
     @Transactional(readOnly = true)
-    public List<ProjectMemberResponse> listMembers(String projectId, String currentUserId) {
-        Project project = requireProject(projectId);
+    public PageResponse<ProjectMemberResponse> listMembers(String projectId, String currentUserId, Pageable pageable) {
+        Project project = projectLookupService.requireProject(projectId);
         projectAccessService.requireViewer(project, currentUserId);
 
-        return projectMemberRepository.findByProject_IdOrderByJoinedAtAsc(projectId)
-                .stream()
-                .map(this::toMemberResponse)
-                .toList();
+        return PageResponse.from(projectMemberRepository.findByProject_Id(projectId, pageable)
+                .map(projectMapper::toMemberResponse));
     }
 
     @Transactional
@@ -115,40 +115,30 @@ public class ProjectService {
             UpdateProjectMemberRoleRequest request,
             String currentUserId
     ) {
-        Project project = requireProject(projectId);
+        Project project = projectLookupService.requireProject(projectId);
         projectAccessService.requireOwner(project, currentUserId);
 
-        ProjectMember member = requireProjectMember(projectId, memberUserId);
+        ProjectMember member = projectLookupService.requireProjectMember(projectId, memberUserId);
         if (member.getRole() == ProjectRole.OWNER || request.getRole() == ProjectRole.OWNER) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Owner role changes are not supported yet");
         }
 
         member.setRole(request.getRole());
-        return toMemberResponse(projectMemberRepository.save(member));
+        return projectMapper.toMemberResponse(projectMemberRepository.save(member));
     }
 
     @Transactional
     public void removeMember(String projectId, String memberUserId, String currentUserId) {
-        Project project = requireProject(projectId);
+        Project project = projectLookupService.requireProject(projectId);
         projectAccessService.requireOwner(project, currentUserId);
 
-        ProjectMember member = requireProjectMember(projectId, memberUserId);
+        ProjectMember member = projectLookupService.requireProjectMember(projectId, memberUserId);
         if (member.getRole() == ProjectRole.OWNER) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Project owner cannot be removed");
         }
 
         teamMemberRepository.deleteByTeam_Project_IdAndUserId(projectId, memberUserId);
         projectMemberRepository.delete(member);
-    }
-
-    private Project requireProject(String projectId) {
-        return projectRepository.findById(projectId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Project not found"));
-    }
-
-    private ProjectMember requireProjectMember(String projectId, String userId) {
-        return projectMemberRepository.findByProject_IdAndUserId(projectId, userId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Project member not found"));
     }
 
     private String normalizeOptionalText(String value) {
@@ -158,30 +148,6 @@ public class ProjectService {
 
         String normalized = value.trim();
         return normalized.isBlank() ? null : normalized;
-    }
-
-    private ProjectResponse toProjectResponse(Project project, ProjectRole currentUserRole) {
-        return new ProjectResponse(
-                project.getId(),
-                project.getName(),
-                project.getDescription(),
-                project.getCreatedByUserId(),
-                project.getStatus(),
-                currentUserRole,
-                project.getCreatedAt(),
-                project.getUpdatedAt(),
-                project.getArchivedAt()
-        );
-    }
-
-    private ProjectMemberResponse toMemberResponse(ProjectMember member) {
-        return new ProjectMemberResponse(
-                member.getId(),
-                member.getProject().getId(),
-                member.getUserId(),
-                member.getRole(),
-                member.getJoinedAt()
-        );
     }
 
 }

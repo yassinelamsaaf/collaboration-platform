@@ -26,8 +26,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/api/projects")
 @RequiredArgsConstructor
@@ -78,11 +76,12 @@ public class ProjectController {
     }
 
     @GetMapping("/{projectId}/members")
-    public ResponseEntity<List<ProjectMemberResponse>> listMembers(
+    public ResponseEntity<PageResponse<ProjectMemberResponse>> listMembers(
             @PathVariable String projectId,
-            Authentication authentication
+            Authentication authentication,
+            @PageableDefault(size = 20, sort = "joinedAt", direction = Sort.Direction.ASC) Pageable pageable
     ) {
-        return ResponseEntity.ok(projectService.listMembers(projectId, currentUserId(authentication)));
+        return ResponseEntity.ok(projectService.listMembers(projectId, currentUserId(authentication), pageable));
     }
 
     @PatchMapping("/{projectId}/members/{memberUserId}/role")
