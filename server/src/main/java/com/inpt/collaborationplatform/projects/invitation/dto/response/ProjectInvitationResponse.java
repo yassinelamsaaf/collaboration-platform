@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 public record ProjectInvitationResponse(
         String id,
         String projectId,
+        String projectSlug,
         String projectName,
         String email,
         ProjectRole role,

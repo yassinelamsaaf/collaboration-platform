@@ -13,6 +13,7 @@ public class ProjectMapper {
     public ProjectResponse toProjectResponse(Project project, ProjectRole currentUserRole) {
         return new ProjectResponse(
                 project.getId(),
+                project.getSlug(),
                 project.getName(),
                 project.getDescription(),
                 project.getCreatedByUserId(),

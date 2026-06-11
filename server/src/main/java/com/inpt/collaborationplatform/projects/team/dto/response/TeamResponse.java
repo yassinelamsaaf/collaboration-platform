@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 public record TeamResponse(
         String id,
         String projectId,
+        String slug,
         String name,
         String description,
         String createdByUserId,

@@ -12,6 +12,7 @@ import com.inpt.collaborationplatform.projects.project.entity.ProjectStatus;
 import com.inpt.collaborationplatform.projects.project.mapper.ProjectMapper;
 import com.inpt.collaborationplatform.projects.project.repository.ProjectMemberRepository;
 import com.inpt.collaborationplatform.projects.project.repository.ProjectRepository;
+import com.inpt.collaborationplatform.projects.shared.SlugGenerator;
 import com.inpt.collaborationplatform.projects.team.repository.TeamMemberRepository;
 import com.inpt.collaborationplatform.shared.dto.PageResponse;
 import lombok.RequiredArgsConstructor;
@@ -33,11 +34,14 @@ public class ProjectService {
     private final ProjectAccessService projectAccessService;
     private final ProjectLookupService projectLookupService;
     private final ProjectMapper projectMapper;
+    private final SlugGenerator slugGenerator;
 
     @Transactional
     public ProjectResponse createProject(CreateProjectRequest request, String currentUserId) {
+        String name = request.getName().trim();
         Project project = Project.builder()
-                .name(request.getName().trim())
+                .name(name)
+                .slug(slugGenerator.uniqueSlug(name, projectRepository::existsBySlug))
                 .description(normalizeOptionalText(request.getDescription()))
                 .createdByUserId(currentUserId)
                 .status(ProjectStatus.ACTIVE)
@@ -60,15 +64,15 @@ public class ProjectService {
     }
 
     @Transactional(readOnly = true)
-    public ProjectResponse getProject(String projectId, String currentUserId) {
-        Project project = projectLookupService.requireProject(projectId);
+    public ProjectResponse getProject(String projectRef, String currentUserId) {
+        Project project = projectLookupService.requireProject(projectRef);
         ProjectMember member = projectAccessService.requireViewer(project, currentUserId);
         return projectMapper.toProjectResponse(project, member.getRole());
     }
 
     @Transactional
-    public ProjectResponse updateProject(String projectId, UpdateProjectRequest request, String currentUserId) {
-        Project project = projectLookupService.requireProject(projectId);
+    public ProjectResponse updateProject(String projectRef, UpdateProjectRequest request, String currentUserId) {
+        Project project = projectLookupService.requireProject(projectRef);
         ProjectMember member = projectAccessService.requireManager(project, currentUserId);
 
         if (request.getName() != null) {
@@ -87,8 +91,8 @@ public class ProjectService {
     }
 
     @Transactional
-    public ProjectResponse archiveProject(String projectId, String currentUserId) {
-        Project project = projectLookupService.requireProject(projectId);
+    public ProjectResponse archiveProject(String projectRef, String currentUserId) {
+        Project project = projectLookupService.requireProject(projectRef);
         ProjectMember member = projectAccessService.requireOwner(project, currentUserId);
 
         if (project.getStatus() != ProjectStatus.ARCHIVED) {
@@ -100,25 +104,25 @@ public class ProjectService {
     }
 
     @Transactional(readOnly = true)
-    public PageResponse<ProjectMemberResponse> listMembers(String projectId, String currentUserId, Pageable pageable) {
-        Project project = projectLookupService.requireProject(projectId);
+    public PageResponse<ProjectMemberResponse> listMembers(String projectRef, String currentUserId, Pageable pageable) {
+        Project project = projectLookupService.requireProject(projectRef);
         projectAccessService.requireViewer(project, currentUserId);
 
-        return PageResponse.from(projectMemberRepository.findByProject_Id(projectId, pageable)
+        return PageResponse.from(projectMemberRepository.findByProject_Id(project.getId(), pageable)
                 .map(projectMapper::toMemberResponse));
     }
 
     @Transactional
     public ProjectMemberResponse updateMemberRole(
-            String projectId,
+            String projectRef,
             String memberUserId,
             UpdateProjectMemberRoleRequest request,
             String currentUserId
     ) {
-        Project project = projectLookupService.requireProject(projectId);
+        Project project = projectLookupService.requireProject(projectRef);
         projectAccessService.requireOwner(project, currentUserId);
 
-        ProjectMember member = projectLookupService.requireProjectMember(projectId, memberUserId);
+        ProjectMember member = projectLookupService.requireProjectMember(project.getId(), memberUserId);
         if (member.getRole() == ProjectRole.OWNER || request.getRole() == ProjectRole.OWNER) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Owner role changes are not supported yet");
         }
@@ -128,16 +132,16 @@ public class ProjectService {
     }
 
     @Transactional
-    public void removeMember(String projectId, String memberUserId, String currentUserId) {
-        Project project = projectLookupService.requireProject(projectId);
+    public void removeMember(String projectRef, String memberUserId, String currentUserId) {
+        Project project = projectLookupService.requireProject(projectRef);
         projectAccessService.requireOwner(project, currentUserId);
 
-        ProjectMember member = projectLookupService.requireProjectMember(projectId, memberUserId);
+        ProjectMember member = projectLookupService.requireProjectMember(project.getId(), memberUserId);
         if (member.getRole() == ProjectRole.OWNER) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Project owner cannot be removed");
         }
 
-        teamMemberRepository.deleteByTeam_Project_IdAndUserId(projectId, memberUserId);
+        teamMemberRepository.deleteByTeam_Project_IdAndUserId(project.getId(), memberUserId);
         projectMemberRepository.delete(member);
     }
 

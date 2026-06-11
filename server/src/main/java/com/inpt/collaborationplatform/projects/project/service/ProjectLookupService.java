@@ -16,8 +16,9 @@ public class ProjectLookupService {
     private final ProjectRepository projectRepository;
     private final ProjectMemberRepository projectMemberRepository;
 
-    public Project requireProject(String projectId) {
-        return projectRepository.findById(projectId)
+    public Project requireProject(String projectRef) {
+        return projectRepository.findById(projectRef)
+                .or(() -> projectRepository.findBySlug(projectRef))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Project not found"));
     }
 

@@ -12,5 +12,9 @@ public interface TeamRepository extends JpaRepository<Team, String> {
 
     Optional<Team> findByIdAndProject_Id(String id, String projectId);
 
+    Optional<Team> findBySlugAndProject_Id(String slug, String projectId);
+
+    boolean existsByProject_IdAndSlug(String projectId, String slug);
+
     boolean existsByProject_IdAndNormalizedName(String projectId, String normalizedName);
 }

@@ -28,10 +28,6 @@ Current boundaries:
 - IAM answers "who is the current user?" and "what is their global role?"
 - Project-scoped permissions are not owned by IAM; they belong to the Projects module.
 
-Known gaps:
-- Password reset backend is not implemented yet.
-- Frontend route guard is not implemented yet.
-
 ### Projects
 
 Package: `server/src/main/java/com/inpt/collaborationplatform/projects`
@@ -40,6 +36,7 @@ Folders:
 - `project/` for `Project`, `ProjectMember`, project roles, project CRUD, and project membership management.
 - `invitation/` for pending project invitations and invitation DTO/repository code.
 - `team/` for `Team`, `TeamMember`, team roles, team CRUD, and team membership management.
+- `shared/` for project-module helpers such as slug generation.
 - Each slice keeps its own mapper so services stay focused on use-case/business logic.
 - Shared project lookups live in `ProjectLookupService` so project, invitation, team, and later work-management services reuse consistent "require project/member" behavior.
 
@@ -49,6 +46,7 @@ Implemented:
 - Pending project invitations by email.
 - Team domain with team-scoped roles.
 - Project creation.
+- Project and team slugs for readable frontend URLs while keeping UUIDs as internal database identities.
 - Listing projects for the current user.
 - Reading/updating/archiving a project with access checks.
 - Listing project members with pagination, role-updating, and removing accepted project members.
@@ -60,31 +58,32 @@ Implemented:
 Backend endpoints:
 - `POST /api/projects` creates a project and makes the current user `OWNER`.
 - `GET /api/projects` lists projects where the current user is a member, using pagination.
-- `GET /api/projects/{projectId}` returns one project if the current user is a member.
-- `PATCH /api/projects/{projectId}` updates project name/description for `OWNER` or `ADMIN`.
-- `POST /api/projects/{projectId}/archive` archives a project for `OWNER` or `ADMIN`.
-- `GET /api/projects/{projectId}/members` lists project members for any project member, using pagination.
-- `PATCH /api/projects/{projectId}/members/{memberUserId}/role` changes a member role for `OWNER`.
-- `DELETE /api/projects/{projectId}/members/{memberUserId}` removes a member for `OWNER`.
-- `POST /api/projects/{projectId}/invitations` creates a pending email invitation for `OWNER` or `ADMIN`.
-- `GET /api/projects/{projectId}/invitations` lists project invitations for `OWNER` or `ADMIN`, using pagination.
+- `GET /api/projects/{projectRef}` returns one project if the current user is a member; `projectRef` can be the UUID or slug.
+- `PATCH /api/projects/{projectRef}` updates project name/description for `OWNER` or `ADMIN`.
+- `POST /api/projects/{projectRef}/archive` archives a project for `OWNER` or `ADMIN`.
+- `GET /api/projects/{projectRef}/members` lists project members for any project member, using pagination.
+- `PATCH /api/projects/{projectRef}/members/{memberUserId}/role` changes a member role for `OWNER`.
+- `DELETE /api/projects/{projectRef}/members/{memberUserId}` removes a member for `OWNER`.
+- `POST /api/projects/{projectRef}/invitations` creates a pending email invitation for `OWNER` or `ADMIN`.
+- `GET /api/projects/{projectRef}/invitations` lists project invitations for `OWNER` or `ADMIN`, using pagination.
 - `GET /api/projects/invitations/{token}` previews an invitation by token.
 - `POST /api/projects/invitations/{token}/accept` accepts an invitation for the logged-in user with the invited email.
-- `POST /api/projects/{projectId}/invitations/{invitationId}/cancel` cancels a pending invitation for `OWNER` or `ADMIN`.
-- `POST /api/projects/{projectId}/teams` creates a team for `OWNER` or `ADMIN`.
-- `GET /api/projects/{projectId}/teams` lists teams for any project member, using pagination.
-- `GET /api/projects/{projectId}/teams/{teamId}` returns one team for any project member.
-- `PATCH /api/projects/{projectId}/teams/{teamId}` updates team name/description for `OWNER` or `ADMIN`.
-- `DELETE /api/projects/{projectId}/teams/{teamId}` deletes a team for `OWNER` or `ADMIN`.
-- `GET /api/projects/{projectId}/teams/{teamId}/members` lists team members for any project member, using pagination.
-- `POST /api/projects/{projectId}/teams/{teamId}/members` adds an existing project member to a team for `OWNER` or `ADMIN`.
-- `PATCH /api/projects/{projectId}/teams/{teamId}/members/{memberUserId}/role` changes a team member role for `OWNER` or `ADMIN`.
-- `DELETE /api/projects/{projectId}/teams/{teamId}/members/{memberUserId}` removes a team member for `OWNER` or `ADMIN`.
+- `POST /api/projects/{projectRef}/invitations/{invitationId}/cancel` cancels a pending invitation for `OWNER` or `ADMIN`.
+- `POST /api/projects/{projectRef}/teams` creates a team for `OWNER` or `ADMIN`.
+- `GET /api/projects/{projectRef}/teams` lists teams for any project member, using pagination.
+- `GET /api/projects/{projectRef}/teams/{teamRef}` returns one team for any project member; `teamRef` can be the UUID or slug.
+- `PATCH /api/projects/{projectRef}/teams/{teamRef}` updates team name/description for `OWNER` or `ADMIN`.
+- `DELETE /api/projects/{projectRef}/teams/{teamRef}` deletes a team for `OWNER` or `ADMIN`.
+- `GET /api/projects/{projectRef}/teams/{teamRef}/members` lists team members for any project member, using pagination.
+- `POST /api/projects/{projectRef}/teams/{teamRef}/members` adds an existing project member to a team for `OWNER` or `ADMIN`.
+- `PATCH /api/projects/{projectRef}/teams/{teamRef}/members/{memberUserId}/role` changes a team member role for `OWNER` or `ADMIN`.
+- `DELETE /api/projects/{projectRef}/teams/{teamRef}/members/{memberUserId}` removes a team member for `OWNER` or `ADMIN`.
 
 Current boundaries:
 - Projects owns `projects` and `project_members`.
 - Projects owns `project_invitations`; pending invitations are not project access yet.
 - Projects owns `teams` and `team_members`.
+- Project slugs are globally unique; team slugs are unique inside their project.
 - New project members are created only when a pending invitation is accepted, except the project creator who becomes `OWNER`.
 - Team members must already be accepted project members.
 - Project `VIEWER` is read-only and cannot be added to teams.
@@ -101,6 +100,7 @@ Project roles:
 Verification:
 - `bash mvnw -DskipTests package` passes.
 - Postman collection JSON validates with `jq empty`.
+- Docker server image rebuilds and restarts with `docker compose up -d --build server`.
 - `bash mvnw test` currently fails before project logic because the default context-load test has no local test environment values for mail/database/Redis.
 
 ## Frontend

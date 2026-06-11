@@ -24,7 +24,10 @@ import java.util.Locale;
 @Entity
 @Table(
         name = "teams",
-        uniqueConstraints = @UniqueConstraint(columnNames = {"project_id", "normalized_name"})
+        uniqueConstraints = {
+                @UniqueConstraint(columnNames = {"project_id", "slug"}),
+                @UniqueConstraint(columnNames = {"project_id", "normalized_name"})
+        }
 )
 @Data
 @Builder
@@ -42,6 +45,9 @@ public class Team {
 
     @Column(nullable = false, length = 120)
     private String name;
+
+    @Column(nullable = false, length = 160)
+    private String slug;
 
     @Column(name = "normalized_name", nullable = false, length = 120)
     private String normalizedName;

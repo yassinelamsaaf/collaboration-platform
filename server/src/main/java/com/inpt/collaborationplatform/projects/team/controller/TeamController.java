@@ -29,7 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 
 @RestController
-@RequestMapping("/api/projects/{projectId}/teams")
+@RequestMapping("/api/projects/{projectRef}/teams")
 @RequiredArgsConstructor
 public class TeamController {
 
@@ -37,98 +37,98 @@ public class TeamController {
 
     @PostMapping
     public ResponseEntity<TeamResponse> createTeam(
-            @PathVariable String projectId,
+            @PathVariable String projectRef,
             @Valid @RequestBody CreateTeamRequest request,
             Authentication authentication
     ) {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(teamService.createTeam(projectId, request, currentUserId(authentication)));
+                .body(teamService.createTeam(projectRef, request, currentUserId(authentication)));
     }
 
     @GetMapping
     public ResponseEntity<PageResponse<TeamResponse>> listTeams(
-            @PathVariable String projectId,
+            @PathVariable String projectRef,
             Authentication authentication,
             @PageableDefault(size = 20, sort = "name", direction = Sort.Direction.ASC) Pageable pageable
     ) {
-        return ResponseEntity.ok(teamService.listTeams(projectId, currentUserId(authentication), pageable));
+        return ResponseEntity.ok(teamService.listTeams(projectRef, currentUserId(authentication), pageable));
     }
 
-    @GetMapping("/{teamId}")
+    @GetMapping("/{teamRef}")
     public ResponseEntity<TeamResponse> getTeam(
-            @PathVariable String projectId,
-            @PathVariable String teamId,
+            @PathVariable String projectRef,
+            @PathVariable String teamRef,
             Authentication authentication
     ) {
-        return ResponseEntity.ok(teamService.getTeam(projectId, teamId, currentUserId(authentication)));
+        return ResponseEntity.ok(teamService.getTeam(projectRef, teamRef, currentUserId(authentication)));
     }
 
-    @PatchMapping("/{teamId}")
+    @PatchMapping("/{teamRef}")
     public ResponseEntity<TeamResponse> updateTeam(
-            @PathVariable String projectId,
-            @PathVariable String teamId,
+            @PathVariable String projectRef,
+            @PathVariable String teamRef,
             @Valid @RequestBody UpdateTeamRequest request,
             Authentication authentication
     ) {
-        return ResponseEntity.ok(teamService.updateTeam(projectId, teamId, request, currentUserId(authentication)));
+        return ResponseEntity.ok(teamService.updateTeam(projectRef, teamRef, request, currentUserId(authentication)));
     }
 
-    @DeleteMapping("/{teamId}")
+    @DeleteMapping("/{teamRef}")
     public ResponseEntity<MessageResponse> deleteTeam(
-            @PathVariable String projectId,
-            @PathVariable String teamId,
+            @PathVariable String projectRef,
+            @PathVariable String teamRef,
             Authentication authentication
     ) {
-        teamService.deleteTeam(projectId, teamId, currentUserId(authentication));
+        teamService.deleteTeam(projectRef, teamRef, currentUserId(authentication));
         return ResponseEntity.ok(new MessageResponse("Team deleted successfully"));
     }
 
-    @GetMapping("/{teamId}/members")
+    @GetMapping("/{teamRef}/members")
     public ResponseEntity<PageResponse<TeamMemberResponse>> listTeamMembers(
-            @PathVariable String projectId,
-            @PathVariable String teamId,
+            @PathVariable String projectRef,
+            @PathVariable String teamRef,
             Authentication authentication,
             @PageableDefault(size = 20, sort = "joinedAt", direction = Sort.Direction.ASC) Pageable pageable
     ) {
-        return ResponseEntity.ok(teamService.listTeamMembers(projectId, teamId, currentUserId(authentication), pageable));
+        return ResponseEntity.ok(teamService.listTeamMembers(projectRef, teamRef, currentUserId(authentication), pageable));
     }
 
-    @PostMapping("/{teamId}/members")
+    @PostMapping("/{teamRef}/members")
     public ResponseEntity<TeamMemberResponse> addTeamMember(
-            @PathVariable String projectId,
-            @PathVariable String teamId,
+            @PathVariable String projectRef,
+            @PathVariable String teamRef,
             @Valid @RequestBody AddTeamMemberRequest request,
             Authentication authentication
     ) {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(teamService.addTeamMember(projectId, teamId, request, currentUserId(authentication)));
+                .body(teamService.addTeamMember(projectRef, teamRef, request, currentUserId(authentication)));
     }
 
-    @PatchMapping("/{teamId}/members/{memberUserId}/role")
+    @PatchMapping("/{teamRef}/members/{memberUserId}/role")
     public ResponseEntity<TeamMemberResponse> updateTeamMemberRole(
-            @PathVariable String projectId,
-            @PathVariable String teamId,
+            @PathVariable String projectRef,
+            @PathVariable String teamRef,
             @PathVariable String memberUserId,
             @Valid @RequestBody UpdateTeamMemberRoleRequest request,
             Authentication authentication
     ) {
         return ResponseEntity.ok(teamService.updateTeamMemberRole(
-                projectId,
-                teamId,
+                projectRef,
+                teamRef,
                 memberUserId,
                 request,
                 currentUserId(authentication)
         ));
     }
 
-    @DeleteMapping("/{teamId}/members/{memberUserId}")
+    @DeleteMapping("/{teamRef}/members/{memberUserId}")
     public ResponseEntity<MessageResponse> removeTeamMember(
-            @PathVariable String projectId,
-            @PathVariable String teamId,
+            @PathVariable String projectRef,
+            @PathVariable String teamRef,
             @PathVariable String memberUserId,
             Authentication authentication
     ) {
-        teamService.removeTeamMember(projectId, teamId, memberUserId, currentUserId(authentication));
+        teamService.removeTeamMember(projectRef, teamRef, memberUserId, currentUserId(authentication));
         return ResponseEntity.ok(new MessageResponse("Team member removed successfully"));
     }
 

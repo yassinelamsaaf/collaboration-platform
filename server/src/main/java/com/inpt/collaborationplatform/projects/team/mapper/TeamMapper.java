@@ -13,6 +13,7 @@ public class TeamMapper {
         return new TeamResponse(
                 team.getId(),
                 team.getProject().getId(),
+                team.getSlug(),
                 team.getName(),
                 team.getDescription(),
                 team.getCreatedByUserId(),

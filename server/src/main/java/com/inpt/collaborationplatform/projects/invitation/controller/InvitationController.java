@@ -30,23 +30,23 @@ public class InvitationController {
 
     private final InvitationService invitationService;
 
-    @PostMapping("/{projectId}/invitations")
+    @PostMapping("/{projectRef}/invitations")
     public ResponseEntity<ProjectInvitationResponse> inviteMember(
-            @PathVariable String projectId,
+            @PathVariable String projectRef,
             @Valid @RequestBody CreateProjectInvitationRequest request,
             Authentication authentication
     ) {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(invitationService.inviteMember(projectId, request, currentUserId(authentication)));
+                .body(invitationService.inviteMember(projectRef, request, currentUserId(authentication)));
     }
 
-    @GetMapping("/{projectId}/invitations")
+    @GetMapping("/{projectRef}/invitations")
     public ResponseEntity<PageResponse<ProjectInvitationResponse>> listInvitations(
-            @PathVariable String projectId,
+            @PathVariable String projectRef,
             Authentication authentication,
             @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
     ) {
-        return ResponseEntity.ok(invitationService.listInvitations(projectId, currentUserId(authentication), pageable));
+        return ResponseEntity.ok(invitationService.listInvitations(projectRef, currentUserId(authentication), pageable));
     }
 
     @GetMapping("/invitations/{token}")
@@ -62,13 +62,13 @@ public class InvitationController {
         return ResponseEntity.ok(invitationService.acceptInvitation(token, currentUserId(authentication)));
     }
 
-    @PostMapping("/{projectId}/invitations/{invitationId}/cancel")
+    @PostMapping("/{projectRef}/invitations/{invitationId}/cancel")
     public ResponseEntity<MessageResponse> cancelInvitation(
-            @PathVariable String projectId,
+            @PathVariable String projectRef,
             @PathVariable String invitationId,
             Authentication authentication
     ) {
-        invitationService.cancelInvitation(projectId, invitationId, currentUserId(authentication));
+        invitationService.cancelInvitation(projectRef, invitationId, currentUserId(authentication));
         return ResponseEntity.ok(new MessageResponse("Project invitation cancelled successfully"));
     }
 

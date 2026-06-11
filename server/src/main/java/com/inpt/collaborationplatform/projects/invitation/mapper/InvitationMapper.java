@@ -12,6 +12,7 @@ public class InvitationMapper {
         return new ProjectInvitationResponse(
                 invitation.getId(),
                 invitation.getProject().getId(),
+                invitation.getProject().getSlug(),
                 invitation.getProject().getName(),
                 invitation.getEmail(),
                 invitation.getRole(),
@@ -26,6 +27,7 @@ public class InvitationMapper {
     public ProjectInvitationPreviewResponse toInvitationPreviewResponse(ProjectInvitation invitation) {
         return new ProjectInvitationPreviewResponse(
                 invitation.getProject().getId(),
+                invitation.getProject().getSlug(),
                 invitation.getProject().getName(),
                 invitation.getEmail(),
                 invitation.getRole(),

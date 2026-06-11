@@ -50,62 +50,62 @@ public class ProjectController {
         return ResponseEntity.ok(projectService.listMyProjects(currentUserId(authentication), pageable));
     }
 
-    @GetMapping("/{projectId}")
+    @GetMapping("/{projectRef}")
     public ResponseEntity<ProjectResponse> getProject(
-            @PathVariable String projectId,
+            @PathVariable String projectRef,
             Authentication authentication
     ) {
-        return ResponseEntity.ok(projectService.getProject(projectId, currentUserId(authentication)));
+        return ResponseEntity.ok(projectService.getProject(projectRef, currentUserId(authentication)));
     }
 
-    @PatchMapping("/{projectId}")
+    @PatchMapping("/{projectRef}")
     public ResponseEntity<ProjectResponse> updateProject(
-            @PathVariable String projectId,
+            @PathVariable String projectRef,
             @Valid @RequestBody UpdateProjectRequest request,
             Authentication authentication
     ) {
-        return ResponseEntity.ok(projectService.updateProject(projectId, request, currentUserId(authentication)));
+        return ResponseEntity.ok(projectService.updateProject(projectRef, request, currentUserId(authentication)));
     }
 
-    @PostMapping("/{projectId}/archive")
+    @PostMapping("/{projectRef}/archive")
     public ResponseEntity<ProjectResponse> archiveProject(
-            @PathVariable String projectId,
+            @PathVariable String projectRef,
             Authentication authentication
     ) {
-        return ResponseEntity.ok(projectService.archiveProject(projectId, currentUserId(authentication)));
+        return ResponseEntity.ok(projectService.archiveProject(projectRef, currentUserId(authentication)));
     }
 
-    @GetMapping("/{projectId}/members")
+    @GetMapping("/{projectRef}/members")
     public ResponseEntity<PageResponse<ProjectMemberResponse>> listMembers(
-            @PathVariable String projectId,
+            @PathVariable String projectRef,
             Authentication authentication,
             @PageableDefault(size = 20, sort = "joinedAt", direction = Sort.Direction.ASC) Pageable pageable
     ) {
-        return ResponseEntity.ok(projectService.listMembers(projectId, currentUserId(authentication), pageable));
+        return ResponseEntity.ok(projectService.listMembers(projectRef, currentUserId(authentication), pageable));
     }
 
-    @PatchMapping("/{projectId}/members/{memberUserId}/role")
+    @PatchMapping("/{projectRef}/members/{memberUserId}/role")
     public ResponseEntity<ProjectMemberResponse> updateMemberRole(
-            @PathVariable String projectId,
+            @PathVariable String projectRef,
             @PathVariable String memberUserId,
             @Valid @RequestBody UpdateProjectMemberRoleRequest request,
             Authentication authentication
     ) {
         return ResponseEntity.ok(projectService.updateMemberRole(
-                projectId,
+                projectRef,
                 memberUserId,
                 request,
                 currentUserId(authentication)
         ));
     }
 
-    @DeleteMapping("/{projectId}/members/{memberUserId}")
+    @DeleteMapping("/{projectRef}/members/{memberUserId}")
     public ResponseEntity<MessageResponse> removeMember(
-            @PathVariable String projectId,
+            @PathVariable String projectRef,
             @PathVariable String memberUserId,
             Authentication authentication
     ) {
-        projectService.removeMember(projectId, memberUserId, currentUserId(authentication));
+        projectService.removeMember(projectRef, memberUserId, currentUserId(authentication));
         return ResponseEntity.ok(new MessageResponse("Project member removed successfully"));
     }
 

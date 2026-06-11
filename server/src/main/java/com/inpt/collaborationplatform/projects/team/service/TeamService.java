@@ -15,6 +15,7 @@ import com.inpt.collaborationplatform.projects.team.entity.TeamMember;
 import com.inpt.collaborationplatform.projects.project.repository.ProjectMemberRepository;
 import com.inpt.collaborationplatform.projects.project.service.ProjectAccessService;
 import com.inpt.collaborationplatform.projects.project.service.ProjectLookupService;
+import com.inpt.collaborationplatform.projects.shared.SlugGenerator;
 import com.inpt.collaborationplatform.projects.team.mapper.TeamMapper;
 import com.inpt.collaborationplatform.projects.team.repository.TeamMemberRepository;
 import com.inpt.collaborationplatform.projects.team.repository.TeamRepository;
@@ -39,21 +40,23 @@ public class TeamService {
     private final ProjectLookupService projectLookupService;
     private final IdentityAccessService identityAccessService;
     private final TeamMapper teamMapper;
+    private final SlugGenerator slugGenerator;
 
     @Transactional
-    public TeamResponse createTeam(String projectId, CreateTeamRequest request, String currentUserId) {
-        Project project = projectLookupService.requireProject(projectId);
+    public TeamResponse createTeam(String projectRef, CreateTeamRequest request, String currentUserId) {
+        Project project = projectLookupService.requireProject(projectRef);
         projectAccessService.requireManager(project, currentUserId);
 
         String name = normalizeRequiredName(request.getName(), "Team name cannot be blank");
         String normalizedName = normalizeNameKey(name);
-        if (teamRepository.existsByProject_IdAndNormalizedName(projectId, normalizedName)) {
+        if (teamRepository.existsByProject_IdAndNormalizedName(project.getId(), normalizedName)) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "A team with this name already exists in the project");
         }
 
         Team team = teamRepository.save(Team.builder()
                 .project(project)
                 .name(name)
+                .slug(slugGenerator.uniqueSlug(name, (slug) -> teamRepository.existsByProject_IdAndSlug(project.getId(), slug)))
                 .normalizedName(normalizedName)
                 .description(normalizeOptionalText(request.getDescription()))
                 .createdByUserId(currentUserId)
@@ -63,32 +66,32 @@ public class TeamService {
     }
 
     @Transactional(readOnly = true)
-    public PageResponse<TeamResponse> listTeams(String projectId, String currentUserId, Pageable pageable) {
-        Project project = projectLookupService.requireProject(projectId);
+    public PageResponse<TeamResponse> listTeams(String projectRef, String currentUserId, Pageable pageable) {
+        Project project = projectLookupService.requireProject(projectRef);
         projectAccessService.requireViewer(project, currentUserId);
 
-        return PageResponse.from(teamRepository.findByProject_Id(projectId, pageable)
+        return PageResponse.from(teamRepository.findByProject_Id(project.getId(), pageable)
                 .map(teamMapper::toTeamResponse));
     }
 
     @Transactional(readOnly = true)
-    public TeamResponse getTeam(String projectId, String teamId, String currentUserId) {
-        Project project = projectLookupService.requireProject(projectId);
+    public TeamResponse getTeam(String projectRef, String teamRef, String currentUserId) {
+        Project project = projectLookupService.requireProject(projectRef);
         projectAccessService.requireViewer(project, currentUserId);
-        return teamMapper.toTeamResponse(requireTeam(projectId, teamId));
+        return teamMapper.toTeamResponse(requireTeam(project.getId(), teamRef));
     }
 
     @Transactional
-    public TeamResponse updateTeam(String projectId, String teamId, UpdateTeamRequest request, String currentUserId) {
-        Project project = projectLookupService.requireProject(projectId);
+    public TeamResponse updateTeam(String projectRef, String teamRef, UpdateTeamRequest request, String currentUserId) {
+        Project project = projectLookupService.requireProject(projectRef);
         projectAccessService.requireManager(project, currentUserId);
 
-        Team team = requireTeam(projectId, teamId);
+        Team team = requireTeam(project.getId(), teamRef);
         if (request.getName() != null) {
             String name = normalizeRequiredName(request.getName(), "Team name cannot be blank");
             String normalizedName = normalizeNameKey(name);
             if (!normalizedName.equals(team.getNormalizedName())
-                    && teamRepository.existsByProject_IdAndNormalizedName(projectId, normalizedName)) {
+                    && teamRepository.existsByProject_IdAndNormalizedName(project.getId(), normalizedName)) {
                 throw new ResponseStatusException(HttpStatus.CONFLICT, "A team with this name already exists in the project");
             }
             team.setName(name);
@@ -103,24 +106,24 @@ public class TeamService {
     }
 
     @Transactional
-    public void deleteTeam(String projectId, String teamId, String currentUserId) {
-        Project project = projectLookupService.requireProject(projectId);
+    public void deleteTeam(String projectRef, String teamRef, String currentUserId) {
+        Project project = projectLookupService.requireProject(projectRef);
         projectAccessService.requireManager(project, currentUserId);
-        Team team = requireTeam(projectId, teamId);
+        Team team = requireTeam(project.getId(), teamRef);
         teamMemberRepository.deleteByTeam_Id(team.getId());
         teamRepository.delete(team);
     }
 
     @Transactional(readOnly = true)
     public PageResponse<TeamMemberResponse> listTeamMembers(
-            String projectId,
-            String teamId,
+            String projectRef,
+            String teamRef,
             String currentUserId,
             Pageable pageable
     ) {
-        Project project = projectLookupService.requireProject(projectId);
+        Project project = projectLookupService.requireProject(projectRef);
         projectAccessService.requireViewer(project, currentUserId);
-        Team team = requireTeam(projectId, teamId);
+        Team team = requireTeam(project.getId(), teamRef);
 
         return PageResponse.from(teamMemberRepository.findByTeam_Id(team.getId(), pageable)
                 .map(teamMapper::toTeamMemberResponse));
@@ -128,22 +131,22 @@ public class TeamService {
 
     @Transactional
     public TeamMemberResponse addTeamMember(
-            String projectId,
-            String teamId,
+            String projectRef,
+            String teamRef,
             AddTeamMemberRequest request,
             String currentUserId
     ) {
-        Project project = projectLookupService.requireProject(projectId);
+        Project project = projectLookupService.requireProject(projectRef);
         projectAccessService.requireManager(project, currentUserId);
-        Team team = requireTeam(projectId, teamId);
+        Team team = requireTeam(project.getId(), teamRef);
 
         identityAccessService.requireUserExists(request.getUserId());
-        ProjectMember projectMember = projectMemberRepository.findByProject_IdAndUserId(projectId, request.getUserId())
+        ProjectMember projectMember = projectMemberRepository.findByProject_IdAndUserId(project.getId(), request.getUserId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "User must be a project member before joining a team"));
         if (projectMember.getRole() == ProjectRole.VIEWER) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Project viewers cannot join teams");
         }
-        if (teamMemberRepository.existsByTeam_IdAndUserId(teamId, request.getUserId())) {
+        if (teamMemberRepository.existsByTeam_IdAndUserId(team.getId(), request.getUserId())) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "User is already a member of this team");
         }
 
@@ -158,31 +161,32 @@ public class TeamService {
 
     @Transactional
     public TeamMemberResponse updateTeamMemberRole(
-            String projectId,
-            String teamId,
+            String projectRef,
+            String teamRef,
             String memberUserId,
             UpdateTeamMemberRoleRequest request,
             String currentUserId
     ) {
-        Project project = projectLookupService.requireProject(projectId);
+        Project project = projectLookupService.requireProject(projectRef);
         projectAccessService.requireManager(project, currentUserId);
-        requireTeam(projectId, teamId);
+        Team team = requireTeam(project.getId(), teamRef);
 
-        TeamMember member = requireTeamMember(teamId, memberUserId);
+        TeamMember member = requireTeamMember(team.getId(), memberUserId);
         member.setRole(request.getRole());
         return teamMapper.toTeamMemberResponse(teamMemberRepository.save(member));
     }
 
     @Transactional
-    public void removeTeamMember(String projectId, String teamId, String memberUserId, String currentUserId) {
-        Project project = projectLookupService.requireProject(projectId);
+    public void removeTeamMember(String projectRef, String teamRef, String memberUserId, String currentUserId) {
+        Project project = projectLookupService.requireProject(projectRef);
         projectAccessService.requireManager(project, currentUserId);
-        requireTeam(projectId, teamId);
-        teamMemberRepository.delete(requireTeamMember(teamId, memberUserId));
+        Team team = requireTeam(project.getId(), teamRef);
+        teamMemberRepository.delete(requireTeamMember(team.getId(), memberUserId));
     }
 
-    private Team requireTeam(String projectId, String teamId) {
-        return teamRepository.findByIdAndProject_Id(teamId, projectId)
+    private Team requireTeam(String projectId, String teamRef) {
+        return teamRepository.findByIdAndProject_Id(teamRef, projectId)
+                .or(() -> teamRepository.findBySlugAndProject_Id(teamRef, projectId))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Team not found"));
     }
 

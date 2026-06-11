@@ -62,7 +62,7 @@
       "type": "string"
     },
     {
-      "key": "projectId",
+      "key": "projectRef",
       "value": "",
       "type": "string"
     },
@@ -72,7 +72,7 @@
       "type": "string"
     },
     {
-      "key": "teamId",
+      "key": "teamRef",
       "value": "",
       "type": "string"
     },
@@ -441,7 +441,7 @@
     },
     {
       "name": "2. Projects",
-      "description": "Requires a logged-in user. Run Login Owner first. Requests save projectId and projectMemberId when possible.",
+      "description": "Requires a logged-in user. Run Login Owner first. Requests save projectRef as the project slug when available, plus projectMemberId when possible.",
       "item": [
         {
           "name": "Create Project",
@@ -455,7 +455,7 @@
                   "});",
                   "if (pm.response.code === 201) {",
                   "  const body = pm.response.json();",
-                  "  pm.collectionVariables.set('projectId', body.id);",
+                  "  pm.collectionVariables.set('projectRef', body.slug || body.id);",
                   "}"
                 ],
                 "type": "text/javascript"
@@ -525,14 +525,14 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/projects/{{projectId}}",
+              "raw": "{{baseUrl}}/api/projects/{{projectRef}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
                 "projects",
-                "{{projectId}}"
+                "{{projectRef}}"
               ]
             },
             "description": "Returns one project if the authenticated user is a member."
@@ -553,14 +553,14 @@
               "raw": "{\n  \"name\": \"PFA Collaboration Platform Updated\",\n  \"description\": \"Updated from Postman.\"\n}"
             },
             "url": {
-              "raw": "{{baseUrl}}/api/projects/{{projectId}}",
+              "raw": "{{baseUrl}}/api/projects/{{projectRef}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
                 "projects",
-                "{{projectId}}"
+                "{{projectRef}}"
               ]
             },
             "description": "Requires OWNER or ADMIN project role."
@@ -572,14 +572,14 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/projects/{{projectId}}/members?page=0&size=20&sort=joinedAt,asc",
+              "raw": "{{baseUrl}}/api/projects/{{projectRef}}/members?page=0&size=20&sort=joinedAt,asc",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
                 "projects",
-                "{{projectId}}",
+                "{{projectRef}}",
                 "members"
               ],
               "query": [
@@ -629,14 +629,14 @@
               "raw": "{\n  \"email\": \"{{memberEmail}}\",\n  \"role\": \"MEMBER\"\n}"
             },
             "url": {
-              "raw": "{{baseUrl}}/api/projects/{{projectId}}/invitations",
+              "raw": "{{baseUrl}}/api/projects/{{projectRef}}/invitations",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
                 "projects",
-                "{{projectId}}",
+                "{{projectRef}}",
                 "invitations"
               ]
             },
@@ -649,14 +649,14 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/projects/{{projectId}}/invitations?page=0&size=20&sort=createdAt,desc",
+              "raw": "{{baseUrl}}/api/projects/{{projectRef}}/invitations?page=0&size=20&sort=createdAt,desc",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
                 "projects",
-                "{{projectId}}",
+                "{{projectRef}}",
                 "invitations"
               ],
               "query": [
@@ -797,7 +797,7 @@
                 "exec": [
                   "if (pm.response.code === 201) {",
                   "  const body = pm.response.json();",
-                  "  pm.collectionVariables.set('teamId', body.id);",
+                  "  pm.collectionVariables.set('teamRef', body.slug || body.id);",
                   "}"
                 ],
                 "type": "text/javascript"
@@ -817,14 +817,14 @@
               "raw": "{\n  \"name\": \"Backend Team\",\n  \"description\": \"Team created from Postman.\"\n}"
             },
             "url": {
-              "raw": "{{baseUrl}}/api/projects/{{projectId}}/teams",
+              "raw": "{{baseUrl}}/api/projects/{{projectRef}}/teams",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
                 "projects",
-                "{{projectId}}",
+                "{{projectRef}}",
                 "teams"
               ]
             },
@@ -837,14 +837,14 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/projects/{{projectId}}/teams?page=0&size=20&sort=name,asc",
+              "raw": "{{baseUrl}}/api/projects/{{projectRef}}/teams?page=0&size=20&sort=name,asc",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
                 "projects",
-                "{{projectId}}",
+                "{{projectRef}}",
                 "teams"
               ],
               "query": [
@@ -871,16 +871,16 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/projects/{{projectId}}/teams/{{teamId}}",
+              "raw": "{{baseUrl}}/api/projects/{{projectRef}}/teams/{{teamRef}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
                 "projects",
-                "{{projectId}}",
+                "{{projectRef}}",
                 "teams",
-                "{{teamId}}"
+                "{{teamRef}}"
               ]
             },
             "description": "Requires any project membership."
@@ -901,16 +901,16 @@
               "raw": "{\n  \"name\": \"Backend Team Updated\",\n  \"description\": \"Updated from Postman.\"\n}"
             },
             "url": {
-              "raw": "{{baseUrl}}/api/projects/{{projectId}}/teams/{{teamId}}",
+              "raw": "{{baseUrl}}/api/projects/{{projectRef}}/teams/{{teamRef}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
                 "projects",
-                "{{projectId}}",
+                "{{projectRef}}",
                 "teams",
-                "{{teamId}}"
+                "{{teamRef}}"
               ]
             },
             "description": "Requires OWNER or ADMIN project role."
@@ -922,16 +922,16 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/projects/{{projectId}}/teams/{{teamId}}/members?page=0&size=20&sort=joinedAt,asc",
+              "raw": "{{baseUrl}}/api/projects/{{projectRef}}/teams/{{teamRef}}/members?page=0&size=20&sort=joinedAt,asc",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
                 "projects",
-                "{{projectId}}",
+                "{{projectRef}}",
                 "teams",
-                "{{teamId}}",
+                "{{teamRef}}",
                 "members"
               ],
               "query": [
@@ -981,16 +981,16 @@
               "raw": "{\n  \"userId\": \"{{memberUserId}}\",\n  \"role\": \"MEMBER\"\n}"
             },
             "url": {
-              "raw": "{{baseUrl}}/api/projects/{{projectId}}/teams/{{teamId}}/members",
+              "raw": "{{baseUrl}}/api/projects/{{projectRef}}/teams/{{teamRef}}/members",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
                 "projects",
-                "{{projectId}}",
+                "{{projectRef}}",
                 "teams",
-                "{{teamId}}",
+                "{{teamRef}}",
                 "members"
               ]
             },
@@ -1012,16 +1012,16 @@
               "raw": "{\n  \"role\": \"LEADER\"\n}"
             },
             "url": {
-              "raw": "{{baseUrl}}/api/projects/{{projectId}}/teams/{{teamId}}/members/{{memberUserId}}/role",
+              "raw": "{{baseUrl}}/api/projects/{{projectRef}}/teams/{{teamRef}}/members/{{memberUserId}}/role",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
                 "projects",
-                "{{projectId}}",
+                "{{projectRef}}",
                 "teams",
-                "{{teamId}}",
+                "{{teamRef}}",
                 "members",
                 "{{memberUserId}}",
                 "role"
@@ -1036,16 +1036,16 @@
             "method": "DELETE",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/projects/{{projectId}}/teams/{{teamId}}/members/{{memberUserId}}",
+              "raw": "{{baseUrl}}/api/projects/{{projectRef}}/teams/{{teamRef}}/members/{{memberUserId}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
                 "projects",
-                "{{projectId}}",
+                "{{projectRef}}",
                 "teams",
-                "{{teamId}}",
+                "{{teamRef}}",
                 "members",
                 "{{memberUserId}}"
               ]
@@ -1059,16 +1059,16 @@
             "method": "DELETE",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/projects/{{projectId}}/teams/{{teamId}}",
+              "raw": "{{baseUrl}}/api/projects/{{projectRef}}/teams/{{teamRef}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
                 "projects",
-                "{{projectId}}",
+                "{{projectRef}}",
                 "teams",
-                "{{teamId}}"
+                "{{teamRef}}"
               ]
             },
             "description": "Requires OWNER or ADMIN. Deletes team memberships before deleting the team."
@@ -1089,14 +1089,14 @@
               "raw": "{\n  \"role\": \"ADMIN\"\n}"
             },
             "url": {
-              "raw": "{{baseUrl}}/api/projects/{{projectId}}/members/{{memberUserId}}/role",
+              "raw": "{{baseUrl}}/api/projects/{{projectRef}}/members/{{memberUserId}}/role",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
                 "projects",
-                "{{projectId}}",
+                "{{projectRef}}",
                 "members",
                 "{{memberUserId}}",
                 "role"
@@ -1111,14 +1111,14 @@
             "method": "DELETE",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/projects/{{projectId}}/members/{{memberUserId}}",
+              "raw": "{{baseUrl}}/api/projects/{{projectRef}}/members/{{memberUserId}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
                 "projects",
-                "{{projectId}}",
+                "{{projectRef}}",
                 "members",
                 "{{memberUserId}}"
               ]
@@ -1132,14 +1132,14 @@
             "method": "POST",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/projects/{{projectId}}/archive",
+              "raw": "{{baseUrl}}/api/projects/{{projectRef}}/archive",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
                 "projects",
-                "{{projectId}}",
+                "{{projectRef}}",
                 "archive"
               ]
             },

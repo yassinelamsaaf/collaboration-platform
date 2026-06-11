@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 // (nfss lblan hna)
 public record ProjectResponse(
         String id,
+        String slug,
         String name,
         String description,
         String createdByUserId,

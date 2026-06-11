@@ -47,11 +47,11 @@ public class InvitationService {
 
     @Transactional
     public ProjectInvitationResponse inviteMember(
-            String projectId,
+            String projectRef,
             CreateProjectInvitationRequest request,
             String currentUserId
     ) {
-        Project project = projectLookupService.requireProject(projectId);
+        Project project = projectLookupService.requireProject(projectRef);
         projectAccessService.requireManager(project, currentUserId);
 
         String email = normalizeEmail(request.getEmail());
@@ -59,14 +59,14 @@ public class InvitationService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Owner invitations are not supported");
         }
         identityAccessService.findUserIdByEmail(email).ifPresent((userId) -> {
-            if (projectMemberRepository.existsByProject_IdAndUserId(projectId, userId)) {
+            if (projectMemberRepository.existsByProject_IdAndUserId(project.getId(), userId)) {
                 throw new ResponseStatusException(HttpStatus.CONFLICT, "User is already a project member");
             }
         });
 
         String invitedByEmail = identityAccessService.requireUserEmail(currentUserId);
         projectInvitationRepository.findByProject_IdAndEmailIgnoreCaseAndStatus(
-                projectId,
+                project.getId(),
                 email,
                 ProjectInvitationStatus.PENDING
         ).ifPresent((invitation) -> {
@@ -88,11 +88,11 @@ public class InvitationService {
     }
 
     @Transactional(readOnly = true)
-    public PageResponse<ProjectInvitationResponse> listInvitations(String projectId, String currentUserId, Pageable pageable) {
-        Project project = projectLookupService.requireProject(projectId);
+    public PageResponse<ProjectInvitationResponse> listInvitations(String projectRef, String currentUserId, Pageable pageable) {
+        Project project = projectLookupService.requireProject(projectRef);
         projectAccessService.requireManager(project, currentUserId);
 
-        return PageResponse.from(projectInvitationRepository.findByProject_Id(projectId, pageable)
+        return PageResponse.from(projectInvitationRepository.findByProject_Id(project.getId(), pageable)
                 .map(invitationMapper::toInvitationResponse));
     }
 
@@ -141,13 +141,13 @@ public class InvitationService {
     }
 
     @Transactional
-    public void cancelInvitation(String projectId, String invitationId, String currentUserId) {
-        Project project = projectLookupService.requireProject(projectId);
+    public void cancelInvitation(String projectRef, String invitationId, String currentUserId) {
+        Project project = projectLookupService.requireProject(projectRef);
         projectAccessService.requireManager(project, currentUserId);
 
         ProjectInvitation invitation = projectInvitationRepository.findById(invitationId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Project invitation not found"));
-        if (!invitation.getProject().getId().equals(projectId)) {
+        if (!invitation.getProject().getId().equals(project.getId())) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Project invitation not found");
         }
         if (invitation.getStatus() != ProjectInvitationStatus.PENDING) {
