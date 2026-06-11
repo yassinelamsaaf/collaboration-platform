@@ -1,6 +1,7 @@
 package com.inpt.collaborationplatform.shared.exception;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -73,6 +74,12 @@ public class GlobalExceptionHandler {
                 "fields", errors,
                 "timestamp", Instant.now().toString()
         ));
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<?> handleDataIntegrity(DataIntegrityViolationException e) {
+        log.warn("Database constraint violation: {}", e.getMostSpecificCause().getMessage());
+        return errorResponse(HttpStatus.CONFLICT, "This resource conflicts with existing data");
     }
 
     // Catch-all for anything unexpected

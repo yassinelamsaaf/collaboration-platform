@@ -1,0 +1,14 @@
+package com.inpt.collaborationplatform.projects.team.dto.response;
+
+import java.time.LocalDateTime;
+
+public record TeamResponse(
+        String id,
+        String projectId,
+        String name,
+        String description,
+        String createdByUserId,
+        LocalDateTime createdAt,
+        LocalDateTime updatedAt
+) {
+}
