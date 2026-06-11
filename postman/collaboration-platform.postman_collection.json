@@ -62,12 +62,22 @@
       "type": "string"
     },
     {
-      "key": "projectId",
+      "key": "projectRef",
       "value": "",
       "type": "string"
     },
     {
       "key": "projectMemberId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "teamRef",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "teamMemberId",
       "value": "",
       "type": "string"
     },
@@ -431,7 +441,7 @@
     },
     {
       "name": "2. Projects",
-      "description": "Requires a logged-in user. Run Login Owner first. Requests save projectId and projectMemberId when possible.",
+      "description": "Requires a logged-in user. Run Login Owner first. Requests save projectRef as the project slug when available, plus projectMemberId when possible.",
       "item": [
         {
           "name": "Create Project",
@@ -445,7 +455,7 @@
                   "});",
                   "if (pm.response.code === 201) {",
                   "  const body = pm.response.json();",
-                  "  pm.collectionVariables.set('projectId', body.id);",
+                  "  pm.collectionVariables.set('projectRef', body.slug || body.id);",
                   "}"
                 ],
                 "type": "text/javascript"
@@ -515,14 +525,14 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/projects/{{projectId}}",
+              "raw": "{{baseUrl}}/api/projects/{{projectRef}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
                 "projects",
-                "{{projectId}}"
+                "{{projectRef}}"
               ]
             },
             "description": "Returns one project if the authenticated user is a member."
@@ -543,14 +553,14 @@
               "raw": "{\n  \"name\": \"PFA Collaboration Platform Updated\",\n  \"description\": \"Updated from Postman.\"\n}"
             },
             "url": {
-              "raw": "{{baseUrl}}/api/projects/{{projectId}}",
+              "raw": "{{baseUrl}}/api/projects/{{projectRef}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
                 "projects",
-                "{{projectId}}"
+                "{{projectRef}}"
               ]
             },
             "description": "Requires OWNER or ADMIN project role."
@@ -562,18 +572,32 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/projects/{{projectId}}/members",
+              "raw": "{{baseUrl}}/api/projects/{{projectRef}}/members?page=0&size=20&sort=joinedAt,asc",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
                 "projects",
-                "{{projectId}}",
+                "{{projectRef}}",
                 "members"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "20"
+                },
+                {
+                  "key": "sort",
+                  "value": "joinedAt,asc"
+                }
               ]
             },
-            "description": "Requires any project membership. Initially this should return the owner membership."
+            "description": "Requires any project membership. Returns PageResponse<ProjectMemberResponse>. Initially this should contain the owner membership."
           }
         },
         {
@@ -605,14 +629,14 @@
               "raw": "{\n  \"email\": \"{{memberEmail}}\",\n  \"role\": \"MEMBER\"\n}"
             },
             "url": {
-              "raw": "{{baseUrl}}/api/projects/{{projectId}}/invitations",
+              "raw": "{{baseUrl}}/api/projects/{{projectRef}}/invitations",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
                 "projects",
-                "{{projectId}}",
+                "{{projectRef}}",
                 "invitations"
               ]
             },
@@ -620,23 +644,37 @@
           }
         },
         {
-          "name": "List Project Invitations",
+          "name": "List Project Invitations - Paginated",
           "request": {
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/projects/{{projectId}}/invitations",
+              "raw": "{{baseUrl}}/api/projects/{{projectRef}}/invitations?page=0&size=20&sort=createdAt,desc",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
                 "projects",
-                "{{projectId}}",
+                "{{projectRef}}",
                 "invitations"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "20"
+                },
+                {
+                  "key": "sort",
+                  "value": "createdAt,desc"
+                }
               ]
             },
-            "description": "Requires OWNER or ADMIN. Shows pending/accepted/cancelled invitations for the project."
+            "description": "Requires OWNER or ADMIN. Returns PageResponse<ProjectInvitationResponse>."
           }
         },
         {
@@ -751,6 +789,292 @@
           }
         },
         {
+          "name": "Create Team",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  const body = pm.response.json();",
+                  "  pm.collectionVariables.set('teamRef', body.slug || body.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Backend Team\",\n  \"description\": \"Team created from Postman.\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/projects/{{projectRef}}/teams",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "projects",
+                "{{projectRef}}",
+                "teams"
+              ]
+            },
+            "description": "Requires OWNER or ADMIN project role."
+          }
+        },
+        {
+          "name": "List Project Teams - Paginated",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/projects/{{projectRef}}/teams?page=0&size=20&sort=name,asc",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "projects",
+                "{{projectRef}}",
+                "teams"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "20"
+                },
+                {
+                  "key": "sort",
+                  "value": "name,asc"
+                }
+              ]
+            },
+            "description": "Requires any project membership. Returns PageResponse<TeamResponse>."
+          }
+        },
+        {
+          "name": "Get Team",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/projects/{{projectRef}}/teams/{{teamRef}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "projects",
+                "{{projectRef}}",
+                "teams",
+                "{{teamRef}}"
+              ]
+            },
+            "description": "Requires any project membership."
+          }
+        },
+        {
+          "name": "Update Team",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Backend Team Updated\",\n  \"description\": \"Updated from Postman.\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/projects/{{projectRef}}/teams/{{teamRef}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "projects",
+                "{{projectRef}}",
+                "teams",
+                "{{teamRef}}"
+              ]
+            },
+            "description": "Requires OWNER or ADMIN project role."
+          }
+        },
+        {
+          "name": "List Team Members - Paginated",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/projects/{{projectRef}}/teams/{{teamRef}}/members?page=0&size=20&sort=joinedAt,asc",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "projects",
+                "{{projectRef}}",
+                "teams",
+                "{{teamRef}}",
+                "members"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "20"
+                },
+                {
+                  "key": "sort",
+                  "value": "joinedAt,asc"
+                }
+              ]
+            },
+            "description": "Requires any project membership. Returns PageResponse<TeamMemberResponse>."
+          }
+        },
+        {
+          "name": "Add Member to Team",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  const body = pm.response.json();",
+                  "  pm.collectionVariables.set('teamMemberId', body.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": \"{{memberUserId}}\",\n  \"role\": \"MEMBER\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/projects/{{projectRef}}/teams/{{teamRef}}/members",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "projects",
+                "{{projectRef}}",
+                "teams",
+                "{{teamRef}}",
+                "members"
+              ]
+            },
+            "description": "Requires OWNER or ADMIN. The user must already be an accepted project member and cannot have project role VIEWER."
+          }
+        },
+        {
+          "name": "Change Team Member Role",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"role\": \"LEADER\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/projects/{{projectRef}}/teams/{{teamRef}}/members/{{memberUserId}}/role",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "projects",
+                "{{projectRef}}",
+                "teams",
+                "{{teamRef}}",
+                "members",
+                "{{memberUserId}}",
+                "role"
+              ]
+            },
+            "description": "Requires OWNER or ADMIN project role."
+          }
+        },
+        {
+          "name": "Remove Team Member",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/projects/{{projectRef}}/teams/{{teamRef}}/members/{{memberUserId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "projects",
+                "{{projectRef}}",
+                "teams",
+                "{{teamRef}}",
+                "members",
+                "{{memberUserId}}"
+              ]
+            },
+            "description": "Requires OWNER or ADMIN project role."
+          }
+        },
+        {
+          "name": "Delete Team",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/projects/{{projectRef}}/teams/{{teamRef}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "projects",
+                "{{projectRef}}",
+                "teams",
+                "{{teamRef}}"
+              ]
+            },
+            "description": "Requires OWNER or ADMIN. Deletes team memberships before deleting the team."
+          }
+        },
+        {
           "name": "Change Member Role",
           "request": {
             "method": "PATCH",
@@ -765,14 +1089,14 @@
               "raw": "{\n  \"role\": \"ADMIN\"\n}"
             },
             "url": {
-              "raw": "{{baseUrl}}/api/projects/{{projectId}}/members/{{memberUserId}}/role",
+              "raw": "{{baseUrl}}/api/projects/{{projectRef}}/members/{{memberUserId}}/role",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
                 "projects",
-                "{{projectId}}",
+                "{{projectRef}}",
                 "members",
                 "{{memberUserId}}",
                 "role"
@@ -787,14 +1111,14 @@
             "method": "DELETE",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/projects/{{projectId}}/members/{{memberUserId}}",
+              "raw": "{{baseUrl}}/api/projects/{{projectRef}}/members/{{memberUserId}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
                 "projects",
-                "{{projectId}}",
+                "{{projectRef}}",
                 "members",
                 "{{memberUserId}}"
               ]
@@ -808,14 +1132,14 @@
             "method": "POST",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/projects/{{projectId}}/archive",
+              "raw": "{{baseUrl}}/api/projects/{{projectRef}}/archive",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
                 "projects",
-                "{{projectId}}",
+                "{{projectRef}}",
                 "archive"
               ]
             },
