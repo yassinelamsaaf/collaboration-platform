@@ -9,6 +9,8 @@ public record TeamMemberResponse(
         String teamId,
         String userId,
         TeamRole role,
-        LocalDateTime joinedAt
+        LocalDateTime joinedAt,
+        String memberName,
+        String memberEmail
 ) {
 }

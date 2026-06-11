@@ -1,7 +1,7 @@
 package com.inpt.collaborationplatform.tasks.label.controller;
 
-import com.inpt.collaborationplatform.Identity.entity.User;
 import com.inpt.collaborationplatform.shared.dto.MessageResponse;
+import com.inpt.collaborationplatform.shared.util.SecurityUtils;
 import com.inpt.collaborationplatform.tasks.label.dto.request.CreateLabelRequest;
 import com.inpt.collaborationplatform.tasks.label.dto.response.LabelResponse;
 import com.inpt.collaborationplatform.tasks.label.service.LabelService;
@@ -34,7 +34,7 @@ public class LabelController {
             Authentication authentication
     ) {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(labelService.createLabel(projectRef, request, currentUserId(authentication)));
+                .body(labelService.createLabel(projectRef, request, SecurityUtils.currentUserId(authentication)));
     }
 
     @GetMapping
@@ -42,7 +42,7 @@ public class LabelController {
             @PathVariable String projectRef,
             Authentication authentication
     ) {
-        return ResponseEntity.ok(labelService.listLabels(projectRef, currentUserId(authentication)));
+        return ResponseEntity.ok(labelService.listLabels(projectRef, SecurityUtils.currentUserId(authentication)));
     }
 
     @DeleteMapping("/{labelId}")
@@ -51,7 +51,7 @@ public class LabelController {
             @PathVariable String labelId,
             Authentication authentication
     ) {
-        labelService.deleteLabel(projectRef, labelId, currentUserId(authentication));
+        labelService.deleteLabel(projectRef, labelId, SecurityUtils.currentUserId(authentication));
         return ResponseEntity.ok(new MessageResponse("Label deleted successfully"));
     }
 
@@ -62,7 +62,7 @@ public class LabelController {
             @PathVariable String taskId,
             Authentication authentication
     ) {
-        labelService.addLabelToTask(projectRef, taskId, labelId, currentUserId(authentication));
+        labelService.addLabelToTask(projectRef, taskId, labelId, SecurityUtils.currentUserId(authentication));
         return ResponseEntity.ok(new MessageResponse("Label added to task successfully"));
     }
 
@@ -73,12 +73,8 @@ public class LabelController {
             @PathVariable String taskId,
             Authentication authentication
     ) {
-        labelService.removeLabelFromTask(projectRef, taskId, labelId, currentUserId(authentication));
+        labelService.removeLabelFromTask(projectRef, taskId, labelId, SecurityUtils.currentUserId(authentication));
         return ResponseEntity.ok(new MessageResponse("Label removed from task successfully"));
     }
 
-    private String currentUserId(Authentication authentication) {
-        User user = (User) authentication.getPrincipal();
-        return user.getId();
-    }
 }

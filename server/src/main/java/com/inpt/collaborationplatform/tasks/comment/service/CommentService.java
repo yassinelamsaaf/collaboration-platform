@@ -12,8 +12,10 @@ import com.inpt.collaborationplatform.tasks.comment.entity.Comment;
 import com.inpt.collaborationplatform.tasks.comment.mapper.CommentMapper;
 import com.inpt.collaborationplatform.tasks.comment.repository.CommentRepository;
 import com.inpt.collaborationplatform.tasks.task.entity.Task;
+import com.inpt.collaborationplatform.shared.event.CommentAddedEvent;
 import com.inpt.collaborationplatform.tasks.task.service.TaskLookupService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -29,6 +31,7 @@ public class CommentService {
     private final TaskLookupService taskLookupService;
     private final ProjectLookupService projectLookupService;
     private final ProjectAccessService projectAccessService;
+    private final ApplicationEventPublisher eventPublisher;
     private final CommentMapper commentMapper;
 
     @Transactional
@@ -45,7 +48,14 @@ public class CommentService {
                 .content(request.getContent().trim())
                 .build();
 
-        return commentMapper.toCommentResponse(commentRepository.save(comment));
+        comment = commentRepository.save(comment);
+
+        eventPublisher.publishEvent(new CommentAddedEvent(
+                comment.getId(), comment.getContent(), task.getId(), task.getTitle(),
+                project.getId(), team.getId(), task.getAssigneeId(), currentUserId
+        ));
+
+        return commentMapper.toCommentResponse(comment);
     }
 
     @Transactional(readOnly = true)

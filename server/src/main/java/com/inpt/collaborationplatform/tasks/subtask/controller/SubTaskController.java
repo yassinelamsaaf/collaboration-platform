@@ -1,7 +1,7 @@
 package com.inpt.collaborationplatform.tasks.subtask.controller;
 
-import com.inpt.collaborationplatform.Identity.entity.User;
 import com.inpt.collaborationplatform.shared.dto.MessageResponse;
+import com.inpt.collaborationplatform.shared.util.SecurityUtils;
 import com.inpt.collaborationplatform.tasks.subtask.dto.request.CreateSubTaskRequest;
 import com.inpt.collaborationplatform.tasks.subtask.dto.request.UpdateSubTaskRequest;
 import com.inpt.collaborationplatform.tasks.subtask.dto.response.SubTaskResponse;
@@ -38,7 +38,7 @@ public class SubTaskController {
             Authentication authentication
     ) {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(subTaskService.createSubTask(projectRef, teamRef, taskId, request, currentUserId(authentication)));
+                .body(subTaskService.createSubTask(projectRef, teamRef, taskId, request, SecurityUtils.currentUserId(authentication)));
     }
 
     @GetMapping
@@ -48,7 +48,7 @@ public class SubTaskController {
             @PathVariable String taskId,
             Authentication authentication
     ) {
-        return ResponseEntity.ok(subTaskService.listSubTasks(projectRef, teamRef, taskId, currentUserId(authentication)));
+        return ResponseEntity.ok(subTaskService.listSubTasks(projectRef, teamRef, taskId, SecurityUtils.currentUserId(authentication)));
     }
 
     @PatchMapping("/{subTaskId}")
@@ -60,7 +60,7 @@ public class SubTaskController {
             @Valid @RequestBody UpdateSubTaskRequest request,
             Authentication authentication
     ) {
-        return ResponseEntity.ok(subTaskService.updateSubTask(projectRef, teamRef, taskId, subTaskId, request, currentUserId(authentication)));
+        return ResponseEntity.ok(subTaskService.updateSubTask(projectRef, teamRef, taskId, subTaskId, request, SecurityUtils.currentUserId(authentication)));
     }
 
     @DeleteMapping("/{subTaskId}")
@@ -71,12 +71,8 @@ public class SubTaskController {
             @PathVariable String subTaskId,
             Authentication authentication
     ) {
-        subTaskService.deleteSubTask(projectRef, teamRef, taskId, subTaskId, currentUserId(authentication));
+        subTaskService.deleteSubTask(projectRef, teamRef, taskId, subTaskId, SecurityUtils.currentUserId(authentication));
         return ResponseEntity.ok(new MessageResponse("Sub-task deleted successfully"));
     }
 
-    private String currentUserId(Authentication authentication) {
-        User user = (User) authentication.getPrincipal();
-        return user.getId();
-    }
 }

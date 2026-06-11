@@ -127,7 +127,11 @@ public class TeamService {
         Team team = teamLookupService.requireTeam(project.getId(), teamRef);
 
         return PageResponse.from(teamMemberRepository.findByTeam_Id(team.getId(), pageable)
-                .map(teamMapper::toTeamMemberResponse));
+                .map(member -> {
+                    String name = identityAccessService.requireUserUsername(member.getUserId());
+                    String email = identityAccessService.requireUserEmail(member.getUserId());
+                    return teamMapper.toTeamMemberResponse(member, name, email);
+                }));
     }
 
     @Transactional
@@ -157,7 +161,9 @@ public class TeamService {
                 .role(request.getRole())
                 .build());
 
-        return teamMapper.toTeamMemberResponse(member);
+        String name = identityAccessService.requireUserUsername(member.getUserId());
+        String email = identityAccessService.requireUserEmail(member.getUserId());
+        return teamMapper.toTeamMemberResponse(member, name, email);
     }
 
     @Transactional
@@ -174,7 +180,10 @@ public class TeamService {
 
         TeamMember member = teamLookupService.requireTeamMemberByUser(team.getId(), memberUserId);
         member.setRole(request.getRole());
-        return teamMapper.toTeamMemberResponse(teamMemberRepository.save(member));
+        member = teamMemberRepository.save(member);
+        String name = identityAccessService.requireUserUsername(member.getUserId());
+        String email = identityAccessService.requireUserEmail(member.getUserId());
+        return teamMapper.toTeamMemberResponse(member, name, email);
     }
 
     @Transactional

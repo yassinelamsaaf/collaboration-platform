@@ -1,7 +1,7 @@
 package com.inpt.collaborationplatform.projects.project.controller;
 
-import com.inpt.collaborationplatform.Identity.entity.User;
 import com.inpt.collaborationplatform.projects.project.dto.request.CreateProjectRequest;
+import com.inpt.collaborationplatform.shared.util.SecurityUtils;
 import com.inpt.collaborationplatform.projects.project.dto.request.UpdateProjectMemberRoleRequest;
 import com.inpt.collaborationplatform.projects.project.dto.request.UpdateProjectRequest;
 import com.inpt.collaborationplatform.projects.project.dto.response.ProjectMemberResponse;
@@ -39,7 +39,7 @@ public class ProjectController {
             Authentication authentication
     ) {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(projectService.createProject(request, currentUserId(authentication)));
+                .body(projectService.createProject(request, SecurityUtils.currentUserId(authentication)));
     }
 
     @GetMapping
@@ -47,7 +47,7 @@ public class ProjectController {
             Authentication authentication,
             @PageableDefault(size = 20, sort = "joinedAt", direction = Sort.Direction.DESC) Pageable pageable
     ) {
-        return ResponseEntity.ok(projectService.listMyProjects(currentUserId(authentication), pageable));
+        return ResponseEntity.ok(projectService.listMyProjects(SecurityUtils.currentUserId(authentication), pageable));
     }
 
     @GetMapping("/{projectRef}")
@@ -55,7 +55,7 @@ public class ProjectController {
             @PathVariable String projectRef,
             Authentication authentication
     ) {
-        return ResponseEntity.ok(projectService.getProject(projectRef, currentUserId(authentication)));
+        return ResponseEntity.ok(projectService.getProject(projectRef, SecurityUtils.currentUserId(authentication)));
     }
 
     @PatchMapping("/{projectRef}")
@@ -64,7 +64,7 @@ public class ProjectController {
             @Valid @RequestBody UpdateProjectRequest request,
             Authentication authentication
     ) {
-        return ResponseEntity.ok(projectService.updateProject(projectRef, request, currentUserId(authentication)));
+        return ResponseEntity.ok(projectService.updateProject(projectRef, request, SecurityUtils.currentUserId(authentication)));
     }
 
     @PostMapping("/{projectRef}/archive")
@@ -72,7 +72,7 @@ public class ProjectController {
             @PathVariable String projectRef,
             Authentication authentication
     ) {
-        return ResponseEntity.ok(projectService.archiveProject(projectRef, currentUserId(authentication)));
+        return ResponseEntity.ok(projectService.archiveProject(projectRef, SecurityUtils.currentUserId(authentication)));
     }
 
     @GetMapping("/{projectRef}/members")
@@ -81,7 +81,7 @@ public class ProjectController {
             Authentication authentication,
             @PageableDefault(size = 20, sort = "joinedAt", direction = Sort.Direction.ASC) Pageable pageable
     ) {
-        return ResponseEntity.ok(projectService.listMembers(projectRef, currentUserId(authentication), pageable));
+        return ResponseEntity.ok(projectService.listMembers(projectRef, SecurityUtils.currentUserId(authentication), pageable));
     }
 
     @PatchMapping("/{projectRef}/members/{memberUserId}/role")
@@ -95,7 +95,7 @@ public class ProjectController {
                 projectRef,
                 memberUserId,
                 request,
-                currentUserId(authentication)
+                SecurityUtils.currentUserId(authentication)
         ));
     }
 
@@ -105,12 +105,8 @@ public class ProjectController {
             @PathVariable String memberUserId,
             Authentication authentication
     ) {
-        projectService.removeMember(projectRef, memberUserId, currentUserId(authentication));
+        projectService.removeMember(projectRef, memberUserId, SecurityUtils.currentUserId(authentication));
         return ResponseEntity.ok(new MessageResponse("Project member removed successfully"));
     }
 
-    private String currentUserId(Authentication authentication) {
-        User user = (User) authentication.getPrincipal();
-        return user.getId();
-    }
 }

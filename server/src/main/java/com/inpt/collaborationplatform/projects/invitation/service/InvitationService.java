@@ -7,6 +7,7 @@ import com.inpt.collaborationplatform.projects.invitation.dto.response.ProjectIn
 import com.inpt.collaborationplatform.projects.invitation.dto.response.ProjectInvitationResponse;
 import com.inpt.collaborationplatform.projects.invitation.entity.ProjectInvitation;
 import com.inpt.collaborationplatform.projects.invitation.entity.ProjectInvitationStatus;
+import com.inpt.collaborationplatform.shared.event.MemberInvitedEvent;
 import com.inpt.collaborationplatform.projects.invitation.mapper.InvitationMapper;
 import com.inpt.collaborationplatform.projects.invitation.repository.ProjectInvitationRepository;
 import com.inpt.collaborationplatform.projects.project.dto.response.ProjectMemberResponse;
@@ -20,6 +21,7 @@ import com.inpt.collaborationplatform.projects.project.service.ProjectLookupServ
 import com.inpt.collaborationplatform.shared.dto.PageResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -43,6 +45,7 @@ public class InvitationService {
     private final IdentityAccessService identityAccessService;
     private final EmailService emailService;
     private final ProjectMapper projectMapper;
+    private final ApplicationEventPublisher eventPublisher;
     private final InvitationMapper invitationMapper;
 
     @Transactional
@@ -82,6 +85,10 @@ public class InvitationService {
                 .invitedByUserId(currentUserId)
                 .expiresAt(LocalDateTime.now().plusDays(7))
                 .build());
+
+        eventPublisher.publishEvent(new MemberInvitedEvent(
+                invitation.getId(), email, project.getId(), project.getName(), currentUserId
+        ));
 
         sendInvitationEmailAfterCommit(email, project.getName(), invitedByEmail, invitation.getToken());
         return invitationMapper.toInvitationResponse(invitation);

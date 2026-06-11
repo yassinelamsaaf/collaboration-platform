@@ -1,7 +1,7 @@
 package com.inpt.collaborationplatform.tasks.timeentry.controller;
 
-import com.inpt.collaborationplatform.Identity.entity.User;
 import com.inpt.collaborationplatform.shared.dto.MessageResponse;
+import com.inpt.collaborationplatform.shared.util.SecurityUtils;
 import com.inpt.collaborationplatform.shared.dto.PageResponse;
 import com.inpt.collaborationplatform.tasks.timeentry.dto.request.CreateTimeEntryRequest;
 import com.inpt.collaborationplatform.tasks.timeentry.dto.response.TimeEntryResponse;
@@ -38,7 +38,7 @@ public class TimeEntryController {
             Authentication authentication
     ) {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(timeEntryService.logTime(projectRef, teamRef, taskId, request, currentUserId(authentication)));
+                .body(timeEntryService.logTime(projectRef, teamRef, taskId, request, SecurityUtils.currentUserId(authentication)));
     }
 
     @GetMapping
@@ -49,7 +49,7 @@ public class TimeEntryController {
             Authentication authentication,
             @PageableDefault(size = 20, sort = "date", direction = Sort.Direction.DESC) Pageable pageable
     ) {
-        return ResponseEntity.ok(timeEntryService.listTimeEntries(projectRef, teamRef, taskId, currentUserId(authentication), pageable));
+        return ResponseEntity.ok(timeEntryService.listTimeEntries(projectRef, teamRef, taskId, SecurityUtils.currentUserId(authentication), pageable));
     }
 
     @DeleteMapping("/{entryId}")
@@ -60,12 +60,8 @@ public class TimeEntryController {
             @PathVariable String entryId,
             Authentication authentication
     ) {
-        timeEntryService.deleteTimeEntry(projectRef, teamRef, taskId, entryId, currentUserId(authentication));
+        timeEntryService.deleteTimeEntry(projectRef, teamRef, taskId, entryId, SecurityUtils.currentUserId(authentication));
         return ResponseEntity.ok(new MessageResponse("Time entry deleted successfully"));
     }
 
-    private String currentUserId(Authentication authentication) {
-        User user = (User) authentication.getPrincipal();
-        return user.getId();
-    }
 }

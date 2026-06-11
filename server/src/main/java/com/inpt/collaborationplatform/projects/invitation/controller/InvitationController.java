@@ -1,7 +1,7 @@
 package com.inpt.collaborationplatform.projects.invitation.controller;
 
-import com.inpt.collaborationplatform.Identity.entity.User;
 import com.inpt.collaborationplatform.projects.invitation.dto.request.CreateProjectInvitationRequest;
+import com.inpt.collaborationplatform.shared.util.SecurityUtils;
 import com.inpt.collaborationplatform.projects.invitation.dto.response.ProjectInvitationPreviewResponse;
 import com.inpt.collaborationplatform.projects.invitation.dto.response.ProjectInvitationResponse;
 import com.inpt.collaborationplatform.projects.invitation.service.InvitationService;
@@ -37,7 +37,7 @@ public class InvitationController {
             Authentication authentication
     ) {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(invitationService.inviteMember(projectRef, request, currentUserId(authentication)));
+                .body(invitationService.inviteMember(projectRef, request, SecurityUtils.currentUserId(authentication)));
     }
 
     @GetMapping("/{projectRef}/invitations")
@@ -46,7 +46,7 @@ public class InvitationController {
             Authentication authentication,
             @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
     ) {
-        return ResponseEntity.ok(invitationService.listInvitations(projectRef, currentUserId(authentication), pageable));
+        return ResponseEntity.ok(invitationService.listInvitations(projectRef, SecurityUtils.currentUserId(authentication), pageable));
     }
 
     @GetMapping("/invitations/{token}")
@@ -59,7 +59,7 @@ public class InvitationController {
             @PathVariable String token,
             Authentication authentication
     ) {
-        return ResponseEntity.ok(invitationService.acceptInvitation(token, currentUserId(authentication)));
+        return ResponseEntity.ok(invitationService.acceptInvitation(token, SecurityUtils.currentUserId(authentication)));
     }
 
     @PostMapping("/{projectRef}/invitations/{invitationId}/cancel")
@@ -68,12 +68,8 @@ public class InvitationController {
             @PathVariable String invitationId,
             Authentication authentication
     ) {
-        invitationService.cancelInvitation(projectRef, invitationId, currentUserId(authentication));
+        invitationService.cancelInvitation(projectRef, invitationId, SecurityUtils.currentUserId(authentication));
         return ResponseEntity.ok(new MessageResponse("Project invitation cancelled successfully"));
     }
 
-    private String currentUserId(Authentication authentication) {
-        User user = (User) authentication.getPrincipal();
-        return user.getId();
-    }
 }

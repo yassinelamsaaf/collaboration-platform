@@ -1,7 +1,7 @@
 package com.inpt.collaborationplatform.tasks.attachment.controller;
 
-import com.inpt.collaborationplatform.Identity.entity.User;
 import com.inpt.collaborationplatform.shared.dto.MessageResponse;
+import com.inpt.collaborationplatform.shared.util.SecurityUtils;
 import com.inpt.collaborationplatform.tasks.attachment.dto.request.CreateAttachmentRequest;
 import com.inpt.collaborationplatform.tasks.attachment.dto.response.AttachmentResponse;
 import com.inpt.collaborationplatform.tasks.attachment.service.AttachmentService;
@@ -36,7 +36,7 @@ public class AttachmentController {
             Authentication authentication
     ) {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(attachmentService.createAttachment(projectRef, teamRef, taskId, request, currentUserId(authentication)));
+                .body(attachmentService.createAttachment(projectRef, teamRef, taskId, request, SecurityUtils.currentUserId(authentication)));
     }
 
     @GetMapping
@@ -46,7 +46,7 @@ public class AttachmentController {
             @PathVariable String taskId,
             Authentication authentication
     ) {
-        return ResponseEntity.ok(attachmentService.listAttachments(projectRef, teamRef, taskId, currentUserId(authentication)));
+        return ResponseEntity.ok(attachmentService.listAttachments(projectRef, teamRef, taskId, SecurityUtils.currentUserId(authentication)));
     }
 
     @DeleteMapping("/{attachmentId}")
@@ -57,12 +57,8 @@ public class AttachmentController {
             @PathVariable String attachmentId,
             Authentication authentication
     ) {
-        attachmentService.deleteAttachment(projectRef, teamRef, taskId, attachmentId, currentUserId(authentication));
+        attachmentService.deleteAttachment(projectRef, teamRef, taskId, attachmentId, SecurityUtils.currentUserId(authentication));
         return ResponseEntity.ok(new MessageResponse("Attachment deleted successfully"));
     }
 
-    private String currentUserId(Authentication authentication) {
-        User user = (User) authentication.getPrincipal();
-        return user.getId();
-    }
 }

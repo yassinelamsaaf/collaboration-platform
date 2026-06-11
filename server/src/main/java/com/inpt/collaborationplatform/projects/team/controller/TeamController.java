@@ -1,7 +1,7 @@
 package com.inpt.collaborationplatform.projects.team.controller;
 
-import com.inpt.collaborationplatform.Identity.entity.User;
 import com.inpt.collaborationplatform.projects.team.dto.request.AddTeamMemberRequest;
+import com.inpt.collaborationplatform.shared.util.SecurityUtils;
 import com.inpt.collaborationplatform.projects.team.dto.request.CreateTeamRequest;
 import com.inpt.collaborationplatform.projects.team.dto.request.UpdateTeamMemberRoleRequest;
 import com.inpt.collaborationplatform.projects.team.dto.request.UpdateTeamRequest;
@@ -42,7 +42,7 @@ public class TeamController {
             Authentication authentication
     ) {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(teamService.createTeam(projectRef, request, currentUserId(authentication)));
+                .body(teamService.createTeam(projectRef, request, SecurityUtils.currentUserId(authentication)));
     }
 
     @GetMapping
@@ -51,7 +51,7 @@ public class TeamController {
             Authentication authentication,
             @PageableDefault(size = 20, sort = "name", direction = Sort.Direction.ASC) Pageable pageable
     ) {
-        return ResponseEntity.ok(teamService.listTeams(projectRef, currentUserId(authentication), pageable));
+        return ResponseEntity.ok(teamService.listTeams(projectRef, SecurityUtils.currentUserId(authentication), pageable));
     }
 
     @GetMapping("/{teamRef}")
@@ -60,7 +60,7 @@ public class TeamController {
             @PathVariable String teamRef,
             Authentication authentication
     ) {
-        return ResponseEntity.ok(teamService.getTeam(projectRef, teamRef, currentUserId(authentication)));
+        return ResponseEntity.ok(teamService.getTeam(projectRef, teamRef, SecurityUtils.currentUserId(authentication)));
     }
 
     @PatchMapping("/{teamRef}")
@@ -70,7 +70,7 @@ public class TeamController {
             @Valid @RequestBody UpdateTeamRequest request,
             Authentication authentication
     ) {
-        return ResponseEntity.ok(teamService.updateTeam(projectRef, teamRef, request, currentUserId(authentication)));
+        return ResponseEntity.ok(teamService.updateTeam(projectRef, teamRef, request, SecurityUtils.currentUserId(authentication)));
     }
 
     @DeleteMapping("/{teamRef}")
@@ -79,7 +79,7 @@ public class TeamController {
             @PathVariable String teamRef,
             Authentication authentication
     ) {
-        teamService.deleteTeam(projectRef, teamRef, currentUserId(authentication));
+        teamService.deleteTeam(projectRef, teamRef, SecurityUtils.currentUserId(authentication));
         return ResponseEntity.ok(new MessageResponse("Team deleted successfully"));
     }
 
@@ -90,7 +90,7 @@ public class TeamController {
             Authentication authentication,
             @PageableDefault(size = 20, sort = "joinedAt", direction = Sort.Direction.ASC) Pageable pageable
     ) {
-        return ResponseEntity.ok(teamService.listTeamMembers(projectRef, teamRef, currentUserId(authentication), pageable));
+        return ResponseEntity.ok(teamService.listTeamMembers(projectRef, teamRef, SecurityUtils.currentUserId(authentication), pageable));
     }
 
     @PostMapping("/{teamRef}/members")
@@ -101,7 +101,7 @@ public class TeamController {
             Authentication authentication
     ) {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(teamService.addTeamMember(projectRef, teamRef, request, currentUserId(authentication)));
+                .body(teamService.addTeamMember(projectRef, teamRef, request, SecurityUtils.currentUserId(authentication)));
     }
 
     @PatchMapping("/{teamRef}/members/{memberUserId}/role")
@@ -117,7 +117,7 @@ public class TeamController {
                 teamRef,
                 memberUserId,
                 request,
-                currentUserId(authentication)
+                SecurityUtils.currentUserId(authentication)
         ));
     }
 
@@ -128,12 +128,8 @@ public class TeamController {
             @PathVariable String memberUserId,
             Authentication authentication
     ) {
-        teamService.removeTeamMember(projectRef, teamRef, memberUserId, currentUserId(authentication));
+        teamService.removeTeamMember(projectRef, teamRef, memberUserId, SecurityUtils.currentUserId(authentication));
         return ResponseEntity.ok(new MessageResponse("Team member removed successfully"));
     }
 
-    private String currentUserId(Authentication authentication) {
-        User user = (User) authentication.getPrincipal();
-        return user.getId();
-    }
 }

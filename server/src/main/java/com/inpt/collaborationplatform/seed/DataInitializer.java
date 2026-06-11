@@ -3,6 +3,13 @@ package com.inpt.collaborationplatform.seed;
 import com.inpt.collaborationplatform.Identity.entity.Role;
 import com.inpt.collaborationplatform.Identity.entity.User;
 import com.inpt.collaborationplatform.Identity.repository.UserRepository;
+import com.inpt.collaborationplatform.audit.entity.ActivityLog;
+import com.inpt.collaborationplatform.audit.repository.ActivityLogRepository;
+import com.inpt.collaborationplatform.notification.entity.Notification;
+import com.inpt.collaborationplatform.notification.entity.NotificationPrefs;
+import com.inpt.collaborationplatform.notification.entity.NotificationType;
+import com.inpt.collaborationplatform.notification.repository.NotificationPrefsRepository;
+import com.inpt.collaborationplatform.notification.repository.NotificationRepository;
 import com.inpt.collaborationplatform.projects.project.entity.Project;
 import com.inpt.collaborationplatform.projects.project.entity.ProjectMember;
 import com.inpt.collaborationplatform.projects.project.entity.ProjectRole;
@@ -55,6 +62,9 @@ public class DataInitializer implements CommandLineRunner {
     private final CommentRepository commentRepository;
     private final AttachmentRepository attachmentRepository;
     private final TimeEntryRepository timeEntryRepository;
+    private final NotificationRepository notificationRepository;
+    private final NotificationPrefsRepository notificationPrefsRepository;
+    private final ActivityLogRepository activityLogRepository;
     private final PasswordEncoder passwordEncoder;
     private final SlugGenerator slugGenerator;
 
@@ -336,7 +346,61 @@ public class DataInitializer implements CommandLineRunner {
         log.info("Labels: 4 in Demo, 2 in Mobile App");
         log.info("Tasks: 3 in Demo Project, 1 in Mobile App");
         log.info("Subtasks: 3 on task1, 2 on task2, 3 on task4");
+        // =====================================================
+        // NOTIFICATION PREFS (default prefs for both users)
+        // =====================================================
+        notificationPrefsRepository.save(NotificationPrefs.builder().userId(admin.getId()).build());
+        notificationPrefsRepository.save(NotificationPrefs.builder().userId(alice.getId()).build());
+
+        // =====================================================
+        // SEED NOTIFICATIONS (2 for each user)
+        // =====================================================
+        notificationRepository.save(Notification.builder()
+                .userId(admin.getId()).type(NotificationType.TASK_ASSIGNED)
+                .title("Task Assigned").message("You were assigned to task \"Set up CI/CD pipeline\"")
+                .relatedEntityType("TASK").relatedEntityId(task1.getId()).isRead(false).build());
+
+        notificationRepository.save(Notification.builder()
+                .userId(admin.getId()).type(NotificationType.STATUS_CHANGED)
+                .title("Status Changed").message("Task \"Fix login page bug\" moved from TODO to IN_PROGRESS")
+                .relatedEntityType("TASK").relatedEntityId(task2.getId()).isRead(false).build());
+
+        notificationRepository.save(Notification.builder()
+                .userId(alice.getId()).type(NotificationType.COMMENT_ADDED)
+                .title("New Comment").message("admin commented on task \"Create landing page mockups\"")
+                .relatedEntityType("COMMENT").relatedEntityId(task3.getId()).isRead(false).build());
+
+        notificationRepository.save(Notification.builder()
+                .userId(alice.getId()).type(NotificationType.DEADLINE_APPROACHING)
+                .title("Deadline Approaching").message("Task \"Implement push notifications\" is due soon")
+                .relatedEntityType("TASK").relatedEntityId(task4.getId()).isRead(false).build());
+
+        // =====================================================
+        // SEED ACTIVITY LOGS (4 entries across both projects)
+        // =====================================================
+        activityLogRepository.save(ActivityLog.builder()
+                .actorId(admin.getId()).projectId(demoProject.getId())
+                .entityType("TASK").entityId(task1.getId())
+                .action("CREATED").details("Task \"Set up CI/CD pipeline\" created").build());
+
+        activityLogRepository.save(ActivityLog.builder()
+                .actorId(admin.getId()).projectId(demoProject.getId())
+                .entityType("TASK").entityId(task1.getId())
+                .action("ASSIGNED").details("Task \"Set up CI/CD pipeline\" assigned to " + adminEng.getId()).build());
+
+        activityLogRepository.save(ActivityLog.builder()
+                .actorId(alice.getId()).projectId(mobileApp.getId())
+                .entityType("TASK").entityId(task4.getId())
+                .action("CREATED").details("Task \"Implement push notifications\" created").build());
+
+        activityLogRepository.save(ActivityLog.builder()
+                .actorId(alice.getId()).projectId(mobileApp.getId())
+                .entityType("TASK").entityId(task4.getId())
+                .action("STATUS_CHANGED").details("Task \"Implement push notifications\" moved from TODO to DONE").build());
+
         log.info("Comments: 4 total | Attachments: 3 total | Time entries: 3 total");
+        log.info("Notifications: 4 total (2 per user)");
+        log.info("Activity logs: 4 entries");
         log.info("========================================");
     }
 }

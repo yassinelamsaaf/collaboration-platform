@@ -1,7 +1,7 @@
 package com.inpt.collaborationplatform.tasks.comment.controller;
 
-import com.inpt.collaborationplatform.Identity.entity.User;
 import com.inpt.collaborationplatform.shared.dto.MessageResponse;
+import com.inpt.collaborationplatform.shared.util.SecurityUtils;
 import com.inpt.collaborationplatform.shared.dto.PageResponse;
 import com.inpt.collaborationplatform.tasks.comment.dto.request.CreateCommentRequest;
 import com.inpt.collaborationplatform.tasks.comment.dto.response.CommentResponse;
@@ -38,7 +38,7 @@ public class CommentController {
             Authentication authentication
     ) {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(commentService.createComment(projectRef, teamRef, taskId, request, currentUserId(authentication)));
+                .body(commentService.createComment(projectRef, teamRef, taskId, request, SecurityUtils.currentUserId(authentication)));
     }
 
     @GetMapping
@@ -49,7 +49,7 @@ public class CommentController {
             Authentication authentication,
             @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
     ) {
-        return ResponseEntity.ok(commentService.listComments(projectRef, teamRef, taskId, currentUserId(authentication), pageable));
+        return ResponseEntity.ok(commentService.listComments(projectRef, teamRef, taskId, SecurityUtils.currentUserId(authentication), pageable));
     }
 
     @DeleteMapping("/{commentId}")
@@ -60,12 +60,8 @@ public class CommentController {
             @PathVariable String commentId,
             Authentication authentication
     ) {
-        commentService.deleteComment(projectRef, teamRef, taskId, commentId, currentUserId(authentication));
+        commentService.deleteComment(projectRef, teamRef, taskId, commentId, SecurityUtils.currentUserId(authentication));
         return ResponseEntity.ok(new MessageResponse("Comment deleted successfully"));
     }
 
-    private String currentUserId(Authentication authentication) {
-        User user = (User) authentication.getPrincipal();
-        return user.getId();
-    }
 }

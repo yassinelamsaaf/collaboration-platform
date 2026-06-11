@@ -27,6 +27,12 @@ public class IdentityAccessService {
                 .getEmail();
     }
 
+    public String requireUserUsername(String userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"))
+                .getUsername();
+    }
+
     public Optional<String> findUserIdByEmail(String email) {
         return userRepository.findByEmail(email).map((user) -> user.getId());
     }

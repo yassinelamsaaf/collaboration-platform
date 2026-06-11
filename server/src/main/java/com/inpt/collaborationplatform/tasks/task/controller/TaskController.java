@@ -1,7 +1,7 @@
 package com.inpt.collaborationplatform.tasks.task.controller;
 
-import com.inpt.collaborationplatform.Identity.entity.User;
 import com.inpt.collaborationplatform.shared.dto.MessageResponse;
+import com.inpt.collaborationplatform.shared.util.SecurityUtils;
 import com.inpt.collaborationplatform.shared.dto.PageResponse;
 import com.inpt.collaborationplatform.tasks.task.dto.request.CreateTaskRequest;
 import com.inpt.collaborationplatform.tasks.task.dto.request.UpdateTaskRequest;
@@ -40,7 +40,7 @@ public class TaskController {
             Authentication authentication
     ) {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(taskService.createTask(projectRef, teamRef, request, currentUserId(authentication)));
+                .body(taskService.createTask(projectRef, teamRef, request, SecurityUtils.currentUserId(authentication)));
     }
 
     @GetMapping
@@ -50,7 +50,7 @@ public class TaskController {
             Authentication authentication,
             @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
     ) {
-        return ResponseEntity.ok(taskService.listTasks(projectRef, teamRef, currentUserId(authentication), pageable));
+        return ResponseEntity.ok(taskService.listTasks(projectRef, teamRef, SecurityUtils.currentUserId(authentication), pageable));
     }
 
     @GetMapping("/{taskId}")
@@ -60,7 +60,7 @@ public class TaskController {
             @PathVariable String taskId,
             Authentication authentication
     ) {
-        return ResponseEntity.ok(taskService.getTask(projectRef, teamRef, taskId, currentUserId(authentication)));
+        return ResponseEntity.ok(taskService.getTask(projectRef, teamRef, taskId, SecurityUtils.currentUserId(authentication)));
     }
 
     @PatchMapping("/{taskId}")
@@ -71,7 +71,7 @@ public class TaskController {
             @Valid @RequestBody UpdateTaskRequest request,
             Authentication authentication
     ) {
-        return ResponseEntity.ok(taskService.updateTask(projectRef, teamRef, taskId, request, currentUserId(authentication)));
+        return ResponseEntity.ok(taskService.updateTask(projectRef, teamRef, taskId, request, SecurityUtils.currentUserId(authentication)));
     }
 
     @PatchMapping("/{taskId}/status")
@@ -82,7 +82,7 @@ public class TaskController {
             @Valid @RequestBody UpdateTaskStatusRequest request,
             Authentication authentication
     ) {
-        return ResponseEntity.ok(taskService.updateTaskStatus(projectRef, teamRef, taskId, request, currentUserId(authentication)));
+        return ResponseEntity.ok(taskService.updateTaskStatus(projectRef, teamRef, taskId, request, SecurityUtils.currentUserId(authentication)));
     }
 
     @DeleteMapping("/{taskId}")
@@ -92,12 +92,8 @@ public class TaskController {
             @PathVariable String taskId,
             Authentication authentication
     ) {
-        taskService.deleteTask(projectRef, teamRef, taskId, currentUserId(authentication));
+        taskService.deleteTask(projectRef, teamRef, taskId, SecurityUtils.currentUserId(authentication));
         return ResponseEntity.ok(new MessageResponse("Task deleted successfully"));
     }
 
-    private String currentUserId(Authentication authentication) {
-        User user = (User) authentication.getPrincipal();
-        return user.getId();
-    }
 }

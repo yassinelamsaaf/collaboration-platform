@@ -88,7 +88,7 @@ Backend endpoints:
 - `GET /api/projects/{projectRef}/teams/{teamRef}/members` lists team members for any project member, using pagination.
 - `POST /api/projects/{projectRef}/teams/{teamRef}/members` adds an existing project member to a team for `OWNER` or `ADMIN`.
 - `PATCH /api/projects/{projectRef}/teams/{teamRef}/members/{memberUserId}/role` changes a team member role for `OWNER` or `ADMIN`.
-- `DELETE /api/projects/{projectRef}/teams/{teamRef}/members/{memberUserId}` removes a team member for `OWNER` or `ADMIN`.
+- `DELETE /api/projects/{projectRef}/teams/{memberUserId}` removes a team member for `OWNER` or `ADMIN`.
 
 Current boundaries:
 - Projects owns `projects` and `project_members`.
@@ -140,16 +140,23 @@ Password reset frontend:
 
 ## Seeds / Testing Notes
 
-Planned:
-- Add development seed data for users, projects, and project memberships once the backend module shape settles.
-- Add backend tests for project access rules before building task management.
-
 Local email testing:
 - Docker Compose includes MailHog for local SMTP capture.
 - Backend SMTP inside Docker uses `mailhog:1025`.
 - Backend SMTP from an IDE/local process uses `localhost:1025`.
 - Local sender address uses `APP_MAIL_FROM=no-reply@collaboration-platform.local`.
 - MailHog web UI is available at `http://localhost:8025`.
+
+Seed data (Created when users table is empty):
+- Users: `admin@test.com` / `Admin123!` (ADMIN), `alice@test.com` / `Alice123!` (USER)
+- Projects: "Demo Project", "Mobile App"
+- Teams: Engineering, Design (Demo); Mobile Team (Mobile App)
+- Tasks: 4 tasks across teams with various priorities/statuses
+- Subtasks: 8 total across tasks
+- Comments: 4, Attachments: 3, Time entries: 3
+- NotificationPrefs: 2 rows (default enabled for both users)
+- Notifications: 4 (2 per user — TASK_ASSIGNED, STATUS_CHANGED, COMMENT_ADDED, DEADLINE_APPROACHING)
+- ActivityLogs: 4 entries
 
 ### Work Management
 
@@ -162,21 +169,19 @@ Folders:
 - `comment/` for `Comment` entity, CRUD controller/service, DTOs, mapper, repository.
 - `attachment/` for `Attachment` entity, CRUD controller/service, DTOs, mapper, repository.
 - `timeentry/` for `TimeEntry` entity, CRUD controller/service, DTOs, mapper, repository.
+- `scheduler/` — `DeadlineScheduler` (cron: 8 AM daily, publishes `DeadlineApproachingEvent` for tasks due tomorrow)
 - Shared lookups live in `TeamLookupService` (projects module) and `TaskLookupService` (tasks module) so all services reuse consistent "require team / task / team-leader" behavior.
 
 Implemented:
-- **Task** entity with title, description, priority (`LOW`/`MEDIUM`/`HIGH`/`URGENT`), status (`TODO`/`IN_PROGRESS`/`IN_REVIEW`/`DONE`), dueDate (LocalDate), assigneeId (references TeamMember ID).
-- **SubTask** entity with title, isDone flag, assigneeId (references TeamMember ID).
-- **TimeEntry** entity with durationMinutes, date, description, linked to task + user.
-- **Label** entity with name, hex color, scoped to project, many-to-many with Task via `task_labels` join table.
-- **Comment** entity with content, linked to task + user.
-- **Attachment** entity with fileName, fileUrl, fileSize, linked to task + user.
+- **Task** entity with title, description, priority, status, dueDate, assigneeId (references TeamMember ID).
+- **SubTask** entity with title, isDone flag, assigneeId.
+- **TimeEntry** entity with durationMinutes, date, description.
+- **Label** entity with name, hex color, scoped to project, many-to-many with Task.
+- **Comment** entity with content.
+- **Attachment** entity with fileName, fileUrl, fileSize.
 - Task response computed aggregates: `subTaskCount`, `completedSubTaskCount`, `commentCount`, `attachmentCount`, `totalTimeMinutes`.
-- Sub-tasks, comments, attachments, and time entries cascade-deleted when a task is deleted.
-- Own-resource ownership checks for comment, attachment, and time-entry deletion (author-only).
-- Label ↔ Task many-to-many add/remove endpoints.
-- Shared lookup services for Team, TeamMember, and Task eliminate private-helper duplication.
 - Aggregate computation lives in `TaskService.computeAggregates()`, not in the mapper.
+- Domain events published: `TaskAssignedEvent` (create + reassign), `TaskStatusChangedEvent`.
 
 Access control rules:
 - **Task creation**: `OWNER` or `ADMIN` (`requireManager`).
@@ -199,7 +204,7 @@ Backend endpoints:
 | DELETE | `/api/projects/{projectRef}/labels/{labelId}` | Delete label | Manager+ |
 | POST | `/api/projects/{projectRef}/labels/{labelId}/tasks/{taskId}` | Add label to task | Contributor+ |
 | DELETE | `/api/projects/{projectRef}/labels/{labelId}/tasks/{taskId}` | Remove label from task | Contributor+ |
-| POST | `/api/projects/{projectRef}/teams/{teamRef}/tasks` | Create task | Manager+ (OWNER/ADMIN) |
+| POST | `/api/projects/{projectRef}/teams/{teamRef}/tasks` | Create task | Manager+ |
 | GET | `/api/projects/{projectRef}/teams/{teamRef}/tasks` | List tasks (paginated) | Viewer+ |
 | GET | `/api/projects/{projectRef}/teams/{teamRef}/tasks/{taskId}` | Get task | Viewer+ |
 | PATCH | `/api/projects/{projectRef}/teams/{teamRef}/tasks/{taskId}` | Update task | Manager+ |
@@ -221,29 +226,105 @@ Backend endpoints:
 
 Current boundaries:
 - Tasks owns `tasks`, `sub_tasks`, `time_entries`, `labels`, `comments`, `attachments`.
-- Task `assigneeId` references `TeamMember` ID (not `User` ID), consistent with class diagram.
-- Labels are scoped to a project, not a team; label–task assignment uses project-scoped task lookup.
-- Subtasks are not deletable by the task assignee — only the team leader can manage them.
-- Comments, attachments, and time entries are owned by the creating user; only the author or a manager can delete them.
-- Aggregates are computed per-request (no caching); list endpoint does N+1 aggregate queries.
+- Task `assigneeId` references `TeamMember` ID (not `User` ID).
+- Labels are scoped to a project, not a team.
+- Aggregates are computed per-request (N+1 on list endpoint).
 
 Known gaps:
 - No batch aggregate query for the list endpoint (currently N+1).
-- `currentUserId()` utility duplicated across all 6 controllers — should be extracted.
 - No integration tests for access rules or cascading deletes.
 - Frontend for Work Management is not implemented yet.
 
 Verification:
 - `mvnw compile` passes.
 
+### Notifications & Audit
 
+Packages:
 
+```
+shared/
+  event/          → TaskAssignedEvent, TaskStatusChangedEvent, CommentAddedEvent,
+  │                  MemberInvitedEvent, DeadlineApproachingEvent (plain records)
+  config/         → WebSocketConfig (STOMP/SockJS at /ws), CorsConfig, RedisConfig
+  util/           → SecurityUtils
 
+tasks/
+  scheduler/      → DeadlineScheduler (@Scheduled daily 8AM)
 
+notification/
+  listener/       → NotificationListener (events → DB + WebSocket push + async email)
+  entity/         → Notification, NotificationType, NotificationPrefs
+  controller/     → NotificationController, NotificationPrefsController
+  dto/response/   → NotificationResponse
+  mapper/         → NotificationMapper
+  service/        → NotificationService
+  repository/     → NotificationRepository, NotificationPrefsRepository
 
+audit/
+  listener/       → ActivityLogListener (events → append-only audit rows)
+  controller/     → ActivityLogController (REST read endpoint)
+  entity/         → ActivityLog
+  dto/response/   → ActivityLogResponse
+  mapper/         → ActivityLogMapper
+  service/        → ActivityLogService
+  repository/     → ActivityLogRepository
+```
 
+Implemented:
+- **Domain events** (plain records, zero dependencies) published from services via `ApplicationEventPublisher`.
+- **ActivityLog** — append-only audit trail with actorId, projectId, entityType, entityId, action, details, timestamp.
+- **Notification** — persisted with userId, type (enum), title, message, isRead, entity reference.
+- **NotificationPrefs** — per-user email opt-in for each event type (default: all enabled).
+- **WebSocket push** — `NotificationListener` injects `SimpMessagingTemplate`, pushes `NotificationResponse` to `/topic/notifications/{userId}` after every create.
+- **Async email** — `@Async` method checks prefs, sends via `EmailService.sendNotification()`.
+- **DeadlineScheduler** — `@Scheduled(cron = "0 0 8 * * ?")` queries tasks due tomorrow, publishes `DeadlineApproachingEvent`.
+- **SecurityUtils** — `currentUserId(authentication)` extracted to `shared/util/SecurityUtils.java`, eliminates duplication across all 12 controllers.
+- **TeamMember response enrichment** — `memberName` + `memberEmail` fields added to `TeamMemberResponse` via `requireUserUsername()` in `IdentityAccessService`.
+- **Listener simplification** — switched from `@TransactionalEventListener` + `REQUIRES_NEW` to plain `@EventListener`; listeners run inside the publisher's transaction, no separate transaction needed.
+- **Bug fix (onCommentAdded)** — the `triggeredByUserId` is a User ID but `event.taskAssigneeId()` is a TeamMember ID; `resolveUserId()` converts TeamMember → User before comparing, so the "skip self-notification" check works correctly.
 
-# 6 modules summary :
+Notification REST API:
+
+| Method | Path | Description | Access |
+|--------|------|-------------|--------|
+| GET | `/api/notifications` | List user's notifications (paginated, `?unreadOnly=true`) | Authenticated |
+| PATCH | `/api/notifications/{id}/read` | Mark one as read | Owner only |
+| PATCH | `/api/notifications/read-all` | Mark all as read | Owner only |
+| GET | `/api/notifications/unread-count` | Count unread | Authenticated |
+| GET | `/api/notifications/prefs` | Get email notification preferences | Authenticated |
+| PUT | `/api/notifications/prefs` | Update preferences | Authenticated |
+
+Audit REST API:
+
+| Method | Path | Description | Access |
+|--------|------|-------------|--------|
+| GET | `/api/projects/{projectRef}/activity-log` | Paginated project audit trail | Viewer+ |
+
+Architecture flow:
+```
+TaskService.createTask(assigneeId=alice)   [@Transactional]
+  ↓ publish TaskAssignedEvent
+  ↓  (same transaction — @EventListener)
+  ↓
+  ActivityLogListener → ActivityLogRepository.save()        [append-only]
+  NotificationListener:
+    1. NotificationRepository.save()                        [in-app notification]
+    2. messagingTemplate.convertAndSend()                    [WebSocket push]
+    3. @Async emailService.sendNotification()                [email if opted in, runs after tx commits]
+
+Note: @Async self-invocation (calling sendEmailIfOptedIn() from the same class)
+bypasses the proxy — the method runs synchronously on the publishing thread.
+```
+
+Known gaps:
+- `@Async` on `sendEmailIfOptedIn()` is ineffective due to self-invocation (same-class call bypasses the proxy) — email runs synchronously on the publishing thread.
+- No rate limiting on the email methods.
+- Failed emails are caught silently (intentional — secondary failures never break the client request).
+- No frontend WebSocket client or notification UI implemented yet.
+
+## 6 modules summary
+
 Identity & Access
 │
 ├── User
@@ -267,7 +348,8 @@ Work Management
 ├── TimeEntry
 ├── Label
 ├── Priority
-└── TaskStatus
+├── TaskStatus
+└── DeadlineScheduler
 
 Collaboration
 │
@@ -276,8 +358,12 @@ Collaboration
 
 Notifications
 │
-└── Notification
+├── Notification
+├── NotificationPrefs
+├── NotificationListener
+└── WebSocket push
 
 Audit
 │
-└── ActivityLog
+├── ActivityLog
+└── ActivityLogListener

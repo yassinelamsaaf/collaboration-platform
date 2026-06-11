@@ -16,10 +16,14 @@ import com.inpt.collaborationplatform.tasks.task.dto.request.UpdateTaskStatusReq
 import com.inpt.collaborationplatform.tasks.task.dto.response.TaskResponse;
 import com.inpt.collaborationplatform.tasks.task.entity.Priority;
 import com.inpt.collaborationplatform.tasks.task.entity.Task;
+import com.inpt.collaborationplatform.tasks.task.entity.TaskStatus;
 import com.inpt.collaborationplatform.tasks.task.mapper.TaskMapper;
+import com.inpt.collaborationplatform.shared.event.TaskAssignedEvent;
+import com.inpt.collaborationplatform.shared.event.TaskStatusChangedEvent;
 import com.inpt.collaborationplatform.tasks.task.repository.TaskRepository;
 import com.inpt.collaborationplatform.tasks.timeentry.repository.TimeEntryRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -39,6 +43,7 @@ public class TaskService {
     private final TaskLookupService taskLookupService;
     private final ProjectLookupService projectLookupService;
     private final ProjectAccessService projectAccessService;
+    private final ApplicationEventPublisher eventPublisher;
     private final TaskMapper taskMapper;
 
     @Transactional
@@ -63,7 +68,16 @@ public class TaskService {
                 .createdByUserId(currentUserId)
                 .build();
 
-        return taskMapper.toTaskResponse(taskRepository.save(task), 0, 0, 0, 0, 0);
+        task = taskRepository.save(task);
+
+        if (request.getAssigneeId() != null) {
+            eventPublisher.publishEvent(new TaskAssignedEvent(
+                    task.getId(), task.getTitle(), project.getId(), team.getId(),
+                    null, request.getAssigneeId(), currentUserId
+            ));
+        }
+
+        return taskMapper.toTaskResponse(task, 0, 0, 0, 0, 0);
     }
 
     @Transactional(readOnly = true)
@@ -120,13 +134,23 @@ public class TaskService {
             task.setDueDate(request.getDueDate());
         }
 
+        String oldAssigneeId = task.getAssigneeId();
         if (request.getAssigneeId() != null) {
             teamLookupService.requireTeamMember(team.getId(), request.getAssigneeId());
             task.setAssigneeId(request.getAssigneeId());
         }
 
+        task = taskRepository.save(task);
+
+        if (request.getAssigneeId() != null && !request.getAssigneeId().equals(oldAssigneeId)) {
+            eventPublisher.publishEvent(new TaskAssignedEvent(
+                    task.getId(), task.getTitle(), project.getId(), team.getId(),
+                    oldAssigneeId, request.getAssigneeId(), currentUserId
+            ));
+        }
+
         var ag = computeAggregates(task.getId());
-        return taskMapper.toTaskResponse(taskRepository.save(task), ag.subTaskCount(), ag.completedSubTaskCount(),
+        return taskMapper.toTaskResponse(task, ag.subTaskCount(), ag.completedSubTaskCount(),
                 ag.commentCount(), ag.attachmentCount(), ag.totalTimeMinutes());
     }
 
@@ -137,10 +161,18 @@ public class TaskService {
         Team team = teamLookupService.requireTeam(project.getId(), teamRef);
 
         Task task = taskLookupService.requireTask(taskId, team.getId());
+        TaskStatus oldStatus = task.getStatus();
         task.setStatus(request.getStatus());
 
+        task = taskRepository.save(task);
+
+        eventPublisher.publishEvent(new TaskStatusChangedEvent(
+                task.getId(), task.getTitle(), project.getId(), team.getId(),
+                oldStatus.name(), request.getStatus().name(), task.getAssigneeId(), currentUserId
+        ));
+
         var ag = computeAggregates(task.getId());
-        return taskMapper.toTaskResponse(taskRepository.save(task), ag.subTaskCount(), ag.completedSubTaskCount(),
+        return taskMapper.toTaskResponse(task, ag.subTaskCount(), ag.completedSubTaskCount(),
                 ag.commentCount(), ag.attachmentCount(), ag.totalTimeMinutes());
     }
 

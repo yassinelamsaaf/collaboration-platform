@@ -22,13 +22,15 @@ public class TeamMapper {
         );
     }
 
-    public TeamMemberResponse toTeamMemberResponse(TeamMember member) {
+    public TeamMemberResponse toTeamMemberResponse(TeamMember member, String memberName, String memberEmail) {
         return new TeamMemberResponse(
                 member.getId(),
                 member.getTeam().getId(),
                 member.getUserId(),
                 member.getRole(),
-                member.getJoinedAt()
+                member.getJoinedAt(),
+                memberName,
+                memberEmail
         );
     }
 }
