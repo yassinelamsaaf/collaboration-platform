@@ -39,10 +39,10 @@ export class KanbanPageComponent implements OnInit {
     if (this.projectRef) {
       this.projectService.listTeams(this.projectRef)
         .pipe(takeUntilDestroyed(this.destroyRef))
-        .subscribe({ next: (teams) => {
-          this.teams = teams;
-          if (teams.length) {
-            this.selectedTeamId = teams[0].id;
+        .subscribe({ next: (res) => {
+          this.teams = res.content;
+          if (res.content.length) {
+            this.selectedTeamId = res.content[0].id;
             this.loadTasks();
           }
           this.cdr.markForCheck();

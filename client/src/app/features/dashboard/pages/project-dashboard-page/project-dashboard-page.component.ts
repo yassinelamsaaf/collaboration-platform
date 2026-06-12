@@ -55,10 +55,10 @@ export class ProjectDashboardPageComponent implements OnInit {
 
     this.projectService.listTeams(this.projectRef)
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({ next: (teams) => {
-        this.teams = teams;
+      .subscribe({ next: (res) => {
+        this.teams = res.content;
         this.cdr.markForCheck();
-        if (teams.length) this.loadTasks(teams[0].id);
+        if (res.content.length) this.loadTasks(res.content[0].id);
       }});
 
     this.activityLogService.list(this.projectRef, { page: 0, size: 10 })

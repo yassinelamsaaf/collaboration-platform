@@ -51,10 +51,10 @@ export class ProjectMembersPageComponent implements OnInit {
 
     this.projectService.listTeams(this.projectRef)
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({ next: (teams) => {
-        this.teams = teams;
+      .subscribe({ next: (res) => {
+        this.teams = res.content;
         this.cdr.markForCheck();
-        teams.forEach(t => this.loadTeamMembers(t.id));
+        res.content.forEach(t => this.loadTeamMembers(t.id));
       }});
   }
 
@@ -62,7 +62,7 @@ export class ProjectMembersPageComponent implements OnInit {
     this.projectService.listTeamMembers(this.projectRef, teamId)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({ next: (res) => {
-        this.teamMembers[teamId] = res;
+        this.teamMembers[teamId] = res.content;
         this.cdr.markForCheck();
       }});
   }

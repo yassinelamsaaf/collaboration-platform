@@ -52,8 +52,8 @@ export class ProjectService {
     return this.api.post<void>(`/projects/${ref}/invitations/${invitationId}/cancel`, null);
   }
 
-  listTeams(ref: string): Observable<TeamResponse[]> {
-    return this.api.get<TeamResponse[]>(`/projects/${ref}/teams`);
+  listTeams(ref: string, params?: Record<string, string | number | boolean | undefined>): Observable<PaginatedResponse<TeamResponse>> {
+    return this.api.get<PaginatedResponse<TeamResponse>>(`/projects/${ref}/teams`, params);
   }
 
   createTeam(ref: string, body: CreateTeamRequest): Observable<TeamResponse> {
@@ -68,8 +68,8 @@ export class ProjectService {
     return this.api.delete<void>(`/projects/${ref}/teams/${teamRef}`);
   }
 
-  listTeamMembers(ref: string, teamRef: string): Observable<TeamMemberResponse[]> {
-    return this.api.get<TeamMemberResponse[]>(`/projects/${ref}/teams/${teamRef}/members`);
+  listTeamMembers(ref: string, teamRef: string, params?: Record<string, string | number | boolean | undefined>): Observable<PaginatedResponse<TeamMemberResponse>> {
+    return this.api.get<PaginatedResponse<TeamMemberResponse>>(`/projects/${ref}/teams/${teamRef}/members`, params);
   }
 
   addTeamMember(ref: string, teamRef: string, userId: string): Observable<TeamMemberResponse> {

@@ -37,11 +37,13 @@ export class DashboardComponent implements OnInit {
     return profile?.username || profile?.email || 'Profile';
   }
 
-  toggleNotifications(): void {
+  toggleNotifications(event: MouseEvent): void {
+    event.stopPropagation();
     this.notificationPanelOpen = !this.notificationPanelOpen;
   }
 
-  toggleProfileDropdown(): void {
+  toggleProfileDropdown(event: MouseEvent): void {
+    event.stopPropagation();
     this.profileDropdownOpen = !this.profileDropdownOpen;
   }
 
