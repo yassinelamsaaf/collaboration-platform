@@ -6,8 +6,7 @@ import com.inpt.collaborationplatform.projects.project.service.ProjectLookupServ
 import com.inpt.collaborationplatform.projects.team.entity.Team;
 import com.inpt.collaborationplatform.projects.team.service.TeamLookupService;
 import com.inpt.collaborationplatform.shared.dto.PageResponse;
-import com.inpt.collaborationplatform.tasks.attachment.repository.AttachmentRepository;
-import com.inpt.collaborationplatform.tasks.comment.repository.CommentRepository;
+import com.inpt.collaborationplatform.collaboration.service.CollaborationQueryService;
 import com.inpt.collaborationplatform.tasks.subtask.entity.SubTask;
 import com.inpt.collaborationplatform.tasks.subtask.repository.SubTaskRepository;
 import com.inpt.collaborationplatform.tasks.task.dto.request.CreateTaskRequest;
@@ -19,6 +18,7 @@ import com.inpt.collaborationplatform.tasks.task.entity.Task;
 import com.inpt.collaborationplatform.tasks.task.entity.TaskStatus;
 import com.inpt.collaborationplatform.tasks.task.mapper.TaskMapper;
 import com.inpt.collaborationplatform.shared.event.TaskAssignedEvent;
+import com.inpt.collaborationplatform.shared.event.TaskDeletedEvent;
 import com.inpt.collaborationplatform.shared.event.TaskStatusChangedEvent;
 import com.inpt.collaborationplatform.tasks.task.repository.TaskRepository;
 import com.inpt.collaborationplatform.tasks.timeentry.repository.TimeEntryRepository;
@@ -36,9 +36,8 @@ public class TaskService {
 
     private final TaskRepository taskRepository;
     private final SubTaskRepository subTaskRepository;
-    private final CommentRepository commentRepository;
-    private final AttachmentRepository attachmentRepository;
     private final TimeEntryRepository timeEntryRepository;
+    private final CollaborationQueryService collaborationQueryService;
     private final TeamLookupService teamLookupService;
     private final TaskLookupService taskLookupService;
     private final ProjectLookupService projectLookupService;
@@ -185,8 +184,9 @@ public class TaskService {
         Task task = taskLookupService.requireTask(taskId, team.getId());
 
         subTaskRepository.deleteByTask_Id(task.getId());
-        commentRepository.deleteByTask_Id(task.getId());
-        attachmentRepository.deleteByTask_Id(task.getId());
+        eventPublisher.publishEvent(new TaskDeletedEvent(
+                task.getId(), task.getTitle(), project.getId(), team.getId(), currentUserId
+        ));
         timeEntryRepository.deleteByTask_Id(task.getId());
 
         taskRepository.delete(task);
@@ -199,8 +199,8 @@ public class TaskService {
         var subTasks = subTaskRepository.findByTask_IdOrderByCreatedAtAsc(taskId);
         int subTaskCount = subTasks.size();
         int completedSubTaskCount = (int) subTasks.stream().filter(SubTask::isDone).count();
-        int commentCount = (int) commentRepository.countByTask_Id(taskId);
-        int attachmentCount = (int) attachmentRepository.countByTask_Id(taskId);
+        int commentCount = collaborationQueryService.countCommentsForTask(taskId);
+        int attachmentCount = collaborationQueryService.countAttachmentsForTask(taskId);
         int totalTimeMinutes = timeEntryRepository.sumDurationMinutesByTask_Id(taskId);
         return new TaskAggregates(subTaskCount, completedSubTaskCount, commentCount, attachmentCount, totalTimeMinutes);
     }

@@ -166,8 +166,6 @@ Folders:
 - `task/` for `Task` entity, CRUD controller/service, DTOs, mapper, repository.
 - `subtask/` for `SubTask` entity, CRUD controller/service, DTOs, mapper, repository.
 - `label/` for `Label` entity, CRUD + task-assignment controller/service, DTOs, mapper, repository.
-- `comment/` for `Comment` entity, CRUD controller/service, DTOs, mapper, repository.
-- `attachment/` for `Attachment` entity, CRUD controller/service, DTOs, mapper, repository.
 - `timeentry/` for `TimeEntry` entity, CRUD controller/service, DTOs, mapper, repository.
 - `scheduler/` — `DeadlineScheduler` (cron: 8 AM daily, publishes `DeadlineApproachingEvent` for tasks due tomorrow)
 - Shared lookups live in `TeamLookupService` (projects module) and `TaskLookupService` (tasks module) so all services reuse consistent "require team / task / team-leader" behavior.
@@ -177,19 +175,18 @@ Implemented:
 - **SubTask** entity with title, isDone flag, assigneeId.
 - **TimeEntry** entity with durationMinutes, date, description.
 - **Label** entity with name, hex color, scoped to project, many-to-many with Task.
-- **Comment** entity with content.
-- **Attachment** entity with fileName, fileUrl, fileSize.
 - Task response computed aggregates: `subTaskCount`, `completedSubTaskCount`, `commentCount`, `attachmentCount`, `totalTimeMinutes`.
 - Aggregate computation lives in `TaskService.computeAggregates()`, not in the mapper.
-- Domain events published: `TaskAssignedEvent` (create + reassign), `TaskStatusChangedEvent`.
+- Comment/attachment counts are read through `CollaborationQueryService`; Work Management does not inject Collaboration repositories directly.
+- Domain events published: `TaskAssignedEvent` (create + reassign), `TaskStatusChangedEvent`, `TaskDeletedEvent`.
 
 Access control rules:
 - **Task creation**: `OWNER` or `ADMIN` (`requireManager`).
 - **Task update / delete**: `OWNER` or `ADMIN` (`requireManager`).
 - **Task status update**: `MEMBER` or above (`requireContributor`).
 - **SubTask CRUD**: team `LEADER` only (`requireTeamLeader`).
-- **Comment / Attachment / TimeEntry create**: `MEMBER` or above (`requireContributor`).
-- **Comment / Attachment / TimeEntry delete**: `MEMBER` or above **and** must be the author.
+- **TimeEntry create**: `MEMBER` or above (`requireContributor`).
+- **TimeEntry delete**: `MEMBER` or above **and** must be the author.
 - **Label create**: `MEMBER` or above (`requireContributor`).
 - **Label delete**: `OWNER` or `ADMIN` (`requireManager`).
 - **Label–task assign / unassign**: `MEMBER` or above (`requireContributor`).
@@ -214,18 +211,12 @@ Backend endpoints:
 | GET | `.../tasks/{taskId}/subtasks` | List sub-tasks | Viewer+ |
 | PATCH | `.../tasks/{taskId}/subtasks/{subTaskId}` | Update sub-task | Team Leader only |
 | DELETE | `.../tasks/{taskId}/subtasks/{subTaskId}` | Delete sub-task | Team Leader only |
-| POST | `.../tasks/{taskId}/comments` | Create comment | Contributor+ |
-| GET | `.../tasks/{taskId}/comments` | List comments (paginated) | Viewer+ |
-| DELETE | `.../tasks/{taskId}/comments/{commentId}` | Delete own comment | Author only |
-| POST | `.../tasks/{taskId}/attachments` | Add attachment | Contributor+ |
-| GET | `.../tasks/{taskId}/attachments` | List attachments | Viewer+ |
-| DELETE | `.../tasks/{taskId}/attachments/{attachmentId}` | Delete own attachment | Author only |
 | POST | `.../tasks/{taskId}/time-entries` | Log time | Contributor+ |
 | GET | `.../tasks/{taskId}/time-entries` | List time entries (paginated) | Viewer+ |
 | DELETE | `.../tasks/{taskId}/time-entries/{entryId}` | Delete own time entry | Author only |
 
 Current boundaries:
-- Tasks owns `tasks`, `sub_tasks`, `time_entries`, `labels`, `comments`, `attachments`.
+- Tasks owns `tasks`, `sub_tasks`, `time_entries`, `labels`.
 - Task `assigneeId` references `TeamMember` ID (not `User` ID).
 - Labels are scoped to a project, not a team.
 - Aggregates are computed per-request (N+1 on list endpoint).
@@ -237,6 +228,45 @@ Known gaps:
 
 Verification:
 - `mvnw compile` passes.
+
+### Collaboration
+
+Package: `server/src/main/java/com/inpt/collaborationplatform/collaboration`
+
+Folders:
+- `comment/` for `Comment` entity, CRUD controller/service, DTOs, mapper, repository.
+- `attachment/` for `Attachment` entity, CRUD controller/service, DTOs, mapper, repository.
+- `service/` for module-level read APIs used by other modules, currently `CollaborationQueryService`.
+- `listener/` for Collaboration event handlers, currently `CollaborationCleanupListener`.
+
+Implemented:
+- **Comment** entity with content and author user ID.
+- **Attachment** entity with fileName, fileUrl, fileSize, and uploaded-by user ID.
+- Task-scoped REST endpoints still live at `/api/projects/{projectRef}/teams/{teamRef}/tasks/{taskId}/comments` and `/attachments` because that is the most natural client URL.
+- Code ownership moved out of Work Management so comments/attachments can later be reused for project discussions, files, or other commentable targets.
+- `CommentService` publishes `CommentAddedEvent`; Notification and Audit listen to it.
+- `CollaborationCleanupListener` listens to `TaskDeletedEvent` and deletes comments/attachments before the task row is removed.
+
+Access control rules:
+- **Comment / Attachment create**: `MEMBER` or above (`requireContributor`).
+- **Comment / Attachment delete**: `MEMBER` or above **and** must be the author/uploader.
+- **Comment / Attachment list**: `VIEWER` or above (`requireViewer`).
+
+Backend endpoints:
+
+| Method | Path | Description | Access |
+|--------|------|-------------|--------|
+| POST | `.../tasks/{taskId}/comments` | Create comment | Contributor+ |
+| GET | `.../tasks/{taskId}/comments` | List comments (paginated) | Viewer+ |
+| DELETE | `.../tasks/{taskId}/comments/{commentId}` | Delete own comment | Author only |
+| POST | `.../tasks/{taskId}/attachments` | Add attachment | Contributor+ |
+| GET | `.../tasks/{taskId}/attachments` | List attachments | Viewer+ |
+| DELETE | `.../tasks/{taskId}/attachments/{attachmentId}` | Delete own attachment | Author only |
+
+Current boundaries:
+- Collaboration owns `comments` and `attachments`.
+- Work Management may ask Collaboration for counts through `CollaborationQueryService`, but it does not directly use Collaboration repositories.
+- Task deletion is coordinated by an in-process Spring event: Work Management publishes `TaskDeletedEvent`; Collaboration handles cleanup; Audit records the deletion.
 
 ### Notifications & Audit
 

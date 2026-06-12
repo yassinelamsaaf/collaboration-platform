@@ -2,7 +2,7 @@
   "info": {
     "_postman_id": "8a123456-2efe-4b1f-aad8-tasks-backend",
     "name": "Collaboration Platform - Work Management",
-    "description": "Postman collection for testing the Work Management (tasks) module. Requires an authenticated session from the Identity + Projects setup.",
+    "description": "Postman collection for testing Work Management plus task-scoped Collaboration endpoints. Requires an authenticated session from the Identity + Projects setup.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
@@ -297,7 +297,7 @@
               "host": ["{{baseUrl}}"],
               "path": ["api", "projects", "{{projectRef}}", "teams", "{{teamRef}}", "tasks", "{{taskId}}"]
             },
-            "description": "Deletes a task and all its subtasks, comments, attachments, and time entries. Requires manager role."
+            "description": "Deletes a task. Work-owned rows are deleted directly; collaboration rows are cleaned by the Collaboration module through TaskDeletedEvent. Requires manager role."
           }
         }
       ]
@@ -438,7 +438,7 @@
       ]
     },
     {
-      "name": "Comments",
+      "name": "Collaboration - Comments",
       "item": [
         {
           "name": "Create Comment",
@@ -470,7 +470,7 @@
               "host": ["{{baseUrl}}"],
               "path": ["api", "projects", "{{projectRef}}", "teams", "{{teamRef}}", "tasks", "{{taskId}}", "comments"]
             },
-            "description": "Adds a comment to a task."
+            "description": "Adds a task comment through the Collaboration module."
           }
         },
         {
@@ -503,7 +503,7 @@
               "host": ["{{baseUrl}}"],
               "path": ["api", "projects", "{{projectRef}}", "teams", "{{teamRef}}", "tasks", "{{taskId}}", "comments"]
             },
-            "description": "Adds a second comment."
+            "description": "Adds a second task comment through the Collaboration module."
           }
         },
         {
@@ -520,7 +520,7 @@
                 { "key": "size", "value": "10" }
               ]
             },
-            "description": "Lists comments for a task with pagination (newest first)."
+            "description": "Lists task comments from the Collaboration module with pagination (newest first)."
           }
         },
         {
@@ -533,13 +533,13 @@
               "host": ["{{baseUrl}}"],
               "path": ["api", "projects", "{{projectRef}}", "teams", "{{teamRef}}", "tasks", "{{taskId}}", "comments", "{{commentId}}"]
             },
-            "description": "Deletes a comment. Only the comment author can delete their own comments."
+            "description": "Deletes a task comment. Only the comment author can delete their own comments."
           }
         }
       ]
     },
     {
-      "name": "Attachments",
+      "name": "Collaboration - Attachments",
       "item": [
         {
           "name": "Add Attachment",
@@ -571,7 +571,7 @@
               "host": ["{{baseUrl}}"],
               "path": ["api", "projects", "{{projectRef}}", "teams", "{{teamRef}}", "tasks", "{{taskId}}", "attachments"]
             },
-            "description": "Registers a file attachment for a task."
+            "description": "Registers a task attachment through the Collaboration module."
           }
         },
         {
@@ -584,7 +584,7 @@
               "host": ["{{baseUrl}}"],
               "path": ["api", "projects", "{{projectRef}}", "teams", "{{teamRef}}", "tasks", "{{taskId}}", "attachments"]
             },
-            "description": "Lists all attachments for a task (newest first)."
+            "description": "Lists all task attachments from the Collaboration module (newest first)."
           }
         },
         {
@@ -597,7 +597,7 @@
               "host": ["{{baseUrl}}"],
               "path": ["api", "projects", "{{projectRef}}", "teams", "{{teamRef}}", "tasks", "{{taskId}}", "attachments", "{{attachmentId}}"]
             },
-            "description": "Deletes an attachment. Only the uploader can delete their own attachments."
+            "description": "Deletes a task attachment. Only the uploader can delete their own attachments."
           }
         }
       ]

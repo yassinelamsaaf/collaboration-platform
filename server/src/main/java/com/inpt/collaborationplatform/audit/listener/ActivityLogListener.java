@@ -5,6 +5,7 @@ import com.inpt.collaborationplatform.shared.event.CommentAddedEvent;
 import com.inpt.collaborationplatform.shared.event.DeadlineApproachingEvent;
 import com.inpt.collaborationplatform.shared.event.MemberInvitedEvent;
 import com.inpt.collaborationplatform.shared.event.TaskAssignedEvent;
+import com.inpt.collaborationplatform.shared.event.TaskDeletedEvent;
 import com.inpt.collaborationplatform.shared.event.TaskStatusChangedEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -40,6 +41,18 @@ public class ActivityLogListener {
                 event.taskId(),
                 "STATUS_CHANGED",
                 "Task \"" + event.taskTitle() + "\" moved from " + event.oldStatus() + " to " + event.newStatus()
+        );
+    }
+
+    @EventListener
+    public void onTaskDeleted(TaskDeletedEvent event) {
+        activityLogService.log(
+                event.triggeredByUserId(),
+                event.projectId(),
+                "TASK",
+                event.taskId(),
+                "DELETED",
+                "Task \"" + event.taskTitle() + "\" deleted"
         );
     }
 
