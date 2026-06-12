@@ -2,7 +2,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
-import { AUTH_API_BASE_URL } from './api.constants';
+import { API_BASE_URL, AUTH_API_BASE_URL } from './api.constants';
 
 type RequestParams = Record<string, string | number | boolean | undefined>;
 
@@ -18,9 +18,24 @@ export class ApiService {
     return this.http.post<T>(this.buildUrl(path), body, { params: this.buildParams(params) });
   }
 
-  private buildUrl(path: string): string {
+  put<T>(path: string, body: unknown, params?: RequestParams): Observable<T> {
+    return this.http.put<T>(this.buildUrl(path), body, { params: this.buildParams(params) });
+  }
+
+  patch<T>(path: string, body: unknown, params?: RequestParams): Observable<T> {
+    return this.http.patch<T>(this.buildUrl(path), body, { params: this.buildParams(params) });
+  }
+
+  delete<T>(path: string, params?: RequestParams): Observable<T> {
+    return this.http.delete<T>(this.buildUrl(path), { params: this.buildParams(params) });
+  }
+
+  buildUrl(path: string): string {
     if (path.startsWith('http')) {
       return path;
+    }
+    if (path.startsWith('/')) {
+      return `${API_BASE_URL}${path}`;
     }
     return `${AUTH_API_BASE_URL}/${path}`;
   }

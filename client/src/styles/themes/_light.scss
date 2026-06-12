@@ -2,5 +2,19 @@
 
 :root {
   color-scheme: light;
+  --white: #{$white};
+  --black: #{$black};
+  --navy-900: #{$navy-900};
+  --blue-600: #{$blue-600};
+  --blue-500: #{$blue-500};
+  --blue-100: #{$blue-100};
+  --gray-900: #{$gray-900};
+  --gray-700: #{$gray-700};
+  --gray-600: #{$gray-600};
+  --gray-500: #{$gray-500};
+  --gray-300: #{$gray-300};
+  --gray-200: #{$gray-200};
+  --gray-100: #{$gray-100};
+  --bg-soft: #{$bg-soft};
+  --overlay-dark: #{$overlay-dark};
 }
-

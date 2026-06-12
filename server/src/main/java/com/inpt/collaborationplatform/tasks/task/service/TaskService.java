@@ -3,7 +3,9 @@ package com.inpt.collaborationplatform.tasks.task.service;
 import com.inpt.collaborationplatform.projects.project.entity.Project;
 import com.inpt.collaborationplatform.projects.project.service.ProjectAccessService;
 import com.inpt.collaborationplatform.projects.project.service.ProjectLookupService;
+import com.inpt.collaborationplatform.Identity.service.IdentityAccessService;
 import com.inpt.collaborationplatform.projects.team.entity.Team;
+import com.inpt.collaborationplatform.projects.team.repository.TeamMemberRepository;
 import com.inpt.collaborationplatform.projects.team.service.TeamLookupService;
 import com.inpt.collaborationplatform.shared.dto.PageResponse;
 import com.inpt.collaborationplatform.collaboration.service.CollaborationQueryService;
@@ -44,6 +46,8 @@ public class TaskService {
     private final ProjectAccessService projectAccessService;
     private final ApplicationEventPublisher eventPublisher;
     private final TaskMapper taskMapper;
+    private final IdentityAccessService identityAccessService;
+    private final TeamMemberRepository teamMemberRepository;
 
     @Transactional
     public TaskResponse createTask(String projectRef, String teamRef, CreateTaskRequest request, String currentUserId) {
@@ -76,7 +80,7 @@ public class TaskService {
             ));
         }
 
-        return taskMapper.toTaskResponse(task, 0, 0, 0, 0, 0);
+        return taskMapper.toTaskResponse(task, 0, 0, 0, 0, 0, resolveAssigneeName(task.getAssigneeId()));
     }
 
     @Transactional(readOnly = true)
@@ -89,7 +93,8 @@ public class TaskService {
                 .map(task -> {
                     var ag = computeAggregates(task.getId());
                     return taskMapper.toTaskResponse(task, ag.subTaskCount(), ag.completedSubTaskCount(),
-                            ag.commentCount(), ag.attachmentCount(), ag.totalTimeMinutes());
+                            ag.commentCount(), ag.attachmentCount(), ag.totalTimeMinutes(),
+                            resolveAssigneeName(task.getAssigneeId()));
                 }));
     }
 
@@ -102,7 +107,8 @@ public class TaskService {
         Task task = taskLookupService.requireTask(taskId, team.getId());
         var ag = computeAggregates(task.getId());
         return taskMapper.toTaskResponse(task, ag.subTaskCount(), ag.completedSubTaskCount(),
-                ag.commentCount(), ag.attachmentCount(), ag.totalTimeMinutes());
+                ag.commentCount(), ag.attachmentCount(), ag.totalTimeMinutes(),
+                resolveAssigneeName(task.getAssigneeId()));
     }
 
     @Transactional
@@ -150,7 +156,8 @@ public class TaskService {
 
         var ag = computeAggregates(task.getId());
         return taskMapper.toTaskResponse(task, ag.subTaskCount(), ag.completedSubTaskCount(),
-                ag.commentCount(), ag.attachmentCount(), ag.totalTimeMinutes());
+                ag.commentCount(), ag.attachmentCount(), ag.totalTimeMinutes(),
+                resolveAssigneeName(task.getAssigneeId()));
     }
 
     @Transactional
@@ -172,7 +179,8 @@ public class TaskService {
 
         var ag = computeAggregates(task.getId());
         return taskMapper.toTaskResponse(task, ag.subTaskCount(), ag.completedSubTaskCount(),
-                ag.commentCount(), ag.attachmentCount(), ag.totalTimeMinutes());
+                ag.commentCount(), ag.attachmentCount(), ag.totalTimeMinutes(),
+                resolveAssigneeName(task.getAssigneeId()));
     }
 
     @Transactional
@@ -190,6 +198,13 @@ public class TaskService {
         timeEntryRepository.deleteByTask_Id(task.getId());
 
         taskRepository.delete(task);
+    }
+
+    private String resolveAssigneeName(String teamMemberId) {
+        if (teamMemberId == null) return null;
+        return teamMemberRepository.findById(teamMemberId)
+                .map(tm -> identityAccessService.requireUserUsername(tm.getUserId()))
+                .orElse(null);
     }
 
     private record TaskAggregates(int subTaskCount, int completedSubTaskCount,

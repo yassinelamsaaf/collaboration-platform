@@ -10,6 +10,7 @@ public record ActivityLogResponse(
         String entityId,
         String action,
         String details,
-        LocalDateTime timestamp
+        LocalDateTime timestamp,
+        String actorName
 ) {
 }

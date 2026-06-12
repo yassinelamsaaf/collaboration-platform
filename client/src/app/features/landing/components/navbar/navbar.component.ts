@@ -73,6 +73,18 @@ export class NavbarComponent {
     this.mobileMenuOpen = false;
   }
 
+  goToDashboard(): void {
+    this.menuOpen = false;
+    this.mobileMenuOpen = false;
+    this.router.navigate(['/dashboard']);
+  }
+
+  goToSettings(): void {
+    this.menuOpen = false;
+    this.mobileMenuOpen = false;
+    this.router.navigate(['/dashboard/settings']);
+  }
+
   onLogin(): void {
     this.router.navigate(['/auth/login']);
     this.mobileMenuOpen = false;

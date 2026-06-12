@@ -23,6 +23,7 @@ public record TaskResponse(
         int attachmentCount,
         int totalTimeMinutes,
         LocalDateTime createdAt,
-        LocalDateTime updatedAt
+        LocalDateTime updatedAt,
+        String assigneeName
 ) {
 }

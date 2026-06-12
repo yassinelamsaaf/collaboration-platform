@@ -1,0 +1,140 @@
+<div class="proj-header">
+  <div>
+    <div class="proj-eyebrow">
+      <span>PROJECT {{ project?.slug || projectRef | uppercase }}</span>
+      <span class="badge badge-medium">Lead</span>
+    </div>
+    <h2 class="proj-title">{{ project?.name || 'Loading...' }}</h2>
+  </div>
+  <div class="proj-header-actions">
+    <div class="avatar-stack">
+      <div class="av" *ngFor="let m of members.slice(0, 4); let i = index"
+           [style.background]="'var(--blue-' + (i + 2) + '00)'"
+           [style.color]="'var(--blue-700)'">{{ getMemberInitials(m.memberName || m.userId) }}</div>
+      <div class="av more" *ngIf="members.length > 4">+{{ members.length - 4 }}</div>
+    </div>
+    <button class="btn btn--outline">Share</button>
+    <button class="btn btn--primary">Complete Sprint</button>
+  </div>
+</div>
+
+<div class="proj-tabs">
+  <a class="tab" routerLinkActive="active" [routerLink]="['/dashboard/projects', projectRef, 'dashboard']">Dashboard</a>
+  <a class="tab" [routerLink]="['/dashboard/projects', projectRef, 'board']">Board</a>
+  <a class="tab" [routerLink]="['/dashboard/projects', projectRef, 'members']">Members</a>
+  <a class="tab" [routerLink]="['/dashboard/projects', projectRef, 'activity']">Activity</a>
+  <a class="tab" [routerLink]="['/dashboard/projects', projectRef, 'settings']">Settings</a>
+</div>
+
+<div class="stats-grid">
+  <div class="stat-card card">
+    <span class="stat-label">Total Tasks</span>
+    <div class="stat-value">{{ tasks.length }}</div>
+    <span class="stat-sub up">&nearr; +12 this week</span>
+  </div>
+  <div class="stat-card card">
+    <span class="stat-label">Done</span>
+    <div class="stat-value">{{ doneCount }}</div>
+    <div class="progress-bar" style="margin-top:8px"><div class="progress-fill" [style.width.%]="completionPct"></div></div>
+  </div>
+  <div class="stat-card card">
+    <span class="stat-label">In Progress</span>
+    <div class="stat-value">{{ inProgressCount }}</div>
+    <span class="stat-sub"><span class="dot dot-blue"></span> Active</span>
+  </div>
+  <div class="stat-card card overdue">
+    <span class="stat-label overdue-label">Overdue</span>
+    <div class="stat-value overdue-value">{{ overdueCount }}</div>
+    <span class="stat-sub overdue-label">&#9888; Requires attention</span>
+  </div>
+</div>
+
+<div class="content-grid3">
+  <section class="card completion-card">
+    <h3>Completion Status</h3>
+    <div class="donut-wrap">
+      <svg viewBox="0 0 120 120" class="donut">
+        <circle cx="60" cy="60" r="50" fill="none" stroke="var(--gray-100)" stroke-width="14"/>
+        <circle cx="60" cy="60" r="50" fill="none" stroke="var(--blue-500)" stroke-width="14"
+          [attr.stroke-dasharray]="donutCircumference"
+          [attr.stroke-dashoffset]="donutDoneOffset"
+          transform="rotate(-90 60 60)" stroke-linecap="round"/>
+        <circle cx="60" cy="60" r="50" fill="none" stroke="#c0392b" stroke-width="14"
+          [attr.stroke-dasharray]="donutCircumference"
+          [attr.stroke-dashoffset]="donutOverdueOffset"
+          [attr.transform]="'rotate(' + donutOverdueRotation + ' 60 60)'"
+          stroke-linecap="round"/>
+      </svg>
+      <div class="donut-center">
+        <span class="donut-pct">{{ completionPct }}%</span>
+        <span class="donut-label">Done</span>
+      </div>
+    </div>
+    <div class="legend">
+      <div class="legend-row"><span class="dot dot-blue"></span> Done <span class="legend-val">{{ doneCount }}</span></div>
+      <div class="legend-row"><span class="dot dot-gray"></span> In Progress <span class="legend-val">{{ inProgressCount }}</span></div>
+      <div class="legend-row"><span class="dot dot-red"></span> Overdue <span class="legend-val">{{ overdueCount }}</span></div>
+    </div>
+  </section>
+
+  <section class="card active-tasks-card">
+    <div class="section-header">
+      <h3>Active Tasks</h3>
+      <a class="view-all" [routerLink]="['/dashboard/projects', projectRef, 'board']">View All</a>
+    </div>
+    <div class="task-list">
+      <div class="task-item" *ngFor="let task of tasks.slice(0, 6)">
+        <div class="task-status-icon" [class.hourglass]="getTaskStatusIcon(task)==='hourglass'" [class.check]="getTaskStatusIcon(task)==='check'">
+          <svg *ngIf="task.status === 'DONE'" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--blue-500)" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg>
+          <svg *ngIf="task.status === 'IN_PROGRESS'" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--blue-500)" stroke-width="2"><path d="M5 22h14M5 2h14M17 22v-4.172a2 2 0 0 0-.586-1.414L12 12l-4.414 4.414A2 2 0 0 0 7 17.828V22M17 2v4.172a2 2 0 0 1-.586 1.414L12 12 7.586 7.586A2 2 0 0 1 7 6.172V2"/></svg>
+        </div>
+        <div class="task-body">
+          <p class="task-title" [class.strike]="task.status === 'DONE'">{{ task.title }}</p>
+          <p class="task-desc">{{ task.description || task.priority + ' Priority' }}</p>
+          <div class="task-meta">
+            <span class="badge badge-high" *ngIf="task.priority==='HIGH'||task.priority==='URGENT'">{{ task.priority }}</span>
+            <span class="badge badge-medium" *ngIf="task.priority==='MEDIUM'">Medium</span>
+            <span class="due-info" *ngIf="task.dueDate">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+              {{ task.dueDate | date:'mediumDate' }}
+            </span>
+          </div>
+        </div>
+        <div class="avatar avatar-sm" *ngIf="task.assigneeId">{{ getMemberInitials(task.assigneeName || task.assigneeId) }}</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="card team-card">
+    <div class="section-header">
+      <h3>Team</h3>
+      <button class="icon-btn small" aria-label="More options">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg>
+      </button>
+    </div>
+    <div class="team-list">
+      <div class="team-member" *ngFor="let m of members.slice(0, 6)">
+        <div class="avatar avatar-md">{{ getMemberInitials(m.memberName || m.userId) }}</div>
+        <div>
+          <p class="member-name">{{ m.memberName || m.userId }}</p>
+          <p class="member-role">{{ m.role }}</p>
+        </div>
+      </div>
+    </div>
+    <button class="add-member-btn">+ Add Member</button>
+  </section>
+</div>
+
+<section class="activity-section">
+  <h3>Recent Activity</h3>
+  <div class="card activity-card">
+    <div class="activity-item" *ngFor="let act of recentActivity">
+      <span class="dot dot-blue" style="margin-top:6px"></span>
+      <div class="activity-body">
+        <span class="activity-time-top">{{ act.timestamp | date:'short' }}</span>
+        <p><strong>{{ act.actorName || act.actorId }}</strong> {{ act.action }} {{ act.entityType }}.</p>
+        <div class="comment-box" *ngIf="act.details">{{ act.details }}</div>
+      </div>
+    </div>
+  </div>
+</section>

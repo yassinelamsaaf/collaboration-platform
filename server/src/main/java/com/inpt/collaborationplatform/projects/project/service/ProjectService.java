@@ -12,6 +12,7 @@ import com.inpt.collaborationplatform.projects.project.entity.ProjectStatus;
 import com.inpt.collaborationplatform.projects.project.mapper.ProjectMapper;
 import com.inpt.collaborationplatform.projects.project.repository.ProjectMemberRepository;
 import com.inpt.collaborationplatform.projects.project.repository.ProjectRepository;
+import com.inpt.collaborationplatform.Identity.service.IdentityAccessService;
 import com.inpt.collaborationplatform.projects.shared.SlugGenerator;
 import com.inpt.collaborationplatform.projects.team.repository.TeamMemberRepository;
 import com.inpt.collaborationplatform.shared.dto.PageResponse;
@@ -33,6 +34,7 @@ public class ProjectService {
     private final TeamMemberRepository teamMemberRepository;
     private final ProjectAccessService projectAccessService;
     private final ProjectLookupService projectLookupService;
+    private final IdentityAccessService identityAccessService;
     private final ProjectMapper projectMapper;
     private final SlugGenerator slugGenerator;
 
@@ -109,7 +111,11 @@ public class ProjectService {
         projectAccessService.requireViewer(project, currentUserId);
 
         return PageResponse.from(projectMemberRepository.findByProject_Id(project.getId(), pageable)
-                .map(projectMapper::toMemberResponse));
+                .map(member -> {
+                    String name = identityAccessService.requireUserUsername(member.getUserId());
+                    String email = identityAccessService.requireUserEmail(member.getUserId());
+                    return projectMapper.toMemberResponse(member, name, email);
+                }));
     }
 
     @Transactional
@@ -128,7 +134,10 @@ public class ProjectService {
         }
 
         member.setRole(request.getRole());
-        return projectMapper.toMemberResponse(projectMemberRepository.save(member));
+        ProjectMember saved = projectMemberRepository.save(member);
+        String name = identityAccessService.requireUserUsername(saved.getUserId());
+        String email = identityAccessService.requireUserEmail(saved.getUserId());
+        return projectMapper.toMemberResponse(saved, name, email);
     }
 
     @Transactional

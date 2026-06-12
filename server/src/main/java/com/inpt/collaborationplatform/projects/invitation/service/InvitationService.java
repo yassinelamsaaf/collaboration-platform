@@ -130,7 +130,10 @@ public class InvitationService {
             invitation.setAcceptedByUserId(currentUserId);
             invitation.setAcceptedAt(LocalDateTime.now());
             projectInvitationRepository.save(invitation);
-            return projectMapper.toMemberResponse(projectLookupService.requireProjectMember(project.getId(), currentUserId));
+            ProjectMember existingMember = projectLookupService.requireProjectMember(project.getId(), currentUserId);
+            String name = identityAccessService.requireUserUsername(existingMember.getUserId());
+            String email = identityAccessService.requireUserEmail(existingMember.getUserId());
+            return projectMapper.toMemberResponse(existingMember, name, email);
         }
 
         ProjectMember member = projectMemberRepository.save(ProjectMember.builder()
@@ -144,7 +147,9 @@ public class InvitationService {
         invitation.setAcceptedAt(LocalDateTime.now());
         projectInvitationRepository.save(invitation);
 
-        return projectMapper.toMemberResponse(member);
+        String name = identityAccessService.requireUserUsername(member.getUserId());
+        String email = identityAccessService.requireUserEmail(member.getUserId());
+        return projectMapper.toMemberResponse(member, name, email);
     }
 
     @Transactional

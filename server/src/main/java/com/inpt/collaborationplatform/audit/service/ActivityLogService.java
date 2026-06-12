@@ -1,5 +1,6 @@
 package com.inpt.collaborationplatform.audit.service;
 
+import com.inpt.collaborationplatform.Identity.service.IdentityAccessService;
 import com.inpt.collaborationplatform.audit.dto.response.ActivityLogResponse;
 import com.inpt.collaborationplatform.audit.entity.ActivityLog;
 import com.inpt.collaborationplatform.audit.mapper.ActivityLogMapper;
@@ -18,6 +19,7 @@ public class ActivityLogService {
 
     private final ActivityLogRepository activityLogRepository;
     private final ActivityLogMapper activityLogMapper;
+    private final IdentityAccessService identityAccessService;
 
     @Transactional
     public void log(String actorId, String projectId, String entityType, String entityId, String action, String details) {
@@ -36,7 +38,10 @@ public class ActivityLogService {
     public PageResponse<ActivityLogResponse> listByProject(String projectId, Pageable pageable) {
         var page = activityLogRepository.findByProjectIdOrderByTimestampDesc(projectId, pageable);
         return new PageResponse<>(
-                page.getContent().stream().map(activityLogMapper::toResponse).toList(),
+                page.getContent().stream().map(log -> {
+                    String name = identityAccessService.requireUserUsername(log.getActorId());
+                    return activityLogMapper.toResponse(log, name);
+                }).toList(),
                 page.getNumber() + 1,
                 page.getSize(),
                 page.getTotalElements(),

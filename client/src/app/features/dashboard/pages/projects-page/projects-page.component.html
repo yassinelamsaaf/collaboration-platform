@@ -1,0 +1,64 @@
+<div class="page-header">
+  <div>
+    <h1>Projects</h1>
+    <p class="subtitle">Manage and oversee all active enterprise initiatives.</p>
+  </div>
+  <div class="topbar-actions">
+    <div class="search-box">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+      <input type="text" placeholder="Search projects..." [(ngModel)]="search">
+    </div>
+  </div>
+</div>
+
+<div class="tabs-row">
+  <div class="tabs">
+    <a class="tab active">All Projects</a>
+    <a class="tab">Active</a>
+    <a class="tab">Archived</a>
+    <a class="tab">Owned by me</a>
+  </div>
+  <div class="view-controls">
+    <button class="btn btn--outline">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:6px"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg>
+      Filters
+    </button>
+    <button class="btn btn--outline">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:6px"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      Sort
+    </button>
+    <div class="view-toggle">
+      <button class="view-btn" [class.active]="gridView" (click)="gridView = true" aria-label="Grid view">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      </button>
+      <button class="view-btn" [class.active]="!gridView" (click)="gridView = false" aria-label="List view">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="projects-grid" [class.list-view]="!gridView">
+  <a class="card proj-card" *ngFor="let project of filtered" [routerLink]="['/dashboard/projects', project.slug, 'dashboard']">
+    <div class="proj-icon" [style.background]="getProjectIconBg(project.name)" [style.color]="'#fff'">{{ getProjectInitials(project.name) }}</div>
+    <div class="proj-card-head">
+      <h3>{{ project.name }}</h3>
+      <button class="icon-btn small" aria-label="More options" (click)="$event.preventDefault()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg>
+      </button>
+    </div>
+    <span class="badge" [class.badge-active]="project.status==='ACTIVE'" [class.badge-medium]="project.status!=='ACTIVE'">{{ project.status }}</span>
+    <p class="proj-desc">{{ project.description || 'No description' }}</p>
+    <div class="proj-card-footer">
+      <span class="badge" [class.badge-active]="project.status==='ACTIVE'" [class.badge-medium]="project.status!=='ACTIVE'">{{ project.status }}</span>
+      <div class="avatar-stack">
+        <div class="av more">+1</div>
+      </div>
+    </div>
+  </a>
+</div>
+
+<div class="empty-state" *ngIf="!filtered.length">
+  <p class="empty-title">No projects found</p>
+  <p class="empty-desc">Create a new project to get started.</p>
+</div>

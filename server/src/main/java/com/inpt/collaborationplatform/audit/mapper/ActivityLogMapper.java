@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class ActivityLogMapper {
 
-    public ActivityLogResponse toResponse(ActivityLog log) {
+    public ActivityLogResponse toResponse(ActivityLog log, String actorName) {
         return new ActivityLogResponse(
                 log.getId(),
                 log.getActorId(),
@@ -16,7 +16,8 @@ public class ActivityLogMapper {
                 log.getEntityId(),
                 log.getAction(),
                 log.getDetails(),
-                log.getTimestamp()
+                log.getTimestamp(),
+                actorName
         );
     }
 }

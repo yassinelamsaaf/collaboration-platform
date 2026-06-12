@@ -25,13 +25,15 @@ public class ProjectMapper {
         );
     }
 
-    public ProjectMemberResponse toMemberResponse(ProjectMember member) {
+    public ProjectMemberResponse toMemberResponse(ProjectMember member, String memberName, String memberEmail) {
         return new ProjectMemberResponse(
                 member.getId(),
                 member.getProject().getId(),
                 member.getUserId(),
                 member.getRole(),
-                member.getJoinedAt()
+                member.getJoinedAt(),
+                memberName,
+                memberEmail
         );
     }
 }

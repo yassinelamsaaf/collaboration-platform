@@ -1,0 +1,409 @@
+:host {
+  display: block;
+}
+
+.welcome-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 28px;
+
+  h2 {
+    font-size: 22px;
+    font-weight: 700;
+    margin: 0 0 4px;
+  }
+
+  .subtitle {
+    color: var(--gray-600, #76777d);
+    font-size: 14px;
+    margin: 0;
+  }
+}
+
+.loading-state {
+  text-align: center;
+  padding: 60px 0;
+  color: var(--gray-500, #6b7280);
+  font-size: 14px;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.stat-card {
+  padding: 18px;
+  background: var(--white, #ffffff);
+  border: 1px solid var(--gray-300, #c6c6cd);
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+
+  &.overdue {
+    border-color: #f3c6c3;
+  }
+}
+
+.stat-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: var(--gray-600, #76777d);
+  margin-bottom: 12px;
+}
+
+.stat-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.overdue-label {
+  color: #c0392b;
+}
+
+.stat-value {
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.overdue-value {
+  color: #c0392b;
+}
+
+.content-grid {
+  display: grid;
+  grid-template-columns: 1.3fr 1fr;
+  gap: 28px;
+  margin-bottom: 28px;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+
+  h3 {
+    font-size: 16px;
+    font-weight: 700;
+    margin: 0;
+  }
+}
+
+.view-all {
+  color: var(--blue-500, #2563eb);
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.task-list {
+  padding: 0;
+  background: var(--white, #ffffff);
+  border: 1px solid var(--gray-300, #c6c6cd);
+  border-radius: 8px;
+}
+
+.task-item {
+  display: flex;
+  gap: 12px;
+  padding: 16px;
+  border-bottom: 1px solid var(--gray-100, #f6f3f5);
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  input[type="checkbox"] {
+    margin-top: 2px;
+    width: 16px;
+    height: 16px;
+    accent-color: var(--blue-500, #2563eb);
+    flex-shrink: 0;
+    cursor: pointer;
+  }
+}
+
+.task-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.task-title {
+  font-weight: 600;
+  font-size: 13px;
+  margin: 0 0 4px;
+}
+
+.task-desc {
+  color: var(--gray-600, #76777d);
+  font-size: 12px;
+  margin: 0 0 8px;
+}
+
+.task-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.due-info {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  color: var(--gray-600, #76777d);
+}
+
+.task-empty {
+  padding: 40px 16px;
+  text-align: center;
+  color: var(--gray-500, #6b7280);
+  font-size: 13px;
+}
+
+.projects-row {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.project-card {
+  padding: 16px;
+  background: var(--white, #ffffff);
+  border: 1px solid var(--gray-300, #c6c6cd);
+  border-radius: 8px;
+}
+
+.project-card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 14px;
+}
+
+.project-title {
+  font-weight: 700;
+  font-size: 14px;
+  margin: 0;
+}
+
+.project-sub {
+  color: var(--gray-600, #76777d);
+  font-size: 12px;
+  margin: 2px 0 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 200px;
+}
+
+.icon-btn {
+  &.small {
+    width: 26px;
+    height: 26px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--gray-600, #76777d);
+    border-radius: 4px;
+
+    &:hover {
+      background: var(--gray-100, #f6f3f5);
+    }
+  }
+}
+
+.progress-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--gray-600, #76777d);
+  margin-bottom: 6px;
+}
+
+.progress-bar {
+  height: 6px;
+  background: var(--gray-100, #f6f3f5);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 14px;
+}
+
+.progress-fill {
+  height: 100%;
+  background: var(--blue-500, #2563eb);
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.project-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.avatar-stack {
+  display: flex;
+  align-items: center;
+
+  .av {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 2px solid var(--white, #ffffff);
+    margin-left: -6px;
+
+    &:first-child {
+      margin-left: 0;
+    }
+
+    &.more {
+      background: var(--gray-100, #f6f3f5);
+      color: var(--gray-700, #45464d);
+      font-size: 10px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  }
+}
+
+.due-text {
+  font-size: 12px;
+  color: var(--gray-600, #76777d);
+}
+
+.overdue-text {
+  color: #c0392b;
+  font-weight: 600;
+}
+
+.projects-empty {
+  text-align: center;
+  padding: 40px 16px;
+  color: var(--gray-500, #6b7280);
+  font-size: 13px;
+
+  .btn {
+    margin-top: 12px;
+  }
+}
+
+.activity-section {
+  margin-bottom: 28px;
+
+  h3 {
+    font-size: 16px;
+    font-weight: 700;
+    margin: 0 0 12px;
+  }
+}
+
+.activity-card {
+  padding: 16px;
+  background: var(--white, #ffffff);
+  border: 1px solid var(--gray-300, #c6c6cd);
+  border-radius: 8px;
+}
+
+.activity-item {
+  display: flex;
+  gap: 12px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--gray-100, #f6f3f5);
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.activity-icon {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 2px;
+
+  &.icon-blue {
+    background: var(--blue-500, #2563eb);
+  }
+
+  &.icon-gray {
+    background: var(--gray-600, #76777d);
+  }
+
+  &.icon-yellow {
+    background: #e8a33d;
+  }
+}
+
+.activity-body {
+  flex: 1;
+  min-width: 0;
+
+  p {
+    font-size: 13px;
+    margin: 0 0 4px;
+  }
+}
+
+.activity-time {
+  font-size: 11px;
+  color: var(--gray-600, #76777d);
+}
+
+.activity-empty {
+  text-align: center;
+  padding: 30px 0;
+  color: var(--gray-500, #6b7280);
+  font-size: 13px;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.badge-high {
+  background: #fde8e8;
+  color: #c0392b;
+}
+
+.badge-medium {
+  background: #fef3cd;
+  color: #856404;
+}
+
+.badge-low {
+  background: var(--blue-100, #dae2fd);
+  color: var(--blue-600, #0051d5);
+}
+
+.badge-progress {
+  background: var(--blue-100, #dae2fd);
+  color: var(--blue-600, #0051d5);
+}

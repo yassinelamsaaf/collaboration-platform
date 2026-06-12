@@ -1,0 +1,75 @@
+<div class="page-header">
+  <div>
+    <h1>Dashboard</h1>
+    <p class="subtitle">Welcome back, here's your workspace overview.</p>
+  </div>
+</div>
+
+<div class="stats-grid">
+  <div class="stat-card card">
+    <div class="stat-top">
+      <span class="stat-label">TOTAL ACTIVE PROJECTS</span>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7z"/></svg>
+    </div>
+    <div class="stat-value">{{ projects.length }}</div>
+  </div>
+  <div class="stat-card card">
+    <div class="stat-top">
+      <span class="stat-label">TASKS ASSIGNED</span>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a6 6 0 0 1 12 0v1"/></svg>
+    </div>
+    <div class="stat-value">0</div>
+  </div>
+  <div class="stat-card card">
+    <div class="stat-top">
+      <span class="stat-label">DUE THIS WEEK</span>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+    </div>
+    <div class="stat-value">0</div>
+  </div>
+  <div class="stat-card card overdue">
+    <div class="stat-top">
+      <span class="stat-label overdue-label">OVERDUE TASKS</span>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><path d="M12 9v4M12 17h.01"/></svg>
+    </div>
+    <div class="stat-value overdue-value">0</div>
+  </div>
+</div>
+
+<div class="content-grid">
+  <section>
+    <div class="section-header">
+      <h3>My Projects</h3>
+      <a class="view-all" [routerLink]="['/dashboard/projects']">View All</a>
+    </div>
+    <div class="projects-row">
+      <a class="card project-card" *ngFor="let project of projects.slice(0, 5)" [routerLink]="['/dashboard/projects', project.slug, 'dashboard']">
+        <div class="project-card-head">
+          <div>
+            <p class="project-title">{{ project.name }}</p>
+            <p class="project-sub">{{ project.description || project.status }}</p>
+          </div>
+          <button class="icon-btn small" aria-label="More options" (click)="$event.preventDefault()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg>
+          </button>
+        </div>
+        <div class="project-card-footer">
+          <div class="avatar-stack">
+            <div class="av more">+1</div>
+          </div>
+          <span class="due-text">{{ project.status }}</span>
+        </div>
+      </a>
+      <p class="empty-state" *ngIf="!projects.length">No projects yet</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-header">
+      <h3>Recent Activity</h3>
+    </div>
+    <div class="card activity-card">
+      <p class="empty-state">Activity feed will appear here once you join a project.</p>
+    </div>
+  </section>
+</div>

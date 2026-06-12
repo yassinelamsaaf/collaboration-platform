@@ -40,11 +40,11 @@
         <lucide-icon name="chevron-down"></lucide-icon>
       </button>
       <div class="profile-dropdown" [class.is-open]="menuOpen">
-        <button class="profile-dropdown__item" type="button">
+        <button class="profile-dropdown__item" type="button" (click)="goToDashboard()">
           <lucide-icon name="layout-dashboard"></lucide-icon>
           Dashboard
         </button>
-        <button class="profile-dropdown__item" type="button">
+        <button class="profile-dropdown__item" type="button" (click)="goToSettings()">
           <lucide-icon name="settings"></lucide-icon>
           Settings
         </button>
@@ -134,11 +134,11 @@
           <div class="landing-mobile__meta">Logged in</div>
         </div>
       </div>
-      <button class="landing-mobile__item" type="button">
+      <button class="landing-mobile__item" type="button" (click)="goToDashboard()">
         <lucide-icon name="layout-dashboard"></lucide-icon>
         Dashboard
       </button>
-      <button class="landing-mobile__item" type="button">
+      <button class="landing-mobile__item" type="button" (click)="goToSettings()">
         <lucide-icon name="settings"></lucide-icon>
         Settings
       </button>

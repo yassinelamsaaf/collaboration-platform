@@ -1,0 +1,142 @@
+<div class="page-header">
+  <div>
+    <h1>Kanban Board</h1>
+  </div>
+  <div class="topbar-actions">
+    <div class="team-tabs" *ngIf="teams.length">
+      <button class="team-tab" *ngFor="let team of teams"
+              [class.active]="selectedTeamId === team.id"
+              (click)="selectedTeamId = team.id; loadTasks()">{{ team.name }}</button>
+    </div>
+    <button class="btn btn--primary">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+      Add Task
+    </button>
+  </div>
+</div>
+
+<div class="filters-row">
+  <button class="btn btn--outline">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a6 6 0 0 1 12 0v1"/></svg>
+    Assignee
+  </button>
+  <button class="btn btn--outline">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><path d="M12 9v4M12 17h.01"/></svg>
+    Priority
+  </button>
+  <button class="btn btn--outline">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41 13 21l-9-9 7.59-7.59A2 2 0 0 1 13 4h6a2 2 0 0 1 2 2v6a2 2 0 0 1-.59 1.41z"/><circle cx="14.5" cy="9.5" r="1"/></svg>
+    Labels
+  </button>
+  <span class="divider"></span>
+  <span class="filter-pill">High Priority <span class="pill-x">&times;</span></span>
+</div>
+
+<div class="board">
+  <div class="board-col" *ngFor="let col of columns">
+    <div class="board-col-head">
+      <span class="col-dot" [style.background]="col.color"></span>
+      <h3>{{ col.label }}</h3>
+      <span class="col-count">{{ getTasksByStatus(col.key).length }}</span>
+    </div>
+    <div class="board-cards" [class.empty]="!getTasksByStatus(col.key).length">
+      <div class="task-card" *ngFor="let task of getTasksByStatus(col.key)"
+           [class.priority-high]="getPriorityClass(task) === 'priority-high'"
+           [class.priority-medium]="getPriorityClass(task) === 'priority-medium'"
+           (click)="openDrawer(task)">
+        <p class="task-card-title">{{ task.title }}</p>
+        <div class="task-card-footer">
+          <span class="due-info" *ngIf="task.dueDate">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+            {{ task.dueDate | date:'MMM d' }}
+          </span>
+          <div class="avatar unassigned">{{ getAssigneeInitials(task.assigneeName || task.assigneeId) }}</div>
+        </div>
+      </div>
+      <div class="empty-state" *ngIf="!getTasksByStatus(col.key).length">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--gray-300)" stroke-width="2"><path d="M21 8a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8z"/><path d="M3 8h18M9 8V6a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"/></svg>
+        <p>No tasks</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="drawer-overlay" [class.open]="drawerOpen" (click)="closeDrawer()">
+  <aside class="drawer" (click)="$event.stopPropagation()" *ngIf="selectedTask">
+    <div class="drawer-header">
+      <div class="drawer-breadcrumb">
+        <span>{{ selectedTask.id.slice(0,8).toUpperCase() || 'TASK' }}</span>
+        <span class="bc-sep">&bull;</span>
+        <span>{{ selectedTask.priority }}</span>
+      </div>
+      <div class="drawer-header-actions">
+        <button class="icon-btn small" aria-label="Close" (click)="closeDrawer()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="drawer-body">
+      <div class="drawer-main">
+        <h2 class="drawer-title">{{ selectedTask.title }}</h2>
+
+        <div class="drawer-pills">
+          <div class="select-pill status-pill" (click)="updateStatus(selectedTask.id, selectedTask.status === 'TODO' ? 'IN_PROGRESS' : selectedTask.status === 'IN_PROGRESS' ? 'DONE' : 'TODO')">
+            <span class="status-dot"></span> {{ selectedTask.status }}
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+          </div>
+          <div class="select-pill priority-pill">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><path d="M12 9v4M12 17h.01"/></svg>
+            {{ selectedTask.priority }} Priority
+          </div>
+        </div>
+
+        <div class="drawer-section">
+          <h4 class="drawer-section-title">Description</h4>
+          <div class="description-box">
+            <p>{{ selectedTask.description || 'No description provided.' }}</p>
+          </div>
+        </div>
+      </div>
+
+      <aside class="drawer-sidebar">
+        <div class="sidebar-field">
+          <span class="sidebar-label">ASSIGNEE</span>
+          <div class="assignee-row">
+            <span class="assignee-placeholder">{{ getAssigneeInitials(selectedTask.assigneeName || selectedTask.assigneeId) }}</span>
+            <span>{{ selectedTask.assigneeName || selectedTask.assigneeId || 'Unassigned' }}</span>
+          </div>
+        </div>
+        <div class="sidebar-field">
+          <span class="sidebar-label">TEAM</span>
+          <div class="assignee-row">
+            <span class="team-icon">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 11v6M19 14h6"/></svg>
+            </span>
+            <span>{{ selectedTask.teamId || 'N/A' }}</span>
+          </div>
+        </div>
+        <div class="sidebar-field" *ngIf="selectedTask.dueDate">
+          <span class="sidebar-label">DUE DATE</span>
+          <div class="assignee-row">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#c0392b" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+            <span>{{ selectedTask.dueDate | date:'MMM d, y' }}</span>
+          </div>
+        </div>
+        <div class="sidebar-field">
+          <span class="sidebar-label">LABELS</span>
+          <div class="labels-row">
+            <button class="icon-btn small" aria-label="Add label">+</button>
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    <div class="drawer-footer">
+      <span class="footer-meta">Created {{ selectedTask.createdAt | date:'mediumDate' }}</span>
+      <div class="footer-actions">
+        <button class="btn btn--dark" (click)="closeDrawer()">Done</button>
+      </div>
+    </div>
+  </aside>
+</div>

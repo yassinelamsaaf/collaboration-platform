@@ -8,7 +8,8 @@ import org.springframework.stereotype.Component;
 public class TaskMapper {
 
     public TaskResponse toTaskResponse(Task task, int subTaskCount, int completedSubTaskCount,
-                                       int commentCount, int attachmentCount, int totalTimeMinutes) {
+                                       int commentCount, int attachmentCount, int totalTimeMinutes,
+                                       String assigneeName) {
         return new TaskResponse(
                 task.getId(),
                 task.getProject().getId(),
@@ -26,7 +27,8 @@ public class TaskMapper {
                 attachmentCount,
                 totalTimeMinutes,
                 task.getCreatedAt(),
-                task.getUpdatedAt()
+                task.getUpdatedAt(),
+                assigneeName
         );
     }
 }
