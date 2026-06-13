@@ -1,8 +1,11 @@
-package com.inpt.collaborationplatform.collaboration.comment.entity;
+package com.inpt.collaborationplatform.workmanagement.subtask.entity;
 
 import com.inpt.collaborationplatform.workmanagement.task.entity.Task;
+import com.inpt.collaborationplatform.workmanagement.task.entity.TaskStatus;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -20,12 +23,12 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "comments")
+@Table(name = "sub_tasks")
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Comment {
+public class SubTask {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -35,11 +38,20 @@ public class Comment {
     @JoinColumn(name = "task_id", nullable = false)
     private Task task;
 
-    @Column(name = "user_id", nullable = false)
-    private String userId;
+    @Column(name = "assignee_id")
+    private String assigneeId;
 
-    @Column(nullable = false, length = 10000)
-    private String content;
+    @Column(nullable = false, length = 255)
+    private String title;
+
+    @Builder.Default
+    @Column(nullable = false)
+    private boolean isDone = false;
+
+    @Builder.Default
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    private TaskStatus status = TaskStatus.TODO;
 
     private LocalDateTime createdAt;
 

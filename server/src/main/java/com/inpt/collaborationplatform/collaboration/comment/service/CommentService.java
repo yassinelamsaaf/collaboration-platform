@@ -11,9 +11,9 @@ import com.inpt.collaborationplatform.collaboration.comment.dto.response.Comment
 import com.inpt.collaborationplatform.collaboration.comment.entity.Comment;
 import com.inpt.collaborationplatform.collaboration.comment.mapper.CommentMapper;
 import com.inpt.collaborationplatform.collaboration.comment.repository.CommentRepository;
-import com.inpt.collaborationplatform.tasks.task.entity.Task;
+import com.inpt.collaborationplatform.workmanagement.task.entity.Task;
 import com.inpt.collaborationplatform.shared.event.CommentAddedEvent;
-import com.inpt.collaborationplatform.tasks.task.service.TaskLookupService;
+import com.inpt.collaborationplatform.workmanagement.task.service.TaskLookupService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Pageable;

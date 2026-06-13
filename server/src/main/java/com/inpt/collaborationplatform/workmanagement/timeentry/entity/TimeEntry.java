@@ -1,4 +1,4 @@
-package com.inpt.collaborationplatform.collaboration.comment.entity;
+package com.inpt.collaborationplatform.workmanagement.timeentry.entity;
 
 import com.inpt.collaborationplatform.workmanagement.task.entity.Task;
 import jakarta.persistence.Column;
@@ -17,15 +17,16 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "comments")
+@Table(name = "time_entries")
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Comment {
+public class TimeEntry {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -38,8 +39,13 @@ public class Comment {
     @Column(name = "user_id", nullable = false)
     private String userId;
 
-    @Column(nullable = false, length = 10000)
-    private String content;
+    @Column(nullable = false)
+    private int durationMinutes;
+
+    @Column(nullable = false)
+    private LocalDate date;
+
+    private String description;
 
     private LocalDateTime createdAt;
 

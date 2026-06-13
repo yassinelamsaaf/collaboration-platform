@@ -10,8 +10,8 @@ import com.inpt.collaborationplatform.collaboration.attachment.dto.response.Atta
 import com.inpt.collaborationplatform.collaboration.attachment.entity.Attachment;
 import com.inpt.collaborationplatform.collaboration.attachment.mapper.AttachmentMapper;
 import com.inpt.collaborationplatform.collaboration.attachment.repository.AttachmentRepository;
-import com.inpt.collaborationplatform.tasks.task.entity.Task;
-import com.inpt.collaborationplatform.tasks.task.service.TaskLookupService;
+import com.inpt.collaborationplatform.workmanagement.task.entity.Task;
+import com.inpt.collaborationplatform.workmanagement.task.service.TaskLookupService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
