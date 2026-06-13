@@ -10,6 +10,8 @@ public record ProjectMemberResponse(
         String projectId,
         String userId,
         ProjectRole role,
-        LocalDateTime joinedAt
+        LocalDateTime joinedAt,
+        String memberName,
+        String memberEmail
 ) {
 }

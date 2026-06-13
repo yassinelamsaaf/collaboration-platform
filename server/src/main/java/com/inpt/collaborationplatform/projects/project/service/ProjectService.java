@@ -1,5 +1,6 @@
 package com.inpt.collaborationplatform.projects.project.service;
 
+import com.inpt.collaborationplatform.Identity.service.IdentityAccessService;
 import com.inpt.collaborationplatform.projects.project.dto.request.CreateProjectRequest;
 import com.inpt.collaborationplatform.projects.project.dto.request.UpdateProjectMemberRoleRequest;
 import com.inpt.collaborationplatform.projects.project.dto.request.UpdateProjectRequest;
@@ -35,6 +36,7 @@ public class ProjectService {
     private final ProjectLookupService projectLookupService;
     private final ProjectMapper projectMapper;
     private final SlugGenerator slugGenerator;
+    private final IdentityAccessService identityAccessService;
 
     @Transactional
     public ProjectResponse createProject(CreateProjectRequest request, String currentUserId) {
@@ -109,7 +111,11 @@ public class ProjectService {
         projectAccessService.requireViewer(project, currentUserId);
 
         return PageResponse.from(projectMemberRepository.findByProject_Id(project.getId(), pageable)
-                .map(projectMapper::toMemberResponse));
+                .map((member) -> projectMapper.toMemberResponse(
+                        member,
+                        identityAccessService.requireUserUsername(member.getUserId()),
+                        identityAccessService.requireUserEmail(member.getUserId())
+                )));
     }
 
     @Transactional
@@ -128,7 +134,11 @@ public class ProjectService {
         }
 
         member.setRole(request.getRole());
-        return projectMapper.toMemberResponse(projectMemberRepository.save(member));
+        return projectMapper.toMemberResponse(
+                projectMemberRepository.save(member),
+                identityAccessService.requireUserUsername(member.getUserId()),
+                identityAccessService.requireUserEmail(member.getUserId())
+        );
     }
 
     @Transactional

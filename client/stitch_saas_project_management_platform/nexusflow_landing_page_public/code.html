@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>NexusFlow - Project Management</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "secondary-container": "#316bf3",
+                        "secondary": "#0051d5",
+                        "on-secondary-fixed": "#00174b",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container-high": "#eae7e9",
+                        "on-tertiary-fixed-variant": "#574425",
+                        "tertiary-container": "#271901",
+                        "surface-variant": "#e4e2e4",
+                        "primary": "#000000",
+                        "on-surface-variant": "#45464d",
+                        "inverse-primary": "#bec6e0",
+                        "background": "#fcf8fa",
+                        "outline-variant": "#c6c6cd",
+                        "surface-tint": "#565e74",
+                        "surface": "#fcf8fa",
+                        "surface-dim": "#dcd9db",
+                        "outline": "#76777d",
+                        "surface-container-low": "#f6f3f5",
+                        "on-secondary-fixed-variant": "#003ea8",
+                        "on-secondary-container": "#fefcff",
+                        "on-error": "#ffffff",
+                        "surface-container": "#f0edef",
+                        "inverse-surface": "#303032",
+                        "on-surface": "#1b1b1d",
+                        "error": "#ba1a1a",
+                        "secondary-fixed": "#dbe1ff",
+                        "primary-fixed": "#dae2fd",
+                        "on-primary-fixed": "#131b2e",
+                        "tertiary-fixed-dim": "#dec29a",
+                        "on-background": "#1b1b1d",
+                        "surface-container-highest": "#e4e2e4",
+                        "secondary-fixed-dim": "#b4c5ff",
+                        "on-tertiary-container": "#98805d",
+                        "on-primary": "#ffffff",
+                        "tertiary-fixed": "#fcdeb5",
+                        "on-secondary": "#ffffff",
+                        "on-primary-fixed-variant": "#3f465c",
+                        "inverse-on-surface": "#f3f0f2",
+                        "tertiary": "#000000",
+                        "on-error-container": "#93000a",
+                        "primary-fixed-dim": "#bec6e0",
+                        "surface-bright": "#fcf8fa",
+                        "primary-container": "#131b2e",
+                        "error-container": "#ffdad6",
+                        "on-primary-container": "#7c839b",
+                        "on-tertiary": "#ffffff",
+                        "on-tertiary-fixed": "#271901"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "sm": "8px",
+                        "2xl": "48px",
+                        "lg": "24px",
+                        "3xl": "64px",
+                        "container-max": "1440px",
+                        "gutter": "24px",
+                        "xs": "4px",
+                        "md": "16px",
+                        "base": "4px",
+                        "xl": "32px"
+                    },
+                    "fontFamily": {
+                        "body-base": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "title-lg": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "headline-sm": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "label-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "body-base": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "title-lg": ["18px", { "lineHeight": "24px", "fontWeight": "600" }],
+                        "label-sm": ["11px", { "lineHeight": "14px", "fontWeight": "500" }],
+                        "headline-sm": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "display-lg": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-sm": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-base antialiased">
+<!-- TopNavBar (Public) -->
+<header class="bg-surface dark:bg-inverse-surface text-primary dark:text-inverse-primary docked full-width top-0 border-b border-outline-variant dark:border-outline flat no shadows sticky z-50">
+<div class="flex justify-between items-center w-full px-lg h-16 max-w-container-max mx-auto">
+<!-- Brand -->
+<div class="flex items-center">
+<span class="font-headline-md text-headline-md font-bold text-primary dark:text-on-surface">NexusFlow</span>
+</div>
+<!-- Desktop Navigation -->
+<nav class="hidden md:flex items-center gap-lg">
+<a class="font-label-md text-label-md text-secondary dark:text-secondary-fixed font-bold border-b-2 border-secondary hover:bg-surface-container-low dark:hover:bg-surface-container-highest transition-colors py-sm" href="#">Features</a>
+<a class="font-label-md text-label-md text-on-surface-variant dark:text-outline hover:text-primary hover:bg-surface-container-low dark:hover:bg-surface-container-highest transition-colors py-sm" href="#">Pricing</a>
+</nav>
+<!-- Actions -->
+<div class="flex items-center gap-md">
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors hidden md:block" href="#">Login</a>
+<button class="bg-secondary text-on-secondary font-label-md text-label-md px-md py-sm rounded-DEFAULT hover:bg-on-secondary-fixed-variant transition-colors">Get Started</button>
+</div>
+</div>
+</header>
+<main>
+<!-- Hero Section -->
+<section class="py-3xl px-lg md:px-xl lg:px-2xl max-w-container-max mx-auto text-center">
+<h1 class="font-display-lg text-display-lg max-w-3xl mx-auto mb-lg text-primary">Master Project Chaos with Calculated Precision</h1>
+<p class="font-body-base text-body-base text-on-surface-variant max-w-2xl mx-auto mb-xl">
+                NexusFlow delivers enterprise-grade project management without the clutter. High-density data views, seamless collaboration, and powerful integrations designed for high-velocity teams.
+            </p>
+<div class="flex flex-col sm:flex-row justify-center gap-md">
+<button class="bg-secondary text-on-secondary font-label-md text-label-md px-lg py-md rounded-DEFAULT hover:bg-on-secondary-fixed-variant transition-colors">Start Free Trial</button>
+<button class="border border-primary-container text-primary-container font-label-md text-label-md px-lg py-md rounded-DEFAULT hover:bg-surface-container transition-colors">View Demo</button>
+</div>
+<div class="mt-3xl rounded-xl overflow-hidden border border-outline-variant shadow-sm mx-auto max-w-5xl">
+<img alt="NexusFlow Dashboard Preview" class="w-full h-auto object-cover" data-alt="A highly detailed, modern SaaS dashboard interface displayed on a sleek monitor. The UI features a clean, utilitarian design with a light mode aesthetic, crisp typography, and dense data visualizations including kanban boards and line charts. The color palette is dominated by pristine whites, cool grays, and professional blue accents, reflecting a functional and authoritative brand identity. The lighting is bright and even, highlighting the analytical nature of the software." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB-R5GFn9ytkQuKAvl54gDl3zUh3cY9ogZPRnfQ21iaH_oVMl6wNTtMaBv_Kg5cwkr9VhWITkgZzSZ4kw4M2NVjGZVf2l1oyKv0x0mSNeeW8FPiQDr7eKKeDkcbDX14w4vuv5DbLQb5lOUJdmsYfxybtOab8URB8DR06544uNAPry_FH9_e8d-EwJwFhYQM1LxG361VKdk1l9ez0W-z8qNbGx4g0PdL55WyN1pjun8Skt4yIKsePRPeN76ox0IMpbeBlj8IPW0-Gw"/>
+</div>
+</section>
+<!-- Feature Grid (Bento Style) -->
+<section class="py-3xl px-lg md:px-xl max-w-container-max mx-auto bg-surface-container-low">
+<div class="mb-2xl text-center">
+<h2 class="font-headline-md text-headline-md text-primary mb-sm">Engineered for Efficiency</h2>
+<p class="font-body-base text-body-base text-on-surface-variant">Everything you need to execute complex projects, stripped of unnecessary noise.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-lg max-w-5xl mx-auto">
+<!-- Large Card -->
+<div class="col-span-1 md:col-span-2 bg-surface-container-lowest border border-outline-variant rounded-DEFAULT p-xl flex flex-col justify-between">
+<div>
+<span class="material-symbols-outlined text-secondary mb-md text-3xl" style="font-variation-settings: 'FILL' 1;">view_kanban</span>
+<h3 class="font-title-lg text-title-lg text-primary mb-sm">High-Density Kanban</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Visualize workflow stages with maximum screen real estate. Quickly identify bottlenecks and reallocate resources without scrolling through endless menus.</p>
+</div>
+<div class="mt-lg border-t border-surface-variant pt-md flex gap-sm">
+<span class="bg-secondary-fixed text-on-secondary-fixed font-label-sm text-label-sm px-sm py-xs rounded-full">Drag &amp; Drop</span>
+<span class="bg-surface-container text-on-surface-variant font-label-sm text-label-sm px-sm py-xs rounded-full">Custom WIP Limits</span>
+</div>
+</div>
+<!-- Small Card -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-DEFAULT p-xl flex flex-col">
+<span class="material-symbols-outlined text-secondary mb-md text-3xl" style="font-variation-settings: 'FILL' 1;">group</span>
+<h3 class="font-title-lg text-title-lg text-primary mb-sm">Team Collaboration</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Contextual discussions attached directly to tasks, ensuring decisions are documented alongside the work.</p>
+</div>
+<!-- Small Card -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-DEFAULT p-xl flex flex-col">
+<span class="material-symbols-outlined text-secondary mb-md text-3xl" style="font-variation-settings: 'FILL' 1;">monitoring</span>
+<h3 class="font-title-lg text-title-lg text-primary mb-sm">Executive Reporting</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Automated roll-up reports provide stakeholders with real-time status updates and predictive burn-down charts.</p>
+</div>
+<!-- Large Card -->
+<div class="col-span-1 md:col-span-2 bg-surface-container-lowest border border-outline-variant rounded-DEFAULT p-xl flex flex-col md:flex-row gap-lg items-center">
+<div class="flex-1">
+<h3 class="font-title-lg text-title-lg text-primary mb-sm">Integrates with Everything</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-md">Connect NexusFlow to your existing toolchain. Push code commits, trigger deployments, and sync calendars seamlessly.</p>
+<a class="font-label-md text-label-md text-secondary hover:underline flex items-center gap-xs" href="#">View all integrations <span class="material-symbols-outlined text-sm">arrow_forward</span></a>
+</div>
+<div class="flex-1 grid grid-cols-2 gap-sm w-full">
+<div class="border border-surface-variant bg-surface-container-low p-sm rounded-DEFAULT flex items-center gap-sm justify-center text-on-surface-variant font-label-sm text-label-sm">
+<span class="material-symbols-outlined">api</span> API Access
+                         </div>
+<div class="border border-surface-variant bg-surface-container-low p-sm rounded-DEFAULT flex items-center gap-sm justify-center text-on-surface-variant font-label-sm text-label-sm">
+<span class="material-symbols-outlined">sync</span> Webhooks
+                         </div>
+<div class="border border-surface-variant bg-surface-container-low p-sm rounded-DEFAULT flex items-center gap-sm justify-center text-on-surface-variant font-label-sm text-label-sm">
+<span class="material-symbols-outlined">cloud</span> Cloud Sync
+                         </div>
+<div class="border border-surface-variant bg-surface-container-low p-sm rounded-DEFAULT flex items-center gap-sm justify-center text-on-surface-variant font-label-sm text-label-sm">
+<span class="material-symbols-outlined">security</span> SSO Ready
+                         </div>
+</div>
+</div>
+</div>
+</section>
+<!-- Social Proof -->
+<section class="py-3xl px-lg md:px-xl max-w-container-max mx-auto border-t border-outline-variant">
+<h2 class="font-headline-sm text-headline-sm text-center text-primary mb-2xl">Trusted by High-Performance Teams</h2>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-lg max-w-5xl mx-auto">
+<div class="p-lg border border-surface-variant rounded-DEFAULT bg-surface">
+<div class="flex text-secondary mb-sm">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-md">"NexusFlow stripped away the bloat we were paying for in other tools. The interface is incredibly fast, allowing our engineering teams to update status in seconds."</p>
+<div class="flex items-center gap-md">
+<div class="w-10 h-10 bg-primary-fixed rounded-full flex items-center justify-center text-on-primary-fixed font-title-lg">S</div>
+<div>
+<p class="font-label-md text-label-md text-primary">Sarah Jenkins</p>
+<p class="font-label-sm text-label-sm text-outline">VP Engineering, TechCorp</p>
+</div>
+</div>
+</div>
+<div class="p-lg border border-surface-variant rounded-DEFAULT bg-surface">
+<div class="flex text-secondary mb-sm">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-md">"The high-density data views are exactly what our executive team needed for cross-departmental oversight. Clean, authoritative, and reliable."</p>
+<div class="flex items-center gap-md">
+<div class="w-10 h-10 bg-tertiary-fixed text-on-tertiary-fixed rounded-full flex items-center justify-center font-title-lg">M</div>
+<div>
+<p class="font-label-md text-label-md text-primary">Marcus Vance</p>
+<p class="font-label-sm text-label-sm text-outline">Director of Ops, Logistics Inc</p>
+</div>
+</div>
+</div>
+<div class="p-lg border border-surface-variant rounded-DEFAULT bg-surface">
+<div class="flex text-secondary mb-sm">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star_half</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-md">"Transitioning to NexusFlow was seamless. The utilitarian design means virtually zero learning curve for new hires. It just works."</p>
+<div class="flex items-center gap-md">
+<div class="w-10 h-10 bg-secondary-fixed text-on-secondary-fixed rounded-full flex items-center justify-center font-title-lg">E</div>
+<div>
+<p class="font-label-md text-label-md text-primary">Elena Rodriguez</p>
+<p class="font-label-sm text-label-sm text-outline">Product Manager, FinTech Solutions</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-surface-container-low border-t border-outline-variant py-2xl px-lg md:px-xl">
+<div class="max-w-container-max mx-auto grid grid-cols-1 md:grid-cols-4 gap-xl">
+<div class="col-span-1 md:col-span-1">
+<span class="font-headline-sm text-headline-sm font-bold text-primary mb-md block">NexusFlow</span>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Utilitarian project management for enterprise velocity.</p>
+</div>
+<div>
+<h4 class="font-label-md text-label-md text-primary mb-md">Product</h4>
+<ul class="space-y-sm">
+<li><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-secondary transition-colors" href="#">Features</a></li>
+<li><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-secondary transition-colors" href="#">Pricing</a></li>
+<li><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-secondary transition-colors" href="#">Integrations</a></li>
+<li><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-secondary transition-colors" href="#">Changelog</a></li>
+</ul>
+</div>
+<div>
+<h4 class="font-label-md text-label-md text-primary mb-md">Resources</h4>
+<ul class="space-y-sm">
+<li><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-secondary transition-colors" href="#">Documentation</a></li>
+<li><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-secondary transition-colors" href="#">API Reference</a></li>
+<li><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-secondary transition-colors" href="#">Blog</a></li>
+<li><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-secondary transition-colors" href="#">Community</a></li>
+</ul>
+</div>
+<div>
+<h4 class="font-label-md text-label-md text-primary mb-md">Company</h4>
+<ul class="space-y-sm">
+<li><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-secondary transition-colors" href="#">About</a></li>
+<li><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-secondary transition-colors" href="#">Careers</a></li>
+<li><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-secondary transition-colors" href="#">Privacy Policy</a></li>
+<li><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-secondary transition-colors" href="#">Terms of Service</a></li>
+</ul>
+</div>
+</div>
+<div class="max-w-container-max mx-auto mt-2xl pt-lg border-t border-surface-variant text-center md:text-left">
+<p class="font-body-sm text-body-sm text-outline">© 2024 NexusFlow Inc. All rights reserved.</p>
+</div>
+</footer>
+</body></html>

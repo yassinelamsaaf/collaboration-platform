@@ -29,7 +29,7 @@
   </nav>
 
   <div class="landing-actions">
-    <button class="btn btn--ghost" type="button" (click)="scrollToSection('contact')">
+    <button class="btn btn--ghost" type="button" (click)="goToContactPage()">
       Contact Us
     </button>
 
@@ -40,13 +40,13 @@
         <lucide-icon name="chevron-down"></lucide-icon>
       </button>
       <div class="profile-dropdown" [class.is-open]="menuOpen">
-        <button class="profile-dropdown__item" type="button">
+        <button class="profile-dropdown__item" type="button" (click)="goToDashboard()">
           <lucide-icon name="layout-dashboard"></lucide-icon>
           Dashboard
         </button>
-        <button class="profile-dropdown__item" type="button">
-          <lucide-icon name="settings"></lucide-icon>
-          Settings
+        <button class="profile-dropdown__item" type="button" (click)="goToContactPage()">
+          <lucide-icon name="mail"></lucide-icon>
+          Contact support
         </button>
         <button class="profile-dropdown__item" type="button" (click)="onLogout()" [disabled]="loading">
           <lucide-icon name="log-out"></lucide-icon>
@@ -117,8 +117,8 @@
       </a>
       <a
         class="landing-mobile__link"
-        href="#contact"
-        (click)="scrollToSection('contact'); $event.preventDefault()"
+        routerLink="/contact"
+        (click)="closeMobileMenu()"
       >
         Contact
       </a>
@@ -134,13 +134,13 @@
           <div class="landing-mobile__meta">Logged in</div>
         </div>
       </div>
-      <button class="landing-mobile__item" type="button">
+      <button class="landing-mobile__item" type="button" (click)="goToDashboard()">
         <lucide-icon name="layout-dashboard"></lucide-icon>
         Dashboard
       </button>
-      <button class="landing-mobile__item" type="button">
-        <lucide-icon name="settings"></lucide-icon>
-        Settings
+      <button class="landing-mobile__item" type="button" (click)="goToContactPage()">
+        <lucide-icon name="mail"></lucide-icon>
+        Contact support
       </button>
       <button class="landing-mobile__item" type="button" (click)="onLogout()" [disabled]="loading">
         <lucide-icon name="log-out"></lucide-icon>

@@ -1,0 +1,30 @@
+<section class="policy-page">
+  <div class="policy-page__header">
+    <div class="landing-section__eyebrow">Support</div>
+    <h1>Support center</h1>
+    <p>
+      This page is the working destination for support links across the app. Use it when you need help with account access, invitations, or project setup.
+    </p>
+  </div>
+
+  <div class="policy-page__grid">
+    <article class="policy-page__card">
+      <h2>Account help</h2>
+      <p>For verification, login, or password reset issues, start from the auth pages and return here if the flow still blocks you.</p>
+      <a class="policy-page__link" routerLink="/auth/forgot-password">Open password reset</a>
+    </article>
+
+    <article class="policy-page__card">
+      <h2>Project onboarding</h2>
+      <p>If an invitation link is not behaving as expected, open the invitation again after signing in with the invited email address.</p>
+      <a class="policy-page__link" routerLink="/contact">Go to contact page</a>
+    </article>
+
+    <article class="policy-page__card">
+      <h2>Direct email</h2>
+      <p>{{ supportEmail }}</p>
+      <p>If your device has a mail client configured, you can still use a direct email link.</p>
+      <a class="policy-page__link" [href]="'mailto:' + supportEmail">Email support</a>
+    </article>
+  </div>
+</section>

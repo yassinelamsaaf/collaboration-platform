@@ -1,0 +1,46 @@
+<section class="contact-page">
+  <div class="contact-page__hero">
+    <div class="landing-section__eyebrow">Contact</div>
+    <h1>Get in touch with the collaboration platform team.</h1>
+    <p>
+      Whether you want a demo, help with onboarding, or a walkthrough of the project and task flows, this page gives you a real contact path instead of a dead button.
+    </p>
+
+    <div class="contact-page__actions">
+      <a class="btn btn--primary" routerLink="/support">
+        Support Center
+        <lucide-icon name="arrow-right"></lucide-icon>
+      </a>
+      <a class="btn btn--secondary" routerLink="/auth/register">Create an account</a>
+      <a class="btn btn--ghost" routerLink="/">Back to home</a>
+    </div>
+  </div>
+
+  <div class="contact-page__grid">
+    <article class="contact-page__card">
+      <div class="contact-page__label">Support email</div>
+      <a routerLink="/support">Open the support page</a>
+      <p>Use it for onboarding questions, invitation issues, account access, and project workflow help.</p>
+    </article>
+
+    <article class="contact-page__card">
+      <div class="contact-page__label">What we can help with</div>
+      <ul>
+        <li>Account verification and login help</li>
+        <li>Project invitations and member onboarding</li>
+        <li>Project setup, teams, and task workflow questions</li>
+      </ul>
+    </article>
+
+    <article class="contact-page__card">
+      <div class="contact-page__label">Fast path</div>
+      <p>If you already have an account, go straight to your workspace and continue from the dashboard.</p>
+      <a class="contact-page__link" routerLink="/dashboard">Open dashboard</a>
+    </article>
+  </div>
+
+  <div class="contact-page__footer">
+    <span>© {{ currentYear }} Collaboration Platform</span>
+    <a routerLink="/support">Support</a>
+  </div>
+</section>

@@ -17,6 +17,10 @@ const routes: Routes = [
     canActivate: [authGuard],
     loadChildren: () => import('./features/dashboard/dashboard.module').then((m) => m.DashboardModule)
   },
+  {
+    path: 'invitations/:token',
+    loadChildren: () => import('./features/invitations/invitations.module').then((m) => m.InvitationsModule)
+  },
   { path: '**', redirectTo: '' }
 ];
 

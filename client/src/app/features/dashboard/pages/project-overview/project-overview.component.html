@@ -1,0 +1,213 @@
+<section class="workspace-page">
+  <div class="workspace-empty" *ngIf="loading && !snapshot">Loading project workspace...</div>
+
+  <div class="workspace-data-chip" *ngIf="loading && snapshot">
+    <lucide-icon name="refresh-cw"></lucide-icon>
+    Refreshing project overview...
+  </div>
+
+  <ng-container *ngIf="snapshot as data">
+    <div class="workspace-page__header">
+      <div>
+        <div class="workspace-page__eyebrow">Project Workspace</div>
+        <h1 class="workspace-page__title">{{ data.project.name }}</h1>
+        <p class="workspace-page__subtitle">
+          {{ data.project.description || 'A structured workspace for team coordination, delivery, and follow-up.' }}
+        </p>
+      </div>
+
+      <div class="workspace-inline-actions">
+        <span class="workspace-pill workspace-pill--neutral">{{ data.project.currentUserRole }}</span>
+        <span class="workspace-pill" [class.workspace-pill--success]="data.project.status === 'ACTIVE'" [class.workspace-pill--warning]="data.project.status === 'ARCHIVED'">
+          {{ data.project.status }}
+        </span>
+      </div>
+    </div>
+
+    <div class="workspace-tabs">
+      <a class="workspace-tabs__link is-active" [routerLink]="['/dashboard/projects', data.project.slug || data.project.id]">
+        <lucide-icon name="layout-dashboard"></lucide-icon>
+        Overview
+      </a>
+      <a class="workspace-tabs__link" [routerLink]="['/dashboard/projects', data.project.slug || data.project.id, 'teams']">
+        <lucide-icon name="users"></lucide-icon>
+        Members & Teams
+      </a>
+      <a class="workspace-tabs__link" [routerLink]="['/dashboard/projects', data.project.slug || data.project.id, 'kanban']">
+        <lucide-icon name="square-kanban"></lucide-icon>
+        Kanban
+      </a>
+    </div>
+
+    <div class="workspace-grid workspace-grid--stats">
+      <article class="workspace-card metric-card">
+        <div class="metric-card__label">Members</div>
+        <div class="metric-card__value">{{ data.members.length }}</div>
+        <div class="metric-card__hint">Project-wide access granted</div>
+      </article>
+      <article class="workspace-card metric-card">
+        <div class="metric-card__label">Teams</div>
+        <div class="metric-card__value">{{ data.teams.length }}</div>
+        <div class="metric-card__hint">Delivery groups inside the project</div>
+      </article>
+      <article class="workspace-card metric-card">
+        <div class="metric-card__label">Tasks</div>
+        <div class="metric-card__value">{{ data.tasks.length }}</div>
+        <div class="metric-card__hint">All tasks across project teams</div>
+      </article>
+      <article class="workspace-card metric-card">
+        <div class="metric-card__label">Pending Invites</div>
+        <div class="metric-card__value">{{ data.invitations.length }}</div>
+        <div class="metric-card__hint">Members not onboarded yet</div>
+      </article>
+    </div>
+
+    <div class="workspace-grid workspace-grid--analytics">
+      <section class="workspace-card workspace-stack chart-card">
+        <div class="chart-card__head">
+          <div class="workspace-page__eyebrow">Workload</div>
+          <h2 class="chart-card__title">Task status</h2>
+        </div>
+        <div class="donut" *ngIf="donutSegments.length; else noStatus">
+          <svg viewBox="0 0 120 120" class="donut__svg">
+            <circle class="donut__track" cx="60" cy="60" r="52"></circle>
+            <circle
+              *ngFor="let seg of donutSegments"
+              class="donut__seg"
+              cx="60"
+              cy="60"
+              r="52"
+              [attr.stroke]="seg.color"
+              [attr.stroke-dasharray]="seg.dash + ' ' + (circumference - seg.dash)"
+              [attr.stroke-dashoffset]="-seg.offset"
+            ></circle>
+          </svg>
+          <div class="donut__center">
+            <div class="donut__value">{{ completionRate }}%</div>
+            <div class="donut__caption">complete</div>
+          </div>
+        </div>
+        <ul class="chart-legend" *ngIf="donutSegments.length">
+          <li *ngFor="let seg of donutSegments">
+            <span class="chart-legend__dot" [style.background]="seg.color"></span>
+            <span class="chart-legend__label">{{ seg.label }}</span>
+            <span class="chart-legend__value">{{ seg.value }}</span>
+          </li>
+        </ul>
+        <ng-template #noStatus><div class="workspace-empty">No tasks yet.</div></ng-template>
+      </section>
+
+      <section class="workspace-card workspace-stack chart-card">
+        <div class="chart-card__head">
+          <div class="workspace-page__eyebrow">Distribution</div>
+          <h2 class="chart-card__title">By priority</h2>
+        </div>
+        <div class="bar-chart">
+          <div class="bar-row" *ngFor="let bar of priorityBars">
+            <span class="bar-row__label">{{ bar.label }}</span>
+            <div class="bar-row__track">
+              <div class="bar-row__fill" [style.width.%]="bar.percent" [style.background]="bar.color"></div>
+            </div>
+            <span class="bar-row__value">{{ bar.value }}</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="workspace-card workspace-stack chart-card">
+        <div class="chart-card__head">
+          <div class="workspace-page__eyebrow">Delivery</div>
+          <h2 class="chart-card__title">Team progress</h2>
+        </div>
+        <div class="progress-list" *ngIf="teamProgress.length; else noTeamProgress">
+          <div class="progress-item" *ngFor="let item of teamProgress">
+            <div class="progress-item__head">
+              <span class="progress-item__name">{{ item.team.name }}</span>
+              <span class="progress-item__pct">{{ item.percent }}%</span>
+            </div>
+            <div class="progress-bar"><div class="progress-bar__fill" [style.width.%]="item.percent"></div></div>
+            <div class="progress-item__meta">{{ item.done }}/{{ item.total }} tasks done</div>
+          </div>
+        </div>
+        <ng-template #noTeamProgress><div class="workspace-empty">No teams yet.</div></ng-template>
+      </section>
+    </div>
+
+    <div class="workspace-grid workspace-grid--two">
+      <section class="workspace-card workspace-stack">
+        <div>
+          <div class="workspace-page__eyebrow">Recent Activity</div>
+          <h2 class="workspace-page__title" style="font-size: 1.45rem">Audit trail</h2>
+        </div>
+
+        <div class="workspace-list" *ngIf="data.activity.length; else noActivity">
+          <div class="workspace-list__item" *ngFor="let item of data.activity | slice: 0 : 8">
+            <div>
+              <div class="workspace-list__title">{{ item.action }}</div>
+              <div class="workspace-list__subtitle">{{ item.details }}</div>
+            </div>
+            <span class="workspace-pill workspace-pill--neutral">{{ item.entityType }}</span>
+          </div>
+        </div>
+
+        <ng-template #noActivity>
+          <div class="workspace-empty">No audit events yet for this project.</div>
+        </ng-template>
+      </section>
+
+      <section class="workspace-stack">
+        <article class="workspace-card workspace-stack">
+          <div>
+            <div class="workspace-page__eyebrow">People</div>
+            <h2 class="workspace-page__title" style="font-size: 1.45rem">Project members</h2>
+          </div>
+
+          <div class="workspace-list" *ngIf="data.members.length; else noMembers">
+            <div class="workspace-list__item" *ngFor="let member of data.members | slice: 0 : 5">
+              <div>
+                <div class="workspace-list__title">{{ member.memberName }}</div>
+                <div class="workspace-list__subtitle">{{ member.memberEmail }}</div>
+              </div>
+              <span class="workspace-pill workspace-pill--primary">{{ member.role }}</span>
+            </div>
+          </div>
+
+          <ng-template #noMembers>
+            <div class="workspace-empty">No members are attached to this project.</div>
+          </ng-template>
+        </article>
+
+        <article class="workspace-card workspace-stack">
+          <div>
+            <div class="workspace-page__eyebrow">Structure</div>
+            <h2 class="workspace-page__title" style="font-size: 1.45rem">Teams & Labels</h2>
+          </div>
+
+          <div class="workspace-list" *ngIf="data.teams.length; else noTeams">
+            <div class="workspace-list__item" *ngFor="let team of data.teams | slice: 0 : 4">
+              <div>
+                <div class="workspace-list__title">{{ team.name }}</div>
+                <div class="workspace-list__subtitle">{{ team.description || 'Operational team inside the project.' }}</div>
+              </div>
+              <span class="workspace-pill workspace-pill--neutral">Team</span>
+            </div>
+          </div>
+
+          <div class="workspace-inline-actions" *ngIf="data.labels.length">
+            <span
+              class="workspace-pill workspace-pill--neutral"
+              *ngFor="let label of data.labels | slice: 0 : 8"
+              [style.background]="label.color + '22'"
+              [style.color]="label.color"
+            >
+              {{ label.name }}
+            </span>
+          </div>
+
+          <ng-template #noTeams>
+            <div class="workspace-empty">No teams or labels created yet.</div>
+          </ng-template>
+        </article>
+      </section>
+    </div>
+  </ng-container>
+</section>

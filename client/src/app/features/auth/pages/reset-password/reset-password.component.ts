@@ -14,12 +14,12 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { interval, finalize, switchMap, takeWhile, tap } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
-import { AuthService } from '../../../../core/services/auth.service';
-import { ToastService } from '../../../../core/services/toast.service';
-import { getControlError, markAllTouched } from '../../../../shared/utils/form-helpers';
-import { mapHttpError } from '../../../../shared/utils/error-mapper';
-import { matchFields } from '../../../../shared/utils/validators';
-import { MessageResponse } from '../../../../shared/models/auth.models';
+import { AuthService } from '@core/services/auth.service';
+import { ToastService } from '@core/services/toast.service';
+import { getControlError, markAllTouched } from '@shared/utils/form-helpers';
+import { mapHttpError } from '@shared/utils/error-mapper';
+import { matchFields } from '@shared/utils/validators';
+import { MessageResponse } from '@shared/models/auth.models';
 
 @Component({
   selector: 'app-reset-password',

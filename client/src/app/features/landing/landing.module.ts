@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 
-import { SharedModule } from '../../shared/shared.module';
+import { SharedModule } from '@shared/shared.module';
 import { LandingRoutingModule } from './landing-routing.module';
 import { LandingPageComponent } from './pages/landing-page/landing-page.component';
 import { NavbarComponent } from './components/navbar/navbar.component';
@@ -10,6 +10,10 @@ import { WorkflowSectionComponent } from './components/workflow-section/workflow
 import { PricingSectionComponent } from './components/pricing-section/pricing-section.component';
 import { ContactSectionComponent } from './components/contact-section/contact-section.component';
 import { FooterComponent } from './components/footer/footer.component';
+import { ContactPageComponent } from './pages/contact-page/contact-page.component';
+import { SupportPageComponent } from './pages/support-page/support-page.component';
+import { PrivacyPageComponent } from './pages/privacy-page/privacy-page.component';
+import { TermsPageComponent } from './pages/terms-page/terms-page.component';
 
 @NgModule({
   declarations: [
@@ -20,7 +24,11 @@ import { FooterComponent } from './components/footer/footer.component';
     WorkflowSectionComponent,
     PricingSectionComponent,
     ContactSectionComponent,
-    FooterComponent
+    FooterComponent,
+    ContactPageComponent,
+    SupportPageComponent,
+    PrivacyPageComponent,
+    TermsPageComponent
   ],
   imports: [SharedModule, LandingRoutingModule]
 })

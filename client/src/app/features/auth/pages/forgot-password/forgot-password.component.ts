@@ -4,11 +4,11 @@ import { Router } from '@angular/router';
 import { finalize } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
-import { AuthService } from '../../../../core/services/auth.service';
-import { ToastService } from '../../../../core/services/toast.service';
-import { markAllTouched } from '../../../../shared/utils/form-helpers';
-import { mapHttpError } from '../../../../shared/utils/error-mapper';
-import { MessageResponse } from '../../../../shared/models/auth.models';
+import { AuthService } from '@core/services/auth.service';
+import { ToastService } from '@core/services/toast.service';
+import { markAllTouched } from '@shared/utils/form-helpers';
+import { mapHttpError } from '@shared/utils/error-mapper';
+import { MessageResponse } from '@shared/models/auth.models';
 
 @Component({
   selector: 'app-forgot-password',

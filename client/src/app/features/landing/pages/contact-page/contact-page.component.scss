@@ -1,0 +1,102 @@
+@use '../policy-pages.shared';
+
+:host {
+  display: block;
+}
+
+.contact-page {
+  min-height: 100vh;
+  padding: 112px 80px 64px;
+  background: linear-gradient(180deg, #f8fbff 0%, #ffffff 100%);
+  color: #111827;
+}
+
+.contact-page__hero {
+  max-width: 760px;
+  display: grid;
+  gap: 18px;
+}
+
+.contact-page__hero h1 {
+  font-size: 3rem;
+  line-height: 1.05;
+  letter-spacing: -0.04em;
+}
+
+.contact-page__hero p {
+  font-size: 1.05rem;
+  line-height: 1.8;
+  color: #4b5563;
+}
+
+.contact-page__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.contact-page__grid {
+  margin-top: 48px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+}
+
+.contact-page__card {
+  padding: 28px;
+  border-radius: 24px;
+  border: 1px solid #e5e7eb;
+  background: #ffffff;
+  box-shadow: 0 22px 50px rgba(15, 23, 42, 0.08);
+  display: grid;
+  gap: 14px;
+}
+
+.contact-page__card a,
+.contact-page__link {
+  color: #2563eb;
+  font-weight: 600;
+}
+
+.contact-page__label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #6b7280;
+}
+
+.contact-page__card ul {
+  padding-left: 18px;
+  color: #4b5563;
+  display: grid;
+  gap: 8px;
+}
+
+.contact-page__footer {
+  margin-top: 48px;
+  padding-top: 24px;
+  border-top: 1px solid #e5e7eb;
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  color: #6b7280;
+}
+
+@media (max-width: 960px) {
+  .contact-page {
+    padding: 96px 24px 40px;
+  }
+
+  .contact-page__hero h1 {
+    font-size: 2.3rem;
+  }
+
+  .contact-page__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .contact-page__footer {
+    flex-direction: column;
+  }
+}

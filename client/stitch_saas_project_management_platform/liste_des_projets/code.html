@@ -1,0 +1,296 @@
+<!DOCTYPE html><html class="light" lang="en" style="width: 1290px; height: 1114px; overflow: hidden; position: relative;"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-secondary-fixed": "#00174b",
+                    "secondary-fixed": "#dbe1ff",
+                    "inverse-surface": "#303032",
+                    "surface-container-highest": "#e4e2e4",
+                    "outline": "#76777d",
+                    "primary-fixed": "#dae2fd",
+                    "surface-container": "#f0edef",
+                    "primary-container": "#131b2e",
+                    "on-secondary-container": "#fefcff",
+                    "primary": "#000000",
+                    "outline-variant": "#c6c6cd",
+                    "error-container": "#ffdad6",
+                    "tertiary-fixed": "#fcdeb5",
+                    "surface-bright": "#fcf8fa",
+                    "on-primary-fixed": "#131b2e",
+                    "on-background": "#1b1b1d",
+                    "on-error": "#ffffff",
+                    "on-surface-variant": "#45464d",
+                    "on-tertiary-container": "#98805d",
+                    "background": "#fcf8fa",
+                    "error": "#ba1a1a",
+                    "on-tertiary-fixed": "#271901",
+                    "primary-fixed-dim": "#bec6e0",
+                    "on-primary": "#ffffff",
+                    "inverse-primary": "#bec6e0",
+                    "surface-dim": "#dcd9db",
+                    "on-primary-fixed-variant": "#3f465c",
+                    "tertiary-fixed-dim": "#dec29a",
+                    "inverse-on-surface": "#f3f0f2",
+                    "on-surface": "#1b1b1d",
+                    "tertiary-container": "#271901",
+                    "surface-container-high": "#eae7e9",
+                    "surface-variant": "#e4e2e4",
+                    "on-tertiary-fixed-variant": "#574425",
+                    "on-primary-container": "#7c839b",
+                    "surface-tint": "#565e74",
+                    "surface-container-lowest": "#ffffff",
+                    "on-tertiary": "#ffffff",
+                    "secondary-fixed-dim": "#b4c5ff",
+                    "surface": "#fcf8fa",
+                    "tertiary": "#000000",
+                    "secondary": "#0051d5",
+                    "on-secondary": "#ffffff",
+                    "on-secondary-fixed-variant": "#003ea8",
+                    "on-error-container": "#93000a",
+                    "surface-container-low": "#f6f3f5"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "md": "16px",
+                    "xs": "4px",
+                    "gutter": "24px",
+                    "sm": "8px",
+                    "xl": "32px",
+                    "lg": "24px",
+                    "3xl": "64px",
+                    "container-max": "1440px",
+                    "2xl": "48px",
+                    "base": "4px"
+            },
+            "fontFamily": {
+                    "body-sm": ["Inter"],
+                    "label-sm": ["Inter"],
+                    "headline-md": ["Inter"],
+                    "title-lg": ["Inter"],
+                    "headline-sm": ["Inter"],
+                    "body-base": ["Inter"],
+                    "label-md": ["Inter"],
+                    "display-lg": ["Inter"]
+            },
+            "fontSize": {
+                    "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "label-sm": ["11px", {"lineHeight": "14px", "fontWeight": "500"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "title-lg": ["18px", {"lineHeight": "24px", "fontWeight": "600"}],
+                    "headline-sm": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                    "body-base": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "display-lg": ["36px", {"lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-background text-on-surface">
+<!-- SideNavBar Shell -->
+<aside class="fixed left-0 top-0 h-screen w-60 bg-primary-container dark:bg-primary-container border-r border-outline-variant dark:border-outline flex flex-col p-md gap-sm z-50">
+<div class="mb-xl px-md">
+<h1 class="font-title-lg text-title-lg font-bold text-on-primary-container">NexusFlow</h1>
+<p class="font-label-md text-label-md text-on-primary-container/70">Enterprise</p>
+</div>
+<nav class="flex flex-col gap-sm flex-grow">
+<!-- Active State: Projects -->
+<a class="text-on-primary-container/70 hover:text-on-primary-container flex items-center gap-md px-md py-sm transition-all hover:bg-on-primary-container/10" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-label-md text-label-md">Dashboard</span>
+</a>
+<a class="bg-primary-fixed dark:bg-primary-fixed-dim text-primary-container rounded-xl flex items-center gap-md px-md py-sm ring-2 ring-secondary transition-shadow" href="#">
+<span class="material-symbols-outlined" data-icon="assignment_turned_in">assignment_turned_in</span>
+<span class="font-label-md text-label-md">Projects</span>
+</a>
+<a class="text-on-primary-container/70 hover:text-on-primary-container flex items-center gap-md px-md py-sm transition-all hover:bg-on-primary-container/10" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-label-md text-label-md">Settings</span>
+</a>
+</nav>
+<div class="mt-auto px-md">
+<button class="w-full bg-[#2563EB] text-white font-label-md text-label-md py-md rounded-lg flex items-center justify-center gap-sm hover:opacity-90 transition-all">
+<span class="material-symbols-outlined" data-icon="add">add</span>
+                New Project
+            </button>
+</div>
+</aside>
+<!-- Main Content Wrapper -->
+<div class="pl-60 flex flex-col min-h-screen">
+<!-- TopNavBar Shell -->
+<header class="sticky top-0 z-40 bg-surface dark:bg-inverse-surface border-b border-outline-variant dark:border-outline flex justify-between items-center w-full px-lg h-16 max-w-container-max mx-auto">
+<div class="flex items-center gap-xl flex-1">
+<div class="relative w-full max-w-md">
+<span class="absolute left-md top-1/2 -translate-y-1/2 text-outline material-symbols-outlined" data-icon="search">search</span>
+<input class="w-full pl-xl pr-md py-sm bg-surface-container-low border border-outline-variant rounded-lg text-body-sm focus:ring-2 focus:ring-secondary/20 focus:border-secondary outline-none transition-all" placeholder="Search projects..." type="text">
+</div>
+</div>
+<div class="flex items-center gap-md">
+<button class="p-sm rounded-full text-on-surface-variant hover:bg-surface-container-low transition-colors material-symbols-outlined" data-icon="notifications">notifications</button>
+<button class="p-sm rounded-full text-on-surface-variant hover:bg-surface-container-low transition-colors material-symbols-outlined" data-icon="help">help</button>
+<button class="p-sm rounded-full text-on-surface-variant hover:bg-surface-container-low transition-colors material-symbols-outlined" data-icon="apps">apps</button>
+<div class="h-8 w-8 rounded-full overflow-hidden border border-outline-variant ml-sm">
+<img alt="User profile" class="h-full w-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD-ghCueuv4RSiCb5UMnCkS3YoIbTtWzHxFzCPYlHgQDZatoXUwTX1f-NyD9f3ZEFI0W0pY4TWJvsimseYOPOf1z6TX4D9hK1gdCJdsSMVj3kDgEHgVVvXZpOzstUt2GRzOh86ZTdQyMB1Q_u4uGFxZRLlG6MdF9uQbhBMVW78TMQVNo7HkTvKotcmDT81Io05vnqy1TLAsNAoYfYCMzShkqJjWQEPf0aEVbj53B6mZv-tHQmz3wPk8rHp_3OMmTJR-jNEcaYiq4A">
+</div>
+</div>
+</header>
+<!-- Canvas -->
+<main class="flex-1 p-xl max-w-container-max mx-auto w-full">
+<!-- Page Header & Filters -->
+<div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-lg mb-2xl">
+<div>
+<h2 class="font-headline-md text-headline-md text-primary mb-xs">Gestion des Projets</h2>
+<p class="font-body-base text-body-base text-on-surface-variant">Oversee enterprise operations and strategic initiatives across all departments.</p>
+</div>
+<div class="flex items-center bg-surface-container-low p-xs rounded-lg border border-outline-variant">
+<button class="px-lg py-sm font-label-md text-label-md rounded-md bg-white text-secondary shadow-sm">Active</button>
+<button class="px-lg py-sm font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors">Archived</button>
+</div>
+</div>
+<!-- Bento Grid Project List -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-lg">
+<!-- Project Card 1: Main Project -->
+<div class="lg:col-span-2 bg-white border border-[#E2E8F0] rounded-xl p-xl flex flex-col justify-between hover:border-secondary transition-all group">
+<div>
+<div class="flex justify-between items-start mb-md">
+<span class="px-md py-xs rounded-full bg-secondary/10 text-secondary font-label-md text-label-md">High Priority</span>
+<button class="material-symbols-outlined text-outline hover:text-primary">more_vert</button>
+</div>
+<h3 class="font-title-lg text-title-lg text-primary mb-sm">Cloud Infrastructure Migration</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant max-w-2xl mb-xl">Modernizing the core legacy stack to a containerized microservices architecture on AWS. This initiative focuses on scalability, reliability, and cost-optimization for high-traffic workloads.</p>
+</div>
+<div class="space-y-xl">
+<div>
+<div class="flex justify-between mb-sm">
+<span class="font-label-md text-label-md text-on-surface-variant">Progress</span>
+<span class="font-label-md text-label-md text-primary">74%</span>
+</div>
+<div class="w-full bg-surface-container-high h-2 rounded-full overflow-hidden">
+<div class="bg-secondary h-full rounded-full" style="width: 74%"></div>
+</div>
+</div>
+<div class="flex justify-between items-center">
+<div class="flex -space-x-sm">
+<img alt="Member" class="w-8 h-8 rounded-full border-2 border-white" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBfdvDcFGEKw07smgKNJvZ5ldYlZRk4QrbMtPdvYRZsdVC3jplAZY_DKOr31LwxtL70zIXWv49725nH4GtqG03QI0j0QmPqMhhuoLeoRoteUQsz7BJPAkhye3QwHjIf9g2qdyIjlnNUBtB8t8RtpI1nf9SdRWcqMMlg-9jGIHJ2kkndrY5urHmlqj0tjX7s5FzL4ZtaBBi1MNyEcNEh9i52JlReDQCUAttDueMBUWVztkb_G_0SOeOey7iyaRvhc6tof-NLvowW6Q">
+<img alt="Member" class="w-8 h-8 rounded-full border-2 border-white" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDm7AVpFdJtq4P4cpK9DFsOAPJVkdYPHJhXH7EJOQr33bBn93dksmNZrkekLHhXibKd0eI699A95i3mP9NEv700y_OCShkIMu3QksanHKfX8t7Mm8FNWLCBTpSFD0zWxbiMfWYqzDOMJ6whSq-VywfJU56x0DchUcfN9-Wup5dsdBU4x6HhV4-87QUbWJ2aguWyQuvuUX-1WubofiF6Lr-eZl4zlMG3z4gL5X0bqHOesXrwpUMYlnwAkhbFdZLh_iEzjxHr3Z4QBA">
+<img alt="Member" class="w-8 h-8 rounded-full border-2 border-white" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA6rAdVFq0Y944BuoMQl8b5N7VlVLrUZ0bnLHei1AB_XzfsNRNYksRAfB-dJBAugDhBX64mxixAhZnOYcMPd2bqBDlwu3FF3V8bCKtafWWoN5iU8kV-7BPa4uz95xeL-CsrGntSbJUpnJ7qYVuj13XdE2EfEyf9J4WKAGIY8AbNbV2jjTJ0M21Zl_uuBxW4ZonEXsG1N_Pv4Bs7HGqAIwu4e_9YqgeYcCS_BmiX8PBGC8FdaQhbOmoLhCAPDfHXalzRe3AghGvqOA">
+<div class="w-8 h-8 rounded-full border-2 border-white bg-surface-container-highest flex items-center justify-center font-label-sm text-label-sm text-on-surface-variant">+5</div>
+</div>
+<div class="flex items-center gap-xs text-on-surface-variant">
+<span class="material-symbols-outlined text-[18px]" data-icon="calendar_today">calendar_today</span>
+<span class="font-label-md text-label-md">Ends Dec 12</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Project Card 2 -->
+<div class="bg-white border border-[#E2E8F0] rounded-xl p-xl flex flex-col hover:border-secondary transition-all">
+<div class="mb-md">
+<div class="flex justify-between items-start mb-md">
+<span class="px-md py-xs rounded-full bg-on-tertiary-container/10 text-on-tertiary-container font-label-md text-label-md">Internal</span>
+<button class="material-symbols-outlined text-outline hover:text-primary">more_vert</button>
+</div>
+<h3 class="font-title-lg text-title-lg text-primary mb-sm">UX Audit 2024</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-xl">Complete accessibility and usability review of the NexusFlow platform across all user personas.</p>
+</div>
+<div class="mt-auto space-y-md">
+<div class="w-full bg-surface-container-high h-1.5 rounded-full overflow-hidden">
+<div class="bg-primary h-full rounded-full" style="width: 32%"></div>
+</div>
+<div class="flex justify-between items-center">
+<div class="flex -space-x-sm">
+<img alt="Member" class="w-7 h-7 rounded-full border-2 border-white" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB7RYawGS7hFklIZf5pjS3tBGsKYLKj27JRgDgn_IHJ3UqfWuMSYPzxuaTp8Nou4rHEtVs6DCcD-yCyEnCB7ClfCELbN8Bkl1MNV6-bkH3bMN1teFsP1WTZQF1_OS7w67pQhCmeGH_-FflFtfp1W5U3H8hWVtdYSW9r-iI_3wxBATPFmyPFSWARz0l1dRiz8bsQTyaDNtssUDffy_qqigsMx3D4OwGC-U3FLgNuzdXtVYU9JOGBm6OnRjAWC1pmBzof3IjWZdwxuw">
+<img alt="Member" class="w-7 h-7 rounded-full border-2 border-white" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDoQAAaxuktzVBxjFqfRIrPyXCV60TuSRAXmorNupV4zc96El4o1k2YA-FmGmIoMd2j5RDNkgEW5fXWv6Zwn5Jgrkng7rJOl1RrbXzK-SQawiYO-aDPlziEpGLYoTON7lDx_GpJWEtzijvpfjTtOQKfW4JmOdezdfyvE1TYPSqO74vkPZujTr7_i8kuiRRRP2aLtwJVk4lCiCBMDA81hI4foZ6HOrAkvNl0CA4Q7Fx-rxUmQlNbZYET6wPDC3BH7LniRxpuztDC2g">
+</div>
+<span class="font-label-md text-label-md text-outline">32%</span>
+</div>
+</div>
+</div>
+<!-- Project Card 3 -->
+<div class="bg-white border border-[#E2E8F0] rounded-xl p-xl flex flex-col hover:border-secondary transition-all">
+<div class="mb-md">
+<div class="flex justify-between items-start mb-md">
+<span class="px-md py-xs rounded-full bg-error-container/20 text-error font-label-md text-label-md">At Risk</span>
+<button class="material-symbols-outlined text-outline hover:text-primary">more_vert</button>
+</div>
+<h3 class="font-title-lg text-title-lg text-primary mb-sm">Q4 Marketing Campaign</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-xl">Global launch campaign for the NexusFlow Pro tier across social, search, and direct mail channels.</p>
+</div>
+<div class="mt-auto space-y-md">
+<div class="w-full bg-surface-container-high h-1.5 rounded-full overflow-hidden">
+<div class="bg-error h-full rounded-full" style="width: 15%"></div>
+</div>
+<div class="flex justify-between items-center">
+<div class="flex -space-x-sm">
+<img alt="Member" class="w-7 h-7 rounded-full border-2 border-white" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA-CO-byIw9MCh5_FgBoRAZVAT0VPevdVPGCuoNxk0bpw4bq0jPxCuHct4K1pa2MM2woveoz4q4B7pfyStpXjFMnT_aLEz6wDCLZKmJALlImwq3JtAalSLsn6kuar92pB81flnoFPHbLJUAyqFAplCltOER-3J8f1-K-9UA14_UeTfPZZsu5TVYGRgVHcAXmaWb3NiRqK1BkODhbswikC3jSI1sTIoG9gGgMW3MVkn7wWYmOERpT44NvcHdYRcmLDSE4ol_f07P3g">
+</div>
+<span class="font-label-md text-label-md text-outline">15%</span>
+</div>
+</div>
+</div>
+<!-- Project Card 4 -->
+<div class="bg-white border border-[#E2E8F0] rounded-xl p-xl flex flex-col hover:border-secondary transition-all">
+<div class="mb-md">
+<div class="flex justify-between items-start mb-md">
+<span class="px-md py-xs rounded-full bg-secondary-fixed/50 text-secondary font-label-md text-label-md">New</span>
+<button class="material-symbols-outlined text-outline hover:text-primary">more_vert</button>
+</div>
+<h3 class="font-title-lg text-title-lg text-primary mb-sm">Security Hardening</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-xl">Implementing SOC2 compliance standards and updating end-to-end encryption protocols.</p>
+</div>
+<div class="mt-auto space-y-md">
+<div class="w-full bg-surface-container-high h-1.5 rounded-full overflow-hidden">
+<div class="bg-secondary h-full rounded-full" style="width: 5%"></div>
+</div>
+<div class="flex justify-between items-center">
+<div class="flex -space-x-sm">
+<img alt="Member" class="w-7 h-7 rounded-full border-2 border-white" src="https://lh3.googleusercontent.com/aida-public/AB6AXuALsgxYmC6qCK0BD5vLntJSHjKzDyFUUnfaGHcx_9ppk9XNlLaerrHHr4_wJSrKTqByTJJCoIc9x1J6k51d2uP6K7LQs0GnLh_ni7D0W02PhPLAkFCzjD-X0MocSaMtyuxvX79MYTkGQdRtQwqznhnb8N-7H8wUvp7D4PSF9Fuw4ED8q5B-9XyoQS2Nus19miF8wgyxLyXMb469J5VTjc3qLVcyXIDZEcFHlwLwMF_7jYSb_XAleNMDu9-QzBXNK_Xwh5NNNB1yug">
+<img alt="Member" class="w-7 h-7 rounded-full border-2 border-white" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB7oXPX6d4LD3C0bL37BIa22Noh8z2FLY5fWGTAxYnk6s-0Cbxnt80dc5PLtQpFmu_xS0Ayq9f2ctDKbqHnl31tCz1HPUN4k6UOKs2SDLvxkFFtNDcg2g0FEv5e2XvbTb2tSBEOrYdlWscQpoTWgHuXCB3iBi_gjWH3Tkl3XN58lfyEwddcd1tOJBvkGXiOKaWy8IfNGIpKLZHjyKgUuwlWJ9g0S2EAaNYCvTF41HxmVs6ceZjfL9Ups-jp4XNFUVf2d39_PRqYNQ">
+<img alt="Member" class="w-7 h-7 rounded-full border-2 border-white" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDr_WZQxO9-VEsUkpmUQ3BgmMsAx3znWeLIKdiR04-wu-7xHaucw9oYWuq5PeuSM7XhXx3h8pAZUa5Dd3-KoiXsBdgh83lpV0ffvgN5lnkmcIS-ieV_WZRld2FMz5HmCOaNU1P2YYsfqI1j5QGILQDrUWadq33wW-hZxW0eRAFaJHVTa8S3Vdx0sYqmPTekZkhur87551j3N4GXWz_ClbcHgX18-ndLq4FmtQ22XCUNBs9lNfczsmsvVXrjzI29crr56S5-MUjBQA">
+</div>
+<span class="font-label-md text-label-md text-outline">5%</span>
+</div>
+</div>
+</div>
+<!-- Project Card 5: Large Visual Focus -->
+<div class="lg:col-span-1 bg-[#0F172A] rounded-xl overflow-hidden flex flex-col hover:opacity-95 transition-all">
+<div class="relative h-48 w-full overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A futuristic data visualization dashboard glowing on a large screen in a dark, sophisticated command center. The image features sleek blue and white light trails representing information flow. The setting is professional, high-tech, and minimal, with a cool-toned atmospheric glow that emphasizes precision and executive oversight. The visual style is modern corporate with deep blacks and vibrant neon blue accents." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAJOQ_eLw6lf_L_FkPky9IsMJyvepBpjdX2YlTvbSos9aEZBwuU-4EB6XBxCH6qjXK52DYA-yewG7qiPQ_tCo4uOZcyREXzwmERb48pa161P7WCNhVLFtYcr2tJGp45rTMm4dH8OlYSPR_RHfVmasOE46Crfcb_3stB9ri7rRVDD0EuILcHvSu-x2xaytz3SrcteEXmJT8EEGyOYUCN3RwwzMCQ_7Y_oqv49okIRGaloBGbX2Fd8mxI_LCHeYX1Jn-O-Tt9ZihVqQ">
+<div class="absolute inset-0 bg-gradient-to-t from-[#0F172A] to-transparent"></div>
+</div>
+<div class="p-xl -mt-8 relative">
+<h3 class="font-title-lg text-title-lg text-white mb-sm">AI Analytics Engine</h3>
+<p class="font-body-sm text-body-sm text-white/70 mb-xl">Integrating machine learning models for predictive project timeline forecasting.</p>
+<button class="w-full py-md bg-white/10 hover:bg-white/20 border border-white/20 text-white rounded-lg font-label-md text-label-md transition-all">View Analytics</button>
+</div>
+</div>
+</div>
+<!-- Footer / Pagination Logic -->
+
+</main>
+</div>
+
+
+<div id="snapdom-sandbox" data-snapdom-sandbox="true" aria-hidden="true" style="position: absolute; left: -9999px; top: -9999px; width: 0px; height: 0px; overflow: hidden;"></div></body></html>

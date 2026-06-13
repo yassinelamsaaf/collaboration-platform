@@ -122,10 +122,13 @@ Implemented:
 - Public landing page.
 - Auth pages: login, register, verify email, forgot password UI.
 - Shared UI helpers and toast/error handling.
+- Responsive auth and landing polish for mobile navigation, footer layout, and form spacing.
+- Runtime frontend API configuration through `public/assets/env.js` so the same Angular build can target local or Docker environments.
+- Frontend Docker image with Nginx static serving and SPA fallback routing.
 
 Known gaps:
 - Projects frontend is not implemented yet.
-- API service is currently auth-centric and should be generalized before adding project screens.
+- API service is still auth-centric and should be generalized before adding project screens.
 
 Auth guard:
 - `core/guards/auth.guard.ts` — calls `AuthService.checkSession()` (POST /api/auth/refresh), redirects to `/auth/login` on failure.
@@ -137,6 +140,11 @@ Password reset frontend:
 - `/auth/reset-password?email=...` — 6-digit OTP (same style as verify-email), new password, confirm password → calls `POST /api/auth/reset-password`.
 - "Resend verification code" link with 60-second countdown cooldown.
 - Reuses existing SCSS classes: `.auth-center`, `.auth-card`, `.otp-grid`, `.input-with-icon`, `.link-button`, `.btn--primary`, `.auth-inline`.
+
+Docker/frontend runtime:
+- `client/Dockerfile` builds the Angular app and serves it with Nginx on container port `80`.
+- `client/public/assets/env.js` is generated at container startup from `CLIENT_API_BASE_URL`.
+- Root `docker-compose.yml` now starts `client`, `server`, `db`, `redis`, and `mailhog` together.
 
 ## Seeds / Testing Notes
 

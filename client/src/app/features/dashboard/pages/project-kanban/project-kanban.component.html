@@ -1,0 +1,197 @@
+<section class="workspace-page">
+  <div class="workspace-empty" *ngIf="loading && !snapshot">Loading project tasks and team lanes...</div>
+
+  <div class="workspace-data-chip" *ngIf="loading && snapshot">
+    <lucide-icon name="refresh-cw"></lucide-icon>
+    Refreshing board data...
+  </div>
+
+  <ng-container *ngIf="snapshot as data">
+    <div class="workspace-page__header">
+      <div>
+        <div class="workspace-page__eyebrow">Work Management</div>
+        <h1 class="workspace-page__title">Kanban board</h1>
+        <p class="workspace-page__subtitle">
+          This is the task module entry point in the frontend: tasks live inside a team and inherit the project context around them.
+        </p>
+      </div>
+
+      <div class="workspace-inline-actions">
+        <a class="workspace-secondary-btn" [routerLink]="['/dashboard/projects', data.project.slug || data.project.id]">
+          <lucide-icon name="layout-dashboard"></lucide-icon>
+          Overview
+        </a>
+        <a class="workspace-secondary-btn" [routerLink]="['/dashboard/projects', data.project.slug || data.project.id, 'teams']">
+          <lucide-icon name="users"></lucide-icon>
+          Members & Teams
+        </a>
+      </div>
+    </div>
+
+    <div class="workspace-tabs">
+      <a class="workspace-tabs__link" [routerLink]="['/dashboard/projects', data.project.slug || data.project.id]">
+        <lucide-icon name="layout-dashboard"></lucide-icon>
+        Overview
+      </a>
+      <a class="workspace-tabs__link" [routerLink]="['/dashboard/projects', data.project.slug || data.project.id, 'teams']">
+        <lucide-icon name="users"></lucide-icon>
+        Members & Teams
+      </a>
+      <a class="workspace-tabs__link is-active" [routerLink]="['/dashboard/projects', data.project.slug || data.project.id, 'kanban']">
+        <lucide-icon name="square-kanban"></lucide-icon>
+        Kanban
+      </a>
+    </div>
+
+    <div class="workspace-card workspace-stack">
+      <div class="workspace-page__header" style="align-items: center">
+        <div>
+          <div class="workspace-page__eyebrow">Board Scope</div>
+          <h2 class="workspace-page__title" style="font-size: 1.45rem">Task filters</h2>
+        </div>
+
+        <div class="workspace-inline-actions">
+          <select class="workspace-select workspace-select--compact" [(ngModel)]="selectedTeamRef" name="selected-team-filter">
+            <option value="all">All teams</option>
+            <option *ngFor="let team of teamOptions()" [value]="team.slug || team.id">{{ team.name }}</option>
+          </select>
+          <button class="workspace-primary-btn" type="button" *ngIf="canEditTasks" (click)="showTaskForm = !showTaskForm">
+            <lucide-icon [name]="showTaskForm ? 'x' : 'badge-plus'"></lucide-icon>
+            {{ showTaskForm ? 'Close' : 'New Task' }}
+          </button>
+        </div>
+      </div>
+
+      <div class="workspace-empty" *ngIf="!canEditTasks">
+        Your current role is read-only in this project, so task creation is disabled.
+      </div>
+
+      <form class="workspace-form" *ngIf="canEditTasks && showTaskForm" (ngSubmit)="createTask()">
+        <div class="workspace-form__row">
+          <div class="workspace-field">
+            <label for="task-team">Team</label>
+            <select id="task-team" class="workspace-select" name="task-team" [(ngModel)]="taskForm.teamRef" (ngModelChange)="onTaskTeamChange()">
+              <option *ngFor="let team of teamOptions()" [value]="team.slug || team.id">{{ team.name }}</option>
+            </select>
+          </div>
+
+          <div class="workspace-field">
+            <label for="task-assignee">Assignee</label>
+            <select id="task-assignee" class="workspace-select" name="task-assignee" [(ngModel)]="taskForm.assigneeId">
+              <option value="">Unassigned</option>
+              <option *ngFor="let option of assigneeOptions()" [value]="option.value">{{ option.label }}</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="workspace-form__row">
+          <div class="workspace-field">
+            <label for="task-title">Title</label>
+            <input
+              id="task-title"
+              class="workspace-input"
+              type="text"
+              name="task-title"
+              [(ngModel)]="taskForm.title"
+              placeholder="Implement invitation acceptance page"
+            />
+          </div>
+
+          <div class="workspace-field">
+            <label for="task-priority">Priority</label>
+            <select id="task-priority" class="workspace-select" name="task-priority" [(ngModel)]="taskForm.priority">
+              <option *ngFor="let priority of priorities" [value]="priority">{{ priority }}</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="workspace-form__row">
+          <div class="workspace-field">
+            <label for="task-description">Description</label>
+            <textarea
+              id="task-description"
+              class="workspace-textarea"
+              name="task-description"
+              [(ngModel)]="taskForm.description"
+              placeholder="Give enough context so the task stays understandable later."
+            ></textarea>
+          </div>
+
+          <div class="workspace-field">
+            <label for="task-due-date">Due date</label>
+            <input id="task-due-date" class="workspace-input" type="date" name="task-due-date" [(ngModel)]="taskForm.dueDate" />
+          </div>
+        </div>
+
+        <button class="workspace-primary-btn" type="submit" [disabled]="creating">
+          <lucide-icon name="badge-plus"></lucide-icon>
+          {{ creating ? 'Creating...' : 'Create Task' }}
+        </button>
+      </form>
+
+      <ng-template #viewerNotice>
+        <div class="workspace-empty">Your current role is read-only in this project, so task creation is disabled.</div>
+      </ng-template>
+    </div>
+
+    <div class="kanban-board">
+      <section
+        class="kanban-column"
+        *ngFor="let status of statuses"
+        [class.kanban-column--dragover]="dragOverStatus === status"
+        (dragover)="onDragOver($event, status)"
+        (dragleave)="onDragLeave(status)"
+        (drop)="onDrop(status)"
+      >
+        <div class="kanban-column__header">
+          <div>
+            <div class="workspace-list__title">{{ status }}</div>
+            <div class="workspace-list__subtitle">{{ tasksForStatus(status).length }} task(s)</div>
+          </div>
+          <span class="workspace-pill workspace-pill--neutral">{{ status }}</span>
+        </div>
+
+        <ng-container *ngIf="tasksForStatus(status).length; else emptyColumn">
+          <article
+            class="kanban-card"
+            *ngFor="let task of tasksForStatus(status)"
+            [class.kanban-card--focused]="isFocused(task)"
+            [class.kanban-card--dragging]="draggedTask === task"
+            [attr.draggable]="canEditTasks ? true : null"
+            (dragstart)="onDragStart(task)"
+            (dragend)="draggedTask = null; dragOverStatus = null"
+          >
+            <a class="kanban-card__title kanban-card__title--link" [routerLink]="taskRoute(task)">{{ task.title }}</a>
+            <div class="workspace-list__subtitle">{{ task.description || 'No task description provided.' }}</div>
+
+            <div class="kanban-card__meta">
+              <span class="workspace-pill workspace-pill--neutral">{{ teamName(task) }}</span>
+              <span class="workspace-pill workspace-pill--primary">{{ task.priority }}</span>
+              <span class="workspace-pill workspace-pill--success" *ngIf="task.assigneeId">Assigned</span>
+            </div>
+
+            <div class="workspace-inline-actions">
+              <a class="workspace-secondary-btn" [routerLink]="taskRoute(task)">
+                <lucide-icon name="file-text"></lucide-icon>
+                Open
+              </a>
+
+              <select
+                class="workspace-select workspace-select--compact"
+                [disabled]="!canEditTasks"
+                [value]="task.status"
+                (change)="moveTask(task, $any($event.target).value)"
+              >
+                <option *ngFor="let nextStatus of statuses" [value]="nextStatus">{{ nextStatus }}</option>
+              </select>
+            </div>
+          </article>
+        </ng-container>
+
+        <ng-template #emptyColumn>
+          <div class="workspace-empty">No tasks in {{ status }}.</div>
+        </ng-template>
+      </section>
+    </div>
+  </ng-container>
+</section>

@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "on-secondary-fixed": "#00174b",
+            "secondary-fixed": "#dbe1ff",
+            "inverse-surface": "#303032",
+            "surface-container-highest": "#e4e2e4",
+            "outline": "#76777d",
+            "primary-fixed": "#dae2fd",
+            "surface-container": "#f0edef",
+            "primary-container": "#131b2e",
+            "on-secondary-container": "#fefcff",
+            "primary": "#000000",
+            "outline-variant": "#c6c6cd",
+            "error-container": "#ffdad6",
+            "tertiary-fixed": "#fcdeb5",
+            "surface-bright": "#fcf8fa",
+            "on-primary-fixed": "#131b2e",
+            "on-background": "#1b1b1d",
+            "on-error": "#ffffff",
+            "on-surface-variant": "#45464d",
+            "on-tertiary-container": "#98805d",
+            "background": "#fcf8fa",
+            "error": "#ba1a1a",
+            "on-tertiary-fixed": "#271901",
+            "primary-fixed-dim": "#bec6e0",
+            "on-primary": "#ffffff",
+            "inverse-primary": "#bec6e0",
+            "surface-dim": "#dcd9db",
+            "on-primary-fixed-variant": "#3f465c",
+            "tertiary-fixed-dim": "#dec29a",
+            "inverse-on-surface": "#f3f0f2",
+            "on-surface": "#1b1b1d",
+            "tertiary-container": "#271901",
+            "surface-container-high": "#eae7e9",
+            "surface-variant": "#e4e2e4",
+            "on-tertiary-fixed-variant": "#574425",
+            "on-primary-container": "#7c839b",
+            "surface-tint": "#565e74",
+            "surface-container-lowest": "#ffffff",
+            "on-tertiary": "#ffffff",
+            "secondary-fixed-dim": "#b4c5ff",
+            "surface": "#fcf8fa",
+            "tertiary": "#000000",
+            "secondary-container": "#316bf3",
+            "secondary": "#0051d5",
+            "on-secondary": "#ffffff",
+            "on-secondary-fixed-variant": "#003ea8",
+            "on-error-container": "#93000a",
+            "surface-container-low": "#f6f3f5"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.125rem",
+            "lg": "0.25rem",
+            "xl": "0.5rem",
+            "full": "0.75rem"
+          },
+          "spacing": {
+            "md": "16px",
+            "xs": "4px",
+            "gutter": "24px",
+            "sm": "8px",
+            "xl": "32px",
+            "lg": "24px",
+            "3xl": "64px",
+            "container-max": "1440px",
+            "2xl": "48px",
+            "base": "4px"
+          },
+          "fontFamily": {
+            "body-sm": ["Inter"],
+            "label-sm": ["Inter"],
+            "headline-md": ["Inter"],
+            "title-lg": ["Inter"],
+            "headline-sm": ["Inter"],
+            "body-base": ["Inter"],
+            "label-md": ["Inter"],
+            "display-lg": ["Inter"]
+          },
+          "fontSize": {
+            "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+            "label-sm": ["11px", {"lineHeight": "14px", "fontWeight": "500"}],
+            "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+            "title-lg": ["18px", {"lineHeight": "24px", "fontWeight": "600"}],
+            "headline-sm": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+            "body-base": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+            "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+            "display-lg": ["36px", {"lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "700"}]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+    body { font-family: 'Inter', sans-serif; }
+  </style>
+</head>
+<body class="bg-surface text-on-surface">
+<!-- SideNavBar Anchor -->
+<aside class="fixed left-0 top-0 h-screen w-60 bg-primary-container dark:bg-primary-container border-r border-outline-variant dark:border-outline flex flex-col h-full p-md gap-sm z-30">
+<div class="flex items-center gap-md mb-xl">
+<div class="w-10 h-10 bg-on-primary-container rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-primary-container" data-icon="hub">hub</span>
+</div>
+<div>
+<h1 class="font-title-lg text-title-lg font-bold text-on-primary-container">NexusFlow</h1>
+<p class="text-on-primary-container/70 text-label-md">Enterprise</p>
+</div>
+</div>
+<nav class="flex flex-col gap-sm flex-grow">
+<a class="text-on-primary-container/70 hover:text-on-primary-container flex items-center gap-md px-md py-sm transition-all hover:bg-on-primary-container/10" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-label-md text-label-md">Dashboard</span>
+</a>
+<a class="bg-primary-fixed dark:bg-primary-fixed-dim text-primary-container rounded-xl flex items-center gap-md px-md py-sm" href="#">
+<span class="material-symbols-outlined" data-icon="assignment_turned_in">assignment_turned_in</span>
+<span class="font-label-md text-label-md">Projects</span>
+</a>
+<a class="text-on-primary-container/70 hover:text-on-primary-container flex items-center gap-md px-md py-sm transition-all hover:bg-on-primary-container/10" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-label-md text-label-md">Settings</span>
+</a>
+</nav>
+<button class="mt-auto bg-secondary text-on-secondary px-md py-sm rounded-lg flex items-center justify-center gap-sm font-label-md transition-all active:scale-95">
+<span class="material-symbols-outlined text-[20px]" data-icon="add">add</span>
+      New Project
+    </button>
+</aside>
+<!-- Main Content Wrapper -->
+<div class="ml-60 flex flex-col min-h-screen">
+<!-- TopNavBar Anchor -->
+<header class="bg-surface dark:bg-inverse-surface border-b border-outline-variant dark:border-outline h-16 sticky top-0 z-20">
+<div class="flex justify-between items-center w-full px-lg h-full max-w-container-max mx-auto">
+<div class="flex items-center gap-xl flex-1">
+<div class="relative w-full max-w-md">
+<span class="material-symbols-outlined absolute left-sm top-1/2 -translate-y-1/2 text-on-surface-variant" data-icon="search">search</span>
+<input class="w-full bg-surface-container-low border-none rounded-lg pl-xl py-xs font-body-sm text-on-surface focus:ring-2 focus:ring-secondary" placeholder="Search project assets..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-md">
+<button class="w-10 h-10 rounded-full flex items-center justify-center text-on-surface-variant hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="w-10 h-10 rounded-full flex items-center justify-center text-on-surface-variant hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+</button>
+<button class="w-10 h-10 rounded-full flex items-center justify-center text-on-surface-variant hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined" data-icon="apps">apps</span>
+</button>
+<div class="h-8 w-[1px] bg-outline-variant mx-sm"></div>
+<img alt="User profile" class="w-8 h-8 rounded-full border border-outline-variant" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAaTuuQK8IBfQ0Wqx3GwEr1he9gG1LBFAgBIWdJ--1z-Dn7luWLwPQ0Xlv0LN3klpqqhVx-Svnp-t-XaLl75lyta8AeANKol10B7ojr1iMMZ6xlSt4cycZF8HuwyOvUIxu36hy85zEbnqG3frtgSMCkwjky8qSb4TfO3e1MgEfS5depshst2uNvucEzu-WfZUQzj-97KE7QK4S-fCJI4BPRMvgDoy5qg6GFL6CjSMMuwRcpR0dF-Gv9HdOzUU4xH0TIc7drHyzCow"/>
+</div>
+</div>
+</header>
+<!-- Canvas -->
+<main class="flex-grow p-lg bg-surface">
+<!-- Board Header -->
+<div class="flex justify-between items-center mb-xl">
+<div>
+<nav class="flex items-center gap-xs text-on-surface-variant mb-xs">
+<span class="text-label-md font-label-md">Projects</span>
+<span class="material-symbols-outlined text-[16px]" data-icon="chevron_right">chevron_right</span>
+<span class="text-label-md font-label-md text-primary">Vue Kanban</span>
+</nav>
+<h2 class="font-display-lg text-display-lg text-primary">Project Roadmap</h2>
+</div>
+<div class="flex items-center gap-md">
+<div class="flex -space-x-sm">
+<img class="w-8 h-8 rounded-full border-2 border-surface" data-alt="A professional studio portrait of a software developer with a clean, high-key lighting setup. The person is smiling confidently, wearing modern business-casual attire. The background is a soft, neutral light gray that aligns with a corporate SaaS aesthetic. The lighting is bright and even, conveying a sense of expertise and approachability." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD-92rPn0CpgHEeU3wjgO8YMJUJfKHnKAVj_oQkFelC3hdYjSBoKuRRiU7bcT-4n-JMWKPYeBoFRNiTD501Q7weD3oEzszzlbye0M2heVU1f57iXbV_HvozCTVZm8xHUCQKOXRvBG0BT8WAh90IdvCF8YUFSeLEGzff61p0eRPXy5JwCnT5orxGfc5vroKMVQecUqD3unWAFTMBCgC987PbRzXw_1xzP9EMVq8aBB_WMpyv12lVyyvKvr1pXB6ojC6_S7kzcyviIw"/>
+<img class="w-8 h-8 rounded-full border-2 border-surface" data-alt="A focused digital nomad working in a brightly lit, modern co-working space. The person is looking at a laptop screen with a professional expression. The atmosphere is clean and minimalist, featuring soft white walls and natural daylight coming from a large window. The color palette is composed of neutrals and subtle blue accents, maintaining a professional corporate tone." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDPRpPjoxMjf51cdFHufy0yI_QlgvajD-6nVTc1RDupF_XqNGBujXE8z2SrKEV0KxxCAWwowaRjMkGEmf76iEC9FdmeEVpnPDqydcwoUtBin8onqQzhWu6hPfNNMarwTqYbsKUT_s63S0kiwl8ff0e32IzPqvIsbhW3f2eryFoBo5wsC7SgCZnO7mbBtPvHvtSZOULivSA4xI0llHfezEqNKaOMLWkFl4sBfU_YKUwXyvCzIU3Shv73oqkaG6l1MgBL8f3wj3tFVw"/>
+<img class="w-8 h-8 rounded-full border-2 border-surface" data-alt="A creative professional in a modern design studio environment with soft, diffused lighting. The individual is engaged in thoughtful planning, surrounded by clean architectural elements and high-end tech. The visual style is crisp and modern, emphasizing clarity and productivity through a high-key light mode aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB4R91qXAsp0DctHA_sc9AObLUvNkVzUydi5TuyNjxdGsO51bWZAaQ-2c9QfyBSM9rhlmowm6FwB9BqoCl6kXQq3ZvWwXRahA21B0sSR2i_rideq16nAld8Oqk22GZVyLpIQOFiO2MMSA7tlk4UYhFEPUM-1e--1S_x-txZbnme6JYzINBAH4pFz8RysB4FzKhR4bKholi69PxhI7VFOZgOzkvP-Qjj1SCoKra7neuy-MXzDI03TqolRCSJQ7BPcV7tyOUf2XASLw"/>
+<div class="w-8 h-8 rounded-full border-2 border-surface bg-surface-container-highest flex items-center justify-center text-label-sm font-label-md text-on-surface-variant">+4</div>
+</div>
+<button class="flex items-center gap-sm px-lg py-sm border border-outline text-on-surface font-label-md rounded-lg hover:bg-surface-container-low transition-all">
+<span class="material-symbols-outlined text-[20px]" data-icon="person_add">person_add</span>
+            Invite Member
+          </button>
+<button class="bg-primary text-on-primary px-lg py-sm rounded-lg font-label-md transition-all active:scale-95 shadow-sm">
+            Share
+          </button>
+</div>
+</div>
+<!-- Kanban Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-lg h-full items-start">
+<!-- Column: To Do -->
+<div class="flex flex-col gap-md">
+<div class="flex justify-between items-center px-sm">
+<div class="flex items-center gap-sm">
+<h3 class="font-title-lg text-title-lg text-primary">To Do</h3>
+<span class="bg-surface-container-highest px-sm rounded-full text-label-sm text-on-surface-variant">4</span>
+</div>
+<button class="text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined" data-icon="more_horiz">more_horiz</span>
+</button>
+</div>
+<button class="w-full py-md border-2 border-dashed border-outline-variant rounded-xl flex items-center justify-center gap-sm text-on-surface-variant hover:border-secondary hover:text-secondary transition-all group">
+<span class="material-symbols-outlined group-hover:scale-110 transition-transform" data-icon="add_circle">add_circle</span>
+<span class="font-label-md">Add Task</span>
+</button>
+<!-- Task Card -->
+<div class="bg-surface-container-lowest border border-outline-variant p-md rounded-xl shadow-sm hover:border-secondary cursor-grab active:cursor-grabbing transition-all">
+<div class="flex justify-between items-start mb-sm">
+<span class="bg-error-container/20 text-error text-label-sm px-sm py-xs rounded-full font-label-md">High</span>
+<span class="material-symbols-outlined text-outline-variant text-[18px]" data-icon="drag_indicator">drag_indicator</span>
+</div>
+<h4 class="font-body-base text-body-base text-primary mb-md font-semibold">Implement Auth Middleware</h4>
+<div class="flex justify-between items-center">
+<div class="flex items-center gap-xs text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px]" data-icon="calendar_today">calendar_today</span>
+<span class="text-label-sm">Oct 24</span>
+</div>
+<img class="w-6 h-6 rounded-full" data-alt="A detailed close-up profile icon of a professional user, styled with a modern corporate aesthetic. The image features soft, high-key lighting and a clean, neutral background. The subject conveys focus and reliability, consistent with a high-performance productivity tool's visual language." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBluiPQHSJBhpUgwiBX24nWQ5hMatTxieC5jUfmcUICm7VRFFLLBCc6wXozZ11UbbWpYiKOjtShZv0jqd7Sbrq3xJt_MYdiSjYnaq-hRcrWBgMqsAflZVKxLLt3BikIUn8fBItlHSHMwagqjBKVg_JSJUDh7QbQw9tgrwgPavoMXmRM7W6yqhlW7p2jukzVMXCcBDpotRtH5-ZmZSpaEBy_WJkas_m0zNHKPBliQKLqsLGh6XS5ej3omnCXWqv2_kLu-T1pT80K3Q"/>
+</div>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant p-md rounded-xl shadow-sm hover:border-secondary cursor-grab transition-all">
+<div class="flex justify-between items-start mb-sm">
+<span class="bg-secondary-fixed text-on-secondary-fixed-variant text-label-sm px-sm py-xs rounded-full font-label-md">Medium</span>
+</div>
+<h4 class="font-body-base text-body-base text-primary mb-md font-semibold">Update API Documentation</h4>
+<div class="flex justify-between items-center">
+<div class="flex items-center gap-xs text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px]" data-icon="calendar_today">calendar_today</span>
+<span class="text-label-sm">Oct 28</span>
+</div>
+<img class="w-6 h-6 rounded-full" data-alt="A crisp, professional avatar portrait set against a clean white and light gray background. The lighting is diffused and professional, following a high-end SaaS platform's style guide. The color palette is strictly neutral with subtle professional blue highlights." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD27HbXUCIJlZGUAg3nomKiRuI1QmTBFsmJtYSs7TpJVh6PAI5HzMoTtO9h3YZ8Rw0J5dLWE4glvlpf64GbeginG1RoDxwdvwM5EMxylSbGnKXifNxorEptvgzObkyEVodavo69dxEvZ_zTH8mS3uGUEPsebLhjc6Tmpu9BUFVS8tUdhev-fEfPMn024KMaI-h0xjXrvyipKsR_iUkM1IFCOiLU7aN97pjM8nSmBL2F_SHOGPMO_3-agQPnX2ENiMF7i7PT4l2qOA"/>
+</div>
+</div>
+</div>
+<!-- Column: In Progress -->
+<div class="flex flex-col gap-md">
+<div class="flex justify-between items-center px-sm">
+<div class="flex items-center gap-sm">
+<h3 class="font-title-lg text-title-lg text-primary">In Progress</h3>
+<span class="bg-surface-container-highest px-sm rounded-full text-label-sm text-on-surface-variant">2</span>
+</div>
+<button class="text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined" data-icon="more_horiz">more_horiz</span>
+</button>
+</div>
+<button class="w-full py-md border-2 border-dashed border-outline-variant rounded-xl flex items-center justify-center gap-sm text-on-surface-variant hover:border-secondary hover:text-secondary transition-all group">
+<span class="material-symbols-outlined group-hover:scale-110 transition-transform" data-icon="add_circle">add_circle</span>
+<span class="font-label-md">Add Task</span>
+</button>
+<div class="bg-surface-container-lowest border border-secondary p-md rounded-xl shadow-md cursor-grab transition-all ring-1 ring-secondary/20">
+<div class="flex justify-between items-start mb-sm">
+<span class="bg-error-container/20 text-error text-label-sm px-sm py-xs rounded-full font-label-md">High</span>
+<span class="material-symbols-outlined text-secondary text-[18px]" data-icon="sync" style="font-variation-settings: 'wght' 700;">sync</span>
+</div>
+<h4 class="font-body-base text-body-base text-primary mb-md font-semibold">Refactor Kanban Core Logic</h4>
+<div class="flex justify-between items-center">
+<div class="flex items-center gap-xs text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px]" data-icon="calendar_today">calendar_today</span>
+<span class="text-label-sm">Today</span>
+</div>
+<div class="flex -space-x-xs">
+<img class="w-6 h-6 rounded-full border border-surface" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA3rU0aUP-e9kKbtEpQSZ510CUIhjYG6wonYXpG0325Ze0vu3epzO0HJhecBr_pMDdPN2xekQxJeb8PF7M5MbRxvfFNLAuWDnl5Klgu8YBnYp-9unac9dQEuLwxBilCdizh4DSBbybXUL_ib0LUpwr1GJizCuriHpKXp5Y-DkLeP2H6zHbagrPFbBLLaKXGH1vujxm-1h2sec3OnygzJo4sCTYpdg_6Tabq82MRVj9zYh_hp83RQlHgaJFPcqrtZniCgdD5idK0mQ"/>
+<img class="w-6 h-6 rounded-full border border-surface" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC-j9qboMutaiU2jD1dJeTJl-TgTBvrox5lrUlKd34Ui8LSzFi8nhp6sAnvke8dCZ9QKP4SoBGENnw75jkrvRt-IgvXuPkhJwxZosf2H0Dh5yZ7gMy64EwsmK4RC124EfzrZk7K5KJA7K27YIZWtRA2qjHu55jyfsrXUsD-qz1iMxHK-kKpV-I_BJKja3uL4n6D6CRph2zOU7IhID7cV4UeAfP-sEyDG9yHKTHbk-kqiKMp8Fwv-hFZ95X3AXol1EvyeeAtmPPFkg"/>
+</div>
+</div>
+</div>
+</div>
+<!-- Column: Review -->
+<div class="flex flex-col gap-md">
+<div class="flex justify-between items-center px-sm">
+<div class="flex items-center gap-sm">
+<h3 class="font-title-lg text-title-lg text-primary">Review</h3>
+<span class="bg-surface-container-highest px-sm rounded-full text-label-sm text-on-surface-variant">1</span>
+</div>
+<button class="text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined" data-icon="more_horiz">more_horiz</span>
+</button>
+</div>
+<button class="w-full py-md border-2 border-dashed border-outline-variant rounded-xl flex items-center justify-center gap-sm text-on-surface-variant hover:border-secondary hover:text-secondary transition-all group">
+<span class="material-symbols-outlined group-hover:scale-110 transition-transform" data-icon="add_circle">add_circle</span>
+<span class="font-label-md">Add Task</span>
+</button>
+<div class="bg-surface-container-lowest border border-outline-variant p-md rounded-xl shadow-sm hover:border-secondary cursor-grab transition-all">
+<div class="flex justify-between items-start mb-sm">
+<span class="bg-tertiary-fixed text-on-tertiary-fixed-variant text-label-sm px-sm py-xs rounded-full font-label-md">Low</span>
+</div>
+<h4 class="font-body-base text-body-base text-primary mb-md font-semibold">User Dashboard UI Polish</h4>
+<div class="flex justify-between items-center">
+<div class="flex items-center gap-xs text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px]" data-icon="calendar_today">calendar_today</span>
+<span class="text-label-sm">Tomorrow</span>
+</div>
+<img class="w-6 h-6 rounded-full" data-alt="A minimalist and sharp avatar image for a corporate UI. The image features high-contrast lighting with a focus on professional aesthetics. The character is portrayed as an efficient and modern tech worker. The background is a clean, solid, light-mode compliant shade of ivory white." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA7XtVccAgkKQBj8ddBI5ierLCWWR9dHIzXLO4XZBevbynygCL4Cacv0tJxHmjRURs8xLXLPd8tiLaWkssVm_VAWuhcIb1SfpDQ6w8L_W9yxy6deji1maH6L9GB8BUKfXmwCxGKVcJd4IaN30mm7RSnNCFTPvwGA7kwUURwy0N2qkq-kYQpI29yPIAljwgYyEyRXc-dpks8VNYNBAM0gtB6WYC94mlVf4sWvY6fifuHPiuB-gH3AiI4CC44V5DReBATiZR-wjoGhw"/>
+</div>
+</div>
+</div>
+<!-- Column: Done -->
+<div class="flex flex-col gap-md opacity-80">
+<div class="flex justify-between items-center px-sm">
+<div class="flex items-center gap-sm">
+<h3 class="font-title-lg text-title-lg text-primary">Done</h3>
+<span class="bg-surface-container-highest px-sm rounded-full text-label-sm text-on-surface-variant">12</span>
+</div>
+<button class="text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined" data-icon="more_horiz">more_horiz</span>
+</button>
+</div>
+<button class="w-full py-md border-2 border-dashed border-outline-variant rounded-xl flex items-center justify-center gap-sm text-on-surface-variant hover:border-secondary hover:text-secondary transition-all group">
+<span class="material-symbols-outlined group-hover:scale-110 transition-transform" data-icon="add_circle">add_circle</span>
+<span class="font-label-md">Add Task</span>
+</button>
+<div class="bg-surface-container border border-outline-variant/50 p-md rounded-xl cursor-grab transition-all grayscale">
+<div class="flex justify-between items-start mb-sm">
+<span class="bg-outline-variant/30 text-on-surface-variant text-label-sm px-sm py-xs rounded-full font-label-md">Completed</span>
+<span class="material-symbols-outlined text-secondary text-[20px]" data-icon="check_circle" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<h4 class="font-body-base text-body-base text-on-surface-variant mb-md font-semibold line-through">Project Setup &amp; Repo Init</h4>
+<div class="flex justify-between items-center">
+<div class="flex items-center gap-xs text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px]" data-icon="calendar_today">calendar_today</span>
+<span class="text-label-sm">Oct 12</span>
+</div>
+<img class="w-6 h-6 rounded-full opacity-50" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAuZ8OffcBh7A_51VFUjRtyckzvO_1B3cOKUVO3NU6QyCq888KkcoeAjmSrW5faRimeg5CYglpseb1zD8A5VbhWeQpiZJVkdlsfhX4hhqeZRaOu0QxTp2GPYLYQ0gFVOw6Z0lwmsARIFk-PHakn1JUXQXFRDQPo1Eqxijt5kbN7enJ5wDhxVrWJb9aew4XCTXDa1ClTohie294TRbyLoSWAQG7EIr-dxz83Qrqf6lwjN3CpjF7IDkhXSjvulf-jhxIW9JgXmB8Lbw"/>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+<!-- FAB - Contextual for Dashboard/Home equivalent task creation -->
+<button class="fixed bottom-xl right-xl w-14 h-14 bg-secondary text-on-secondary rounded-full flex items-center justify-center shadow-xl hover:scale-110 transition-all z-50">
+<span class="material-symbols-outlined" data-icon="add" style="font-variation-settings: 'wght' 600;">add</span>
+</button>
+</body></html>

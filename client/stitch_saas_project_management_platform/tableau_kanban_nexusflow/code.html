@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+
+<html class="h-full" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>NexusFlow - Kanban Board</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "tertiary-fixed": "#fcdeb5",
+                        "surface-variant": "#e4e2e4",
+                        "on-secondary": "#ffffff",
+                        "surface-dim": "#dcd9db",
+                        "on-tertiary": "#ffffff",
+                        "secondary-fixed-dim": "#b4c5ff",
+                        "surface-container-highest": "#e4e2e4",
+                        "on-error-container": "#93000a",
+                        "on-surface": "#1b1b1d",
+                        "on-background": "#1b1b1d",
+                        "tertiary-container": "#271901",
+                        "background": "#fcf8fa",
+                        "surface": "#fcf8fa",
+                        "error-container": "#ffdad6",
+                        "primary": "#000000",
+                        "outline": "#76777d",
+                        "on-surface-variant": "#45464d",
+                        "primary-fixed": "#dae2fd",
+                        "on-error": "#ffffff",
+                        "inverse-surface": "#303032",
+                        "secondary-container": "#316bf3",
+                        "on-primary": "#ffffff",
+                        "tertiary-fixed-dim": "#dec29a",
+                        "inverse-primary": "#bec6e0",
+                        "on-primary-fixed": "#131b2e",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container-high": "#eae7e9",
+                        "on-tertiary-container": "#98805d",
+                        "surface-container": "#f0edef",
+                        "on-tertiary-fixed": "#271901",
+                        "secondary-fixed": "#dbe1ff",
+                        "outline-variant": "#c6c6cd",
+                        "primary-container": "#131b2e",
+                        "surface-bright": "#fcf8fa",
+                        "tertiary": "#000000",
+                        "surface-container-low": "#f6f3f5",
+                        "secondary": "#0051d5",
+                        "on-secondary-fixed": "#00174b",
+                        "inverse-on-surface": "#f3f0f2",
+                        "on-tertiary-fixed-variant": "#574425",
+                        "error": "#ba1a1a",
+                        "surface-tint": "#565e74",
+                        "on-primary-container": "#7c839b",
+                        "on-secondary-fixed-variant": "#003ea8",
+                        "on-primary-fixed-variant": "#3f465c",
+                        "primary-fixed-dim": "#bec6e0",
+                        "on-secondary-container": "#fefcff"
+                    },
+                    borderRadius: {
+                        DEFAULT: "0.125rem",
+                        lg: "0.25rem",
+                        xl: "0.5rem",
+                        full: "0.75rem"
+                    },
+                    spacing: {
+                        lg: "24px",
+                        "container-max": "1440px",
+                        "2xl": "48px",
+                        "xs": "4px",
+                        "md": "16px",
+                        "3xl": "64px",
+                        "xl": "32px",
+                        "sm": "8px",
+                        "base": "4px",
+                        "gutter": "24px"
+                    },
+                    fontFamily: {
+                        "label-md": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "headline-sm": ["Inter"],
+                        "title-lg": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "body-base": ["Inter"]
+                    },
+                    fontSize: {
+                        "label-md": ["12px", { lineHeight: "16px", letterSpacing: "0.05em", fontWeight: "600" }],
+                        "headline-md": ["24px", { lineHeight: "32px", letterSpacing: "-0.01em", fontWeight: "600" }],
+                        "display-lg": ["36px", { lineHeight: "44px", letterSpacing: "-0.02em", fontWeight: "700" }],
+                        "label-sm": ["11px", { lineHeight: "14px", fontWeight: "500" }],
+                        "headline-sm": ["20px", { lineHeight: "28px", fontWeight: "600" }],
+                        "title-lg": ["18px", { lineHeight: "24px", fontWeight: "600" }],
+                        "body-sm": ["14px", { lineHeight: "20px", fontWeight: "400" }],
+                        "body-base": ["16px", { lineHeight: "24px", fontWeight: "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #e4e2e4; border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #c6c6cd; }
+    </style>
+</head>
+<body class="bg-surface text-on-surface h-full flex flex-col font-body-base overflow-hidden selection:bg-secondary selection:text-on-secondary">
+<!-- TopNavBar -->
+<nav class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-lg h-16 bg-surface border-b border-outline-variant flat no shadows">
+<div class="flex items-center gap-md">
+<span class="font-display-lg text-display-lg font-bold text-primary">NexusFlow</span>
+<div class="relative hidden md:block ml-xl">
+<span class="material-symbols-outlined absolute left-sm top-1/2 -translate-y-1/2 text-on-surface-variant text-sm">search</span>
+<input class="pl-[32px] pr-sm py-sm border border-outline-variant rounded bg-surface-container-lowest text-on-surface focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary w-[240px] font-body-sm text-body-sm" placeholder="Search tasks..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-md">
+<button class="w-[32px] h-[32px] rounded-full hover:bg-surface-container transition-colors flex items-center justify-center cursor-pointer active:opacity-80">
+<span class="material-symbols-outlined text-on-surface-variant">notifications</span>
+</button>
+<img alt="User avatar dropdown" class="w-[32px] h-[32px] rounded-full border border-outline-variant cursor-pointer active:opacity-80 hover:ring-2 hover:ring-secondary transition-all" data-alt="A small, professional headshot portrait of a modern corporate executive, well-lit against a neutral grey background. The lighting is soft and even, highlighting a calm, focused expression. The overall style aligns with a high-end, minimalist SaaS application interface." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB7iooQfWqy5rAS1HhDqk5gANvLRjNtFCHydSF-1dDFlsyYgq04EANruV37z2oSgOhF93e9viqlgWhzYWJnw4c0tei7jD7WkyQbVCtFAl5tVtydMFK-hNxMF1irNH59XHu5jH3dnwHTvlcpEfgCbciRMpt8cIIMg4T7r1bZCk0gPSjZ8bkor0YVbRQBZqSfPX6LyA4JrTwZ3dsQ2Xi1lId-1JIO8EdZ5j8WB0s2Kx7DPjPYqPRA9aJCh9XebiWDCGk8l_sE0hc5jw"/>
+</div>
+</nav>
+<!-- SideNavBar & Main Content Wrapper -->
+<div class="flex h-full pt-16">
+<!-- SideNavBar -->
+<aside class="fixed left-0 top-16 h-[calc(100vh-64px)] z-40 flex flex-col py-lg bg-surface-container-low border-r border-outline-variant flat no shadows docked w-[240px]">
+<div class="px-md mb-xl flex items-center gap-sm">
+<div class="w-[40px] h-[40px] rounded bg-secondary flex items-center justify-center text-on-secondary font-headline-sm text-headline-sm font-bold">PR</div>
+<div>
+<h2 class="font-headline-sm text-headline-sm font-black text-primary truncate w-[160px]">NexusFlow</h2>
+<p class="font-label-sm text-label-sm text-on-surface-variant truncate w-[160px]">Enterprise Management</p>
+</div>
+</div>
+<div class="px-md mb-md">
+<button class="w-full bg-secondary hover:bg-on-secondary-fixed-variant text-on-secondary font-label-md text-label-md py-sm rounded transition-colors flex items-center justify-center gap-sm">
+<span class="material-symbols-outlined text-[16px]">add</span>
+                    New Project
+                </button>
+</div>
+<nav class="flex-1 overflow-y-auto custom-scrollbar flex flex-col gap-[2px]">
+<a class="group flex items-center gap-md px-md py-sm text-on-surface-variant hover:bg-surface-container-high transition-all font-label-md text-label-md cursor-pointer active:opacity-80" href="#">
+<span class="material-symbols-outlined">folder</span>
+                    My Projects
+                </a>
+<a class="group flex items-center gap-md px-md py-sm text-on-surface-variant hover:bg-surface-container-high transition-all font-label-md text-label-md cursor-pointer active:opacity-80" href="#">
+<span class="material-symbols-outlined">assignment</span>
+                    My Tasks
+                </a>
+<a class="group flex items-center gap-md px-md py-sm text-on-surface-variant hover:bg-surface-container-high transition-all font-label-md text-label-md cursor-pointer active:opacity-80" href="#">
+<span class="material-symbols-outlined">pause</span>
+                    My Activity
+                </a>
+<a class="group flex items-center gap-md px-md py-sm text-primary font-bold border-r-4 border-secondary bg-surface-container transition-all font-label-md text-label-md cursor-pointer active:opacity-80" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">view_kanban</span>
+                    Kanban
+                </a>
+<a class="group flex items-center gap-md px-md py-sm text-on-surface-variant hover:bg-surface-container-high transition-all font-label-md text-label-md cursor-pointer active:opacity-80" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+                    Dashboard
+                </a>
+</nav>
+<div class="mt-auto flex flex-col gap-[2px] pt-md border-t border-outline-variant">
+<a class="group flex items-center gap-md px-md py-sm text-on-surface-variant hover:bg-surface-container-high transition-all font-label-md text-label-md cursor-pointer active:opacity-80" href="#">
+<span class="material-symbols-outlined">settings</span>
+                    Settings
+                </a>
+<a class="group flex items-center gap-md px-md py-sm text-on-surface-variant hover:bg-surface-container-high transition-all font-label-md text-label-md cursor-pointer active:opacity-80" href="#">
+<span class="material-symbols-outlined">history</span>
+                    Activity
+                </a>
+</div>
+</aside>
+<!-- Main Canvas -->
+<main class="ml-[240px] flex-1 flex flex-col h-[calc(100vh-64px)] overflow-hidden bg-background">
+<!-- Board Header & Filters -->
+<header class="px-lg py-md border-b border-outline-variant bg-surface flex flex-col gap-md shrink-0">
+<div class="flex justify-between items-center">
+<h1 class="font-headline-md text-headline-md text-primary">Frontend Refactor Q3</h1>
+<button class="bg-secondary hover:bg-on-secondary-fixed-variant text-on-secondary font-label-md text-label-md px-md py-sm rounded transition-colors flex items-center gap-sm">
+<span class="material-symbols-outlined text-[16px]">add</span>
+                        Add Task
+                    </button>
+</div>
+<div class="flex flex-wrap items-center gap-md">
+<!-- Filter Strip -->
+<div class="flex items-center gap-sm">
+<button class="flex items-center gap-xs px-sm py-xs border border-outline-variant rounded bg-surface-container-lowest text-on-surface-variant hover:bg-surface-container font-label-sm text-label-sm transition-colors">
+<span class="material-symbols-outlined text-[14px]">person</span>
+                            Assignee
+                        </button>
+<button class="flex items-center gap-xs px-sm py-xs border border-outline-variant rounded bg-surface-container-lowest text-on-surface-variant hover:bg-surface-container font-label-sm text-label-sm transition-colors">
+<span class="material-symbols-outlined text-[14px]">flag</span>
+                            Priority
+                        </button>
+<button class="flex items-center gap-xs px-sm py-xs border border-outline-variant rounded bg-surface-container-lowest text-on-surface-variant hover:bg-surface-container font-label-sm text-label-sm transition-colors">
+<span class="material-symbols-outlined text-[14px]">label</span>
+                            Labels
+                        </button>
+</div>
+<div class="h-[24px] w-[1px] bg-outline-variant mx-sm"></div>
+<!-- Active Filters (Pills) -->
+<div class="flex items-center gap-sm">
+<span class="flex items-center gap-xs pl-sm pr-xs py-xs rounded-full bg-secondary-fixed text-on-secondary-fixed font-label-sm text-label-sm border border-secondary-fixed-dim">
+                            High Priority
+                            <span class="material-symbols-outlined text-[12px] cursor-pointer hover:text-on-surface">close</span>
+</span>
+</div>
+</div>
+</header>
+<!-- Kanban Columns Area -->
+<div class="flex-1 overflow-x-auto overflow-y-hidden custom-scrollbar p-lg flex gap-lg">
+<!-- TODO Column -->
+<div class="flex flex-col w-[320px] shrink-0 bg-surface-container-low rounded-lg border border-outline-variant max-h-full">
+<div class="p-sm border-b border-outline-variant flex items-center justify-between sticky top-0 bg-surface-container-low z-10 rounded-t-lg">
+<h3 class="font-title-lg text-title-lg text-on-surface flex items-center gap-sm">
+<div class="w-3 h-3 rounded-full bg-outline"></div>
+                            TODO
+                        </h3>
+<span class="bg-surface-container-highest text-on-surface-variant font-label-sm text-label-sm px-sm py-[2px] rounded-full">3</span>
+</div>
+<div class="p-sm flex flex-col gap-sm overflow-y-auto custom-scrollbar flex-1">
+<!-- Task Card -->
+<div class="group bg-surface-container-lowest p-md rounded border border-outline-variant hover:border-secondary cursor-pointer transition-all relative">
+<div class="absolute left-1 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 cursor-grab text-outline-variant hover:text-on-surface-variant transition-opacity">
+<span class="material-symbols-outlined text-[16px]">drag_indicator</span>
+</div>
+<div class="pl-sm border-l-2 border-[#ef4444]"> <!-- High Priority Border -->
+<div class="flex flex-wrap gap-xs mb-sm">
+<span class="px-xs py-[2px] rounded bg-error-container text-on-error-container font-label-sm text-label-sm border border-[#ffb4ab]">Bug</span>
+<span class="px-xs py-[2px] rounded bg-surface-container-highest text-on-surface-variant font-label-sm text-label-sm border border-outline-variant">UI</span>
+</div>
+<h4 class="font-body-sm text-body-sm text-on-surface font-medium mb-md leading-tight">Fix navigation overlap on mobile viewport</h4>
+<div class="flex items-center justify-between mt-auto">
+<div class="flex items-center gap-xs text-error font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[14px]">calendar_today</span>
+                                        Oct 12
+                                    </div>
+<img alt="Assignee" class="w-[24px] h-[24px] rounded-full border border-outline-variant" data-alt="A tiny portrait photo of a male professional, used as an avatar in a software interface. The styling is neutral and bright, matching a modern corporate aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDZF_x9Vnioh9kqn8-9HYpnSrd2weXc8cHhioAYsbEM80O2a6_p4LIp6Dd0wG8yagRACt4-Hl31QdTHQ_Y0XPJG0RPtUZXTtW2QD4m9ekpDUc5Awc1Gb21Q76GOdKsB6PR9cIPL6saQ-q-69E7cUXf4WqUVD6VhEEmYHvOm8K7cjlIbODJiXSSyk274D61_GNDmoRNou7mL-xciM3sKkR7S7BSoncni5kholG9Z_NFGe43MYNYWfv01gxSNi4zmLxbdkGvXMF7mgQ"/>
+</div>
+</div>
+</div>
+<!-- Task Card -->
+<div class="group bg-surface-container-lowest p-md rounded border border-outline-variant hover:border-secondary cursor-pointer transition-all relative">
+<div class="absolute left-1 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 cursor-grab text-outline-variant hover:text-on-surface-variant transition-opacity">
+<span class="material-symbols-outlined text-[16px]">drag_indicator</span>
+</div>
+<div class="pl-sm border-l-2 border-[#3b82f6]"> <!-- Medium Priority Border -->
+<div class="flex flex-wrap gap-xs mb-sm">
+<span class="px-xs py-[2px] rounded bg-secondary-fixed text-on-secondary-fixed font-label-sm text-label-sm border border-secondary-fixed-dim">Feature</span>
+</div>
+<h4 class="font-body-sm text-body-sm text-on-surface font-medium mb-md leading-tight">Implement dark mode toggle in settings</h4>
+<div class="flex items-center justify-between mt-auto">
+<div class="flex items-center gap-xs text-on-surface-variant font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[14px]">calendar_today</span>
+                                        Oct 15
+                                    </div>
+<div class="w-[24px] h-[24px] rounded-full bg-surface-container-highest border border-outline-variant flex items-center justify-center text-on-surface-variant font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[14px]">person</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- IN PROGRESS Column -->
+<div class="flex flex-col w-[320px] shrink-0 bg-surface-container-low rounded-lg border border-outline-variant max-h-full">
+<div class="p-sm border-b border-outline-variant flex items-center justify-between sticky top-0 bg-surface-container-low z-10 rounded-t-lg">
+<h3 class="font-title-lg text-title-lg text-on-surface flex items-center gap-sm">
+<div class="w-3 h-3 rounded-full bg-[#3b82f6]"></div>
+                            IN PROGRESS
+                        </h3>
+<span class="bg-surface-container-highest text-on-surface-variant font-label-sm text-label-sm px-sm py-[2px] rounded-full">2</span>
+</div>
+<div class="p-sm flex flex-col gap-sm overflow-y-auto custom-scrollbar flex-1">
+<!-- Task Card -->
+<div class="group bg-surface-container-lowest p-md rounded border border-outline-variant hover:border-secondary cursor-pointer transition-all relative shadow-[0_2px_4px_rgba(0,0,0,0.02)]">
+<div class="absolute left-1 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 cursor-grab text-outline-variant hover:text-on-surface-variant transition-opacity">
+<span class="material-symbols-outlined text-[16px]">drag_indicator</span>
+</div>
+<div class="pl-sm border-l-2 border-[#ef4444]">
+<div class="flex flex-wrap gap-xs mb-sm">
+<span class="px-xs py-[2px] rounded bg-secondary-fixed text-on-secondary-fixed font-label-sm text-label-sm border border-secondary-fixed-dim">Refactor</span>
+<span class="px-xs py-[2px] rounded bg-surface-container-highest text-on-surface-variant font-label-sm text-label-sm border border-outline-variant">API</span>
+</div>
+<h4 class="font-body-sm text-body-sm text-on-surface font-medium mb-md leading-tight">Migrate legacy endpoints to GraphQL</h4>
+<div class="flex items-center justify-between mt-auto">
+<div class="flex items-center gap-xs text-on-surface-variant font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[14px]">calendar_today</span>
+                                        Oct 10
+                                    </div>
+<img alt="Assignee" class="w-[24px] h-[24px] rounded-full border border-outline-variant" data-alt="A tiny portrait photo of a female professional, used as an avatar in a software interface. The styling is neutral and bright, matching a modern corporate aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC-Du8ZqXej4caQA9_J8uL4ZY6l-Fx2yi7Y2j5iJJyqwsqzrJAMFOwAiIN5bPFjLK7cCIxQjDP8LeusAu20BHNUsSvSwfOwny1mhHuiKmmvmwbZPeOK8GuKkidplrQl4RtlhX5d4qmiF0Ef995uR-QgVYHGTgtXRF3kGdFKF35I_MTih0fgE0f1EvnsmmN0m4bV5igW9Vm1K1Eu0dIezMsMGP8YydD4PI3mFAD-ijfC55MZ4r-rxYp-CPn9ZaTlU7llPMRT9OXf4Q"/>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- IN REVIEW Column -->
+<div class="flex flex-col w-[320px] shrink-0 bg-surface-container-low rounded-lg border border-outline-variant max-h-full">
+<div class="p-sm border-b border-outline-variant flex items-center justify-between sticky top-0 bg-surface-container-low z-10 rounded-t-lg">
+<h3 class="font-title-lg text-title-lg text-on-surface flex items-center gap-sm">
+<div class="w-3 h-3 rounded-full bg-[#f59e0b]"></div>
+                            IN REVIEW
+                        </h3>
+<span class="bg-surface-container-highest text-on-surface-variant font-label-sm text-label-sm px-sm py-[2px] rounded-full">0</span>
+</div>
+<div class="p-sm flex flex-col gap-sm overflow-y-auto custom-scrollbar flex-1 items-center justify-center text-center opacity-50">
+<span class="material-symbols-outlined text-[32px] text-on-surface-variant mb-sm">inventory_2</span>
+<p class="font-body-sm text-body-sm text-on-surface-variant">No tasks in review</p>
+</div>
+</div>
+<!-- DONE Column -->
+<div class="flex flex-col w-[320px] shrink-0 bg-surface-container-low rounded-lg border border-outline-variant max-h-full opacity-70 hover:opacity-100 transition-opacity">
+<div class="p-sm border-b border-outline-variant flex items-center justify-between sticky top-0 bg-surface-container-low z-10 rounded-t-lg">
+<h3 class="font-title-lg text-title-lg text-on-surface flex items-center gap-sm">
+<div class="w-3 h-3 rounded-full bg-[#10b981]"></div>
+                            DONE
+                        </h3>
+<span class="bg-surface-container-highest text-on-surface-variant font-label-sm text-label-sm px-sm py-[2px] rounded-full">12</span>
+</div>
+<div class="p-sm flex flex-col gap-sm overflow-y-auto custom-scrollbar flex-1">
+<!-- Task Card (Done state) -->
+<div class="group bg-surface-container-lowest p-md rounded border border-outline-variant hover:border-secondary cursor-pointer transition-all relative">
+<div class="pl-sm border-l-2 border-outline-variant line-through text-on-surface-variant">
+<h4 class="font-body-sm text-body-sm font-medium mb-md leading-tight">Update dependencies for Q3</h4>
+<div class="flex items-center justify-between mt-auto">
+<div class="flex items-center gap-xs font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[14px]">check_circle</span>
+                                        Oct 01
+                                    </div>
+<img alt="Assignee" class="w-[24px] h-[24px] rounded-full border border-outline-variant grayscale" data-alt="A tiny portrait photo of a professional, used as an avatar in a software interface, rendered in grayscale to indicate completion." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDVr8VHiwHBbwl5bukEKRsCrmEnwjCa4TedTMsNDmaNszgFXUERTqCoUZOaP7yjNRT-3cXsZK781COl8TjsEtFDKnzi9Y-ZGDTQWbrfjEVLHkiGUpp9A5N5msnLTZimEqbieN6SxLdwlswsH79KMN85JR4gss_xRv9Phnn59bbdLzZzMmb31W4TUIsCSnxDnCU-nBFjmIzn4JEfPDpCIXWkebxtJicB9hVZjwl08CCGSfFS_HJTuDxcRV1wRkvSVPoQ3qrr6hjMjw"/>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>

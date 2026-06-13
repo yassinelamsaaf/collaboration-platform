@@ -1,0 +1,106 @@
+<section class="workspace-page">
+  <div class="workspace-page__header">
+    <div>
+      <div class="workspace-page__eyebrow">Project Registry</div>
+      <h1 class="workspace-page__title">Projects</h1>
+      <p class="workspace-page__subtitle">
+        Create new project spaces, review active initiatives, and jump into each project workspace.
+      </p>
+    </div>
+  </div>
+
+  <div class="workspace-split">
+    <section class="workspace-card workspace-stack">
+      <div>
+        <div class="workspace-page__eyebrow">Create</div>
+        <h2 class="workspace-page__title" style="font-size: 1.45rem">New project</h2>
+      </div>
+
+      <form class="workspace-form" (ngSubmit)="submit()">
+        <div class="workspace-field">
+          <label for="project-name">Project name</label>
+          <input
+            id="project-name"
+            class="workspace-input"
+            type="text"
+            name="project-name"
+            [(ngModel)]="form.name"
+            placeholder="Platform redesign, Mobile release, Internal tooling..."
+          />
+        </div>
+
+        <div class="workspace-field">
+          <label for="project-description">Description</label>
+          <textarea
+            id="project-description"
+            class="workspace-textarea"
+            name="project-description"
+            [(ngModel)]="form.description"
+            placeholder="State the goal, the business context, or the delivery scope."
+          ></textarea>
+        </div>
+
+        <button class="workspace-primary-btn" type="submit" [disabled]="creating">
+          <lucide-icon name="badge-plus"></lucide-icon>
+          {{ creating ? 'Creating...' : 'Create Project' }}
+        </button>
+      </form>
+    </section>
+
+    <section class="workspace-card workspace-stack">
+      <div>
+        <div class="workspace-page__eyebrow">Overview</div>
+        <h2 class="workspace-page__title" style="font-size: 1.45rem">All projects</h2>
+      </div>
+
+      <div class="workspace-empty" *ngIf="loading">Loading project list...</div>
+
+      <div class="project-grid" *ngIf="!loading && projects.length; else noProjects">
+        <article class="project-card" *ngFor="let project of projects">
+          <div class="project-card__head">
+            <a class="project-card__title" [routerLink]="['/dashboard/projects', project.slug || project.id]">
+              {{ project.name }}
+            </a>
+            <span
+              class="workspace-pill"
+              [class.workspace-pill--success]="project.status === 'ACTIVE'"
+              [class.workspace-pill--warning]="project.status === 'ARCHIVED'"
+            >
+              {{ project.status }}
+            </span>
+          </div>
+
+          <p class="project-card__desc">{{ project.description || 'No project description yet.' }}</p>
+
+          <div class="project-card__role">
+            <span class="workspace-pill workspace-pill--neutral">{{ project.currentUserRole }}</span>
+          </div>
+
+          <div class="project-card__actions">
+            <a class="workspace-secondary-btn" [routerLink]="['/dashboard/projects', project.slug || project.id, 'teams']">
+              <lucide-icon name="users"></lucide-icon>
+              Teams
+            </a>
+            <a class="workspace-secondary-btn" [routerLink]="['/dashboard/projects', project.slug || project.id, 'kanban']">
+              <lucide-icon name="square-kanban"></lucide-icon>
+              Kanban
+            </a>
+            <button
+              class="workspace-ghost-btn project-card__archive"
+              type="button"
+              (click)="archive(project)"
+              *ngIf="project.status === 'ACTIVE' && (project.currentUserRole === 'OWNER' || project.currentUserRole === 'ADMIN')"
+            >
+              <lucide-icon name="archive"></lucide-icon>
+              Archive
+            </button>
+          </div>
+        </article>
+      </div>
+
+      <ng-template #noProjects>
+        <div class="workspace-empty" *ngIf="!loading">No projects found yet.</div>
+      </ng-template>
+    </section>
+  </div>
+</section>

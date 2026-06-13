@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>NexusFlow | Authentication</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-secondary-fixed": "#00174b",
+                        "secondary-fixed": "#dbe1ff",
+                        "inverse-surface": "#303032",
+                        "surface-container-highest": "#e4e2e4",
+                        "outline": "#76777d",
+                        "primary-fixed": "#dae2fd",
+                        "surface-container": "#f0edef",
+                        "primary-container": "#131b2e",
+                        "on-secondary-container": "#fefcff",
+                        "primary": "#000000",
+                        "outline-variant": "#c6c6cd",
+                        "error-container": "#ffdad6",
+                        "tertiary-fixed": "#fcdeb5",
+                        "surface-bright": "#fcf8fa",
+                        "on-primary-fixed": "#131b2e",
+                        "on-background": "#1b1b1d",
+                        "on-error": "#ffffff",
+                        "on-surface-variant": "#45464d",
+                        "on-tertiary-container": "#98805d",
+                        "background": "#fcf8fa",
+                        "error": "#ba1a1a",
+                        "on-tertiary-fixed": "#271901",
+                        "primary-fixed-dim": "#bec6e0",
+                        "on-primary": "#ffffff",
+                        "inverse-primary": "#bec6e0",
+                        "surface-dim": "#dcd9db",
+                        "on-primary-fixed-variant": "#3f465c",
+                        "tertiary-fixed-dim": "#dec29a",
+                        "inverse-on-surface": "#f3f0f2",
+                        "on-surface": "#1b1b1d",
+                        "tertiary-container": "#271901",
+                        "surface-container-high": "#eae7e9",
+                        "surface-variant": "#e4e2e4",
+                        "on-tertiary-fixed-variant": "#574425",
+                        "on-primary-container": "#7c839b",
+                        "surface-tint": "#565e74",
+                        "surface-container-lowest": "#ffffff",
+                        "on-tertiary": "#ffffff",
+                        "secondary-fixed-dim": "#b4c5ff",
+                        "surface": "#fcf8fa",
+                        "tertiary": "#000000",
+                        "secondary": "#0051d5",
+                        "on-secondary": "#ffffff",
+                        "on-secondary-fixed-variant": "#003ea8",
+                        "on-error-container": "#93000a",
+                        "surface-container-low": "#f6f3f5"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "md": "16px",
+                        "xs": "4px",
+                        "gutter": "24px",
+                        "sm": "8px",
+                        "xl": "32px",
+                        "lg": "24px",
+                        "3xl": "64px",
+                        "container-max": "1440px",
+                        "2xl": "48px",
+                        "base": "4px"
+                    },
+                    "fontFamily": {
+                        "body-sm": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "title-lg": ["Inter"],
+                        "headline-sm": ["Inter"],
+                        "body-base": ["Inter"],
+                        "label-md": ["Inter"],
+                        "display-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                        "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "label-sm": ["11px", {"lineHeight": "14px", "fontWeight": "500"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "title-lg": ["18px", {"lineHeight": "24px", "fontWeight": "600"}],
+                        "headline-sm": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                        "body-base": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "display-lg": ["36px", {"lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "700"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #fcf8fa;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background antialiased overflow-hidden">
+<!-- Shell Visibility: Transactional screen - Suppress Nav Bar & FAB -->
+<main class="flex min-h-screen">
+<!-- Left Side: Professional Illustration & Testimonial -->
+<section class="hidden lg:flex lg:w-1/2 relative bg-primary-container items-center justify-center p-2xl">
+<div class="absolute inset-0 z-0 opacity-20 overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A professional high-tech digital workspace environment featuring clean blue architectural lines and abstract data flow visualizations. The aesthetic is modern and corporate with a focus on precision and controlled efficiency. Soft, cool lighting illuminates geometric structures against a deep slate background, creating a sense of authoritative and secure enterprise infrastructure." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDjEINOU_0uY9KuIv8OVWyWZIvJEjWZXTuQSvF44gbQzUhWbl-MKD8kyj1guJoRS6ZsysVIRmjVBmGD_ZS7IRVtsX-uw0s2asyAxEM-UO3OPVBkgTt4JBpR1Spg-Og4LFVoXtCzEuxSibCPGtoxf_cOIk_QezGfwx_X9b-uzXomnxBg_74Xdc-az1_uR4MZQx_1hAQnWEcbhP_tE65Aq1p8eAog-Vt7GkGAubHO7oXS5dERT3Og5rFnB7yTjZ5uUM8aVL2roV8c4Q"/>
+</div>
+<div class="relative z-10 max-w-lg">
+<div class="mb-3xl">
+<span class="font-headline-md text-headline-md font-bold text-on-primary">NexusFlow</span>
+<p class="mt-md font-body-base text-body-base text-on-primary-container">
+                        The ultimate high-performance hub for enterprise velocity and executive oversight.
+                    </p>
+</div>
+<!-- Testimonial Component -->
+<div class="bg-primary/20 backdrop-blur-md p-xl border border-outline-variant/10 rounded-xl">
+<div class="flex gap-xs mb-md">
+<span class="material-symbols-outlined text-secondary-fixed" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-secondary-fixed" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-secondary-fixed" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-secondary-fixed" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-secondary-fixed" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+<p class="font-title-lg text-title-lg text-on-primary mb-lg leading-relaxed italic">
+                        "NexusFlow has fundamentally transformed how our executive team tracks project velocity. It's the most precise tool we've ever used."
+                    </p>
+<div class="flex items-center gap-md">
+<div class="w-12 h-12 rounded-full overflow-hidden border-2 border-primary-fixed">
+<img class="w-full h-full object-cover" data-alt="A professional headshot of a senior technology executive in a well-lit corporate office. The individual has a confident, approachable expression, dressed in premium business attire. The lighting is soft and professional, emphasizing a clean and authoritative corporate brand identity aligned with a modern software interface." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCJW34cRisZEBTc2GLb7GLqZXnp-JGk7iNJbmnjDFUtjio2cAcijrEWAvVbBouBTDL9vV5HcfUKxUeVLlP8hGuyHx2tWw7KyhhpPVaeKyx2jSUu1K9Rz3PDLEHS5R59HO3ujjmfs_TTkgBnbV4exauxwwV6-4cm6t9hRGg6LrYHpegr8E0X6cYdWKRTyc_SDIIolWhBy42Df8rzFz3y1O-3LyRFI-RPtlIp1PYt2d1VqyVquq-sYDI_XR2bS8K29LyXoRhMmRaaAg"/>
+</div>
+<div>
+<p class="font-label-md text-label-md text-on-primary">Marcus Thorne</p>
+<p class="font-label-sm text-label-sm text-on-primary-container">CTO, Vertex Dynamics</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Right Side: Authentication Form -->
+<section class="w-full lg:w-1/2 flex items-center justify-center p-md sm:p-2xl bg-surface-container-lowest">
+<div class="w-full max-w-[440px]">
+<div class="mb-xl text-center lg:text-left">
+<h1 class="font-display-lg text-display-lg text-on-surface mb-xs">Welcome back</h1>
+<p class="font-body-base text-body-base text-on-surface-variant">Access your enterprise dashboard</p>
+</div>
+<!-- Social Logins -->
+<div class="flex border-b border-outline-variant mb-xl">
+<button class="flex-1 pb-md font-label-md text-label-md text-secondary border-b-2 border-secondary">
+        Sign In
+    </button>
+<button class="flex-1 pb-md font-label-md text-label-md text-outline hover:text-on-surface transition-colors">
+        Sign Up
+    </button>
+</div><div class="grid grid-cols-2 gap-md mb-xl">
+<button class="flex items-center justify-center gap-sm py-sm px-md border border-outline-variant rounded-lg font-label-md text-label-md text-on-surface hover:bg-surface-container-low transition-colors bg-surface-container-low">
+<img alt="Google" class="w-5 h-5" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDM0VfSaLweSYoTHsYj13bfi0u4HyTpYsY2Gz6LTB-cqjzvrPb71w6EiRwm30ngJsTvOoJ3UEJaolwbOk8Pd6noa033P4EdiW5nUDjSydjizEeRxZh76Jbl2Dx8VCG8NG21rOC_peoVDa9mZOuzBk6PyoKFRgUnzOR-raU633BLFQmkPCrsmUxkvTJuSGg02P29_Yki-wuWVN9fZkVJoR6nmXBEFxkILGf5ZbVxQypDfL_1SfNd1Fp_Xt-vkamb6VoPEz-hEznWfw"/>
+                        Google
+                    </button>
+<button class="flex items-center justify-center gap-sm py-sm px-md border border-outline-variant rounded-lg font-label-md text-label-md text-on-surface hover:bg-surface-container-low transition-colors bg-surface-container-low">
+<svg class="w-5 h-5" fill="currentColor" viewbox="0 0 24 24"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"></path></svg>
+                        GitHub
+                    </button>
+</div>
+<div class="relative flex items-center mb-xl">
+<div class="flex-grow border-t border-outline-variant"></div>
+<span class="flex-shrink mx-md font-label-sm text-label-sm text-outline uppercase tracking-widest">or email</span>
+<div class="flex-grow border-t border-outline-variant"></div>
+</div>
+<!-- Form -->
+<form class="space-y-lg">
+<div>
+<label class="block font-label-md text-label-md text-on-surface mb-xs" for="email">Email Address</label>
+<input class="w-full h-11 px-md border border-outline-variant rounded-lg font-body-base text-body-base focus:ring-2 focus:ring-secondary/20 focus:border-secondary outline-none transition-all" id="email" placeholder="name@company.com" type="email"/>
+</div>
+<div>
+<div class="flex justify-between items-center mb-xs">
+<label class="block font-label-md text-label-md text-on-surface" for="password">Password</label>
+<a class="font-label-sm text-label-sm text-secondary hover:underline" href="#">Forgot password?</a>
+</div>
+<input class="w-full h-11 px-md border border-outline-variant rounded-lg font-body-base text-body-base focus:ring-2 focus:ring-secondary/20 focus:border-secondary outline-none transition-all" id="password" placeholder="••••••••" type="password"/>
+</div>
+<div class="flex items-center gap-sm">
+<input class="w-4 h-4 rounded border-outline-variant text-secondary focus:ring-secondary" id="remember" type="checkbox"/>
+<label class="font-body-sm text-body-sm text-on-surface-variant" for="remember">Keep me signed in for 30 days</label>
+</div>
+<button class="w-full h-11 bg-secondary text-on-secondary font-label-md text-label-md rounded-lg hover:opacity-90 active:scale-95 transition-all" type="submit">
+                        Sign In to NexusFlow
+                    </button>
+</form>
+<p class="mt-xl text-center font-body-sm text-body-sm text-on-surface-variant">New to NexusFlow? <a class="text-secondary font-bold hover:underline" href="#">Request access</a> or <a class="text-secondary font-bold hover:underline" href="#">Contact Admin</a></p>
+<footer class="mt-3xl text-center border-t border-outline-variant pt-lg">
+<p class="font-label-sm text-label-sm text-outline">
+                        © 2024 NexusFlow Enterprise Solutions. <br class="sm:hidden"/>
+                        All rights reserved. 
+                    </p>
+<div class="mt-sm flex justify-center gap-md">
+<a class="font-label-sm text-label-sm text-outline hover:text-on-surface" href="#">Privacy Policy</a>
+<a class="font-label-sm text-label-sm text-outline hover:text-on-surface" href="#">Terms of Service</a>
+</div>
+</footer>
+</div>
+</section>
+</main>
+</body></html>

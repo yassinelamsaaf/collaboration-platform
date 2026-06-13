@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Task Detail Drawer</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "tertiary-fixed": "#fcdeb5",
+                      "surface-variant": "#e4e2e4",
+                      "on-secondary": "#ffffff",
+                      "surface-dim": "#dcd9db",
+                      "on-tertiary": "#ffffff",
+                      "secondary-fixed-dim": "#b4c5ff",
+                      "surface-container-highest": "#e4e2e4",
+                      "on-error-container": "#93000a",
+                      "on-surface": "#1b1b1d",
+                      "on-background": "#1b1b1d",
+                      "tertiary-container": "#271901",
+                      "background": "#fcf8fa",
+                      "surface": "#fcf8fa",
+                      "error-container": "#ffdad6",
+                      "primary": "#000000",
+                      "outline": "#76777d",
+                      "on-surface-variant": "#45464d",
+                      "primary-fixed": "#dae2fd",
+                      "on-error": "#ffffff",
+                      "inverse-surface": "#303032",
+                      "secondary-container": "#316bf3",
+                      "on-primary": "#ffffff",
+                      "tertiary-fixed-dim": "#dec29a",
+                      "inverse-primary": "#bec6e0",
+                      "on-primary-fixed": "#131b2e",
+                      "surface-container-lowest": "#ffffff",
+                      "surface-container-high": "#eae7e9",
+                      "on-tertiary-container": "#98805d",
+                      "surface-container": "#f0edef",
+                      "on-tertiary-fixed": "#271901",
+                      "secondary-fixed": "#dbe1ff",
+                      "outline-variant": "#c6c6cd",
+                      "primary-container": "#131b2e",
+                      "surface-bright": "#fcf8fa",
+                      "tertiary": "#000000",
+                      "surface-container-low": "#f6f3f5",
+                      "secondary": "#0051d5",
+                      "on-secondary-fixed": "#00174b",
+                      "inverse-on-surface": "#f3f0f2",
+                      "on-tertiary-fixed-variant": "#574425",
+                      "error": "#ba1a1a",
+                      "surface-tint": "#565e74",
+                      "on-primary-container": "#7c839b",
+                      "on-secondary-fixed-variant": "#003ea8",
+                      "on-primary-fixed-variant": "#3f465c",
+                      "primary-fixed-dim": "#bec6e0",
+                      "on-secondary-container": "#fefcff"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "spacing": {
+                      "lg": "24px",
+                      "container-max": "1440px",
+                      "2xl": "48px",
+                      "xs": "4px",
+                      "md": "16px",
+                      "3xl": "64px",
+                      "xl": "32px",
+                      "sm": "8px",
+                      "base": "4px",
+                      "gutter": "24px"
+              },
+              "fontFamily": {
+                      "label-md": ["Inter"],
+                      "headline-md": ["Inter"],
+                      "display-lg": ["Inter"],
+                      "label-sm": ["Inter"],
+                      "headline-sm": ["Inter"],
+                      "title-lg": ["Inter"],
+                      "body-sm": ["Inter"],
+                      "body-base": ["Inter"]
+              },
+              "fontSize": {
+                      "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                      "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                      "display-lg": ["36px", {"lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                      "label-sm": ["11px", {"lineHeight": "14px", "fontWeight": "500"}],
+                      "headline-sm": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                      "title-lg": ["18px", {"lineHeight": "24px", "fontWeight": "600"}],
+                      "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                      "body-base": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
+              }
+            }
+          }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+          font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .bg-pattern {
+            background-image: radial-gradient(#e4e2e4 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+    </style>
+</head>
+<body class="bg-surface font-body-base text-on-surface h-screen overflow-hidden flex selection:bg-secondary-fixed selection:text-on-secondary-fixed">
+<!-- SideNavBar (from JSON) -->
+<nav aria-label="Sidebar" class="bg-surface-container-low border-r border-outline-variant docked left-0 h-full w-[240px] fixed left-0 top-16 h-[calc(100vh-64px)] z-40 flex flex-col py-lg transition-transform duration-300 md:translate-x-0 -translate-x-full">
+<div class="px-md mb-xl flex items-center gap-sm">
+<div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-on-primary">
+<span class="material-symbols-outlined text-[18px]">domain</span>
+</div>
+<div>
+<h2 class="font-headline-sm text-headline-sm font-black text-primary">NexusFlow</h2>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Enterprise Management</p>
+</div>
+</div>
+<button class="mx-md mb-lg flex items-center justify-center gap-sm py-sm px-md bg-secondary text-on-secondary rounded hover:bg-on-secondary-fixed-variant transition-colors">
+<span class="material-symbols-outlined text-[18px]">add</span>
+<span class="font-label-md text-label-md">New Project</span>
+</button>
+<div class="flex-1 flex flex-col gap-sm px-sm overflow-y-auto">
+<a class="group flex items-center gap-md px-md py-sm rounded text-on-surface-variant hover:bg-surface-container-high transition-all" href="#">
+<span class="material-symbols-outlined text-[20px]">folder</span>
+<span class="font-label-md text-label-md">My Projects</span>
+</a>
+<a class="group flex items-center gap-md px-md py-sm rounded text-on-surface-variant hover:bg-surface-container-high transition-all" href="#">
+<span class="material-symbols-outlined text-[20px]">assignment</span>
+<span class="font-label-md text-label-md">My Tasks</span>
+</a>
+<a class="group flex items-center gap-md px-md py-sm rounded text-on-surface-variant hover:bg-surface-container-high transition-all" href="#">
+<span class="material-symbols-outlined text-[20px]">pause</span>
+<span class="font-label-md text-label-md">My Activity</span>
+</a>
+<!-- Active Tab -->
+<a class="group flex items-center gap-md px-md py-sm rounded text-primary font-bold border-r-4 border-secondary hover:bg-surface-container-high transition-all bg-surface-container" href="#">
+<span class="material-symbols-outlined text-[20px] text-secondary">view_kanban</span>
+<span class="font-label-md text-label-md">Kanban</span>
+</a>
+<a class="group flex items-center gap-md px-md py-sm rounded text-on-surface-variant hover:bg-surface-container-high transition-all" href="#">
+<span class="material-symbols-outlined text-[20px]">dashboard</span>
+<span class="font-label-md text-label-md">Dashboard</span>
+</a>
+</div>
+<div class="mt-auto px-sm flex flex-col gap-sm border-t border-outline-variant pt-md">
+<a class="group flex items-center gap-md px-md py-sm rounded text-on-surface-variant hover:bg-surface-container-high transition-all" href="#">
+<span class="material-symbols-outlined text-[20px]">settings</span>
+<span class="font-label-md text-label-md">Settings</span>
+</a>
+<a class="group flex items-center gap-md px-md py-sm rounded text-on-surface-variant hover:bg-surface-container-high transition-all" href="#">
+<span class="material-symbols-outlined text-[20px]">history</span>
+<span class="font-label-md text-label-md">Activity</span>
+</a>
+</div>
+</nav>
+<!-- TopNavBar (from JSON) -->
+<header class="bg-surface fixed top-0 left-0 w-full z-50 flex justify-between items-center px-lg h-16 border-b border-outline-variant md:pl-[264px] transition-all duration-300">
+<div class="flex items-center gap-md w-full max-w-md">
+<button class="md:hidden text-on-surface-variant hover:bg-surface-container p-sm rounded transition-colors" id="mobile-menu-btn">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<div class="relative w-full">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[20px]">search</span>
+<input class="w-full pl-10 pr-4 py-2 bg-surface-container-low border-outline-variant rounded focus:border-secondary focus:ring-1 focus:ring-secondary text-body-sm transition-all" placeholder="Search tasks, projects..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-md">
+<button class="text-on-surface-variant hover:bg-surface-container p-sm rounded transition-colors relative cursor-pointer active:opacity-80">
+<span class="material-symbols-outlined text-[20px]">notifications</span>
+<span class="absolute top-1 right-1 w-2 h-2 bg-error rounded-full"></span>
+</button>
+<div class="w-8 h-8 rounded-full bg-surface-container-high overflow-hidden border border-outline-variant cursor-pointer active:opacity-80">
+<img alt="User avatar dropdown" class="w-full h-full object-cover" data-alt="A professional headshot of a person looking directly at the camera, lit with soft natural light against a neutral background. The style is crisp and corporate." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDW2JIwUiBT9q7ACgACtLChWK1tqL4eXrNjPDA6TX4pBZiDRRCzGHKLXzlG9Xxd4ys3dwYdctQa-FKODoNIm3y6cFsKq0CIk84jmF5pN33Dl1YMIW_AqIYpMgbpFhrOUvlyhvNNBTCh74Be7cicB9XUhhfiFu5SYgIKWd-hBgh9uVNqBtI0fXMasCCFfUo1TOuC0aHNs1ZIz0rSV6Fsrm3hPOCeoiFTsdWuEXO8F93Iuqj6JAyip4YbChQ2qbZQHwHPOstxePziYA"/>
+</div>
+</div>
+</header>
+<!-- Main Background Content (Kanban Board Simulation) -->
+<main class="flex-1 pt-16 md:pl-[240px] bg-pattern relative h-full flex flex-col z-0 transition-all duration-300">
+<div class="p-lg flex-1 overflow-x-auto overflow-y-hidden flex gap-lg">
+<!-- Column 1 -->
+<div class="w-80 flex-shrink-0 flex flex-col max-h-full">
+<div class="flex items-center justify-between mb-sm px-sm">
+<h3 class="font-label-md text-label-md text-on-surface-variant uppercase">To Do <span class="bg-surface-container px-2 py-0.5 rounded ml-2">12</span></h3>
+<button class="text-on-surface-variant hover:bg-surface-container p-1 rounded"><span class="material-symbols-outlined text-[16px]">more_horiz</span></button>
+</div>
+<div class="flex-1 overflow-y-auto space-y-md p-sm bg-surface-container-low rounded border border-outline-variant/50">
+<!-- Dummy Card -->
+<div class="bg-surface p-md rounded border border-outline-variant shadow-sm cursor-pointer hover:border-primary-fixed-dim transition-colors">
+<div class="flex gap-2 mb-2">
+<span class="px-2 py-0.5 bg-error-container text-on-error-container font-label-sm text-label-sm rounded-full">Bug</span>
+<span class="px-2 py-0.5 bg-primary-fixed text-on-primary-fixed font-label-sm text-label-sm rounded-full">High</span>
+</div>
+<h4 class="font-title-lg text-title-lg mb-1">API Rate Limiting Issue</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2">Investigate and resolve the 429 Too Many Requests errors occurring during peak traffic hours on the primary endpoints.</p>
+<div class="mt-4 flex items-center justify-between text-on-surface-variant">
+<div class="flex -space-x-2">
+<img alt="Assignee" class="w-6 h-6 rounded-full border border-surface" data-alt="A small circular avatar showing a professional portrait of a woman." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDR-OCjLzJCRPi5kD0Zlg2YuWqnalmJtK1BR4tEjSJCCtj4GR_iPuJGhUxZWB6XHp-38N0s8DurhhR5fqAV5BMZACmBQBbkxkZwz7Sb5593BawABSC3W9l1fQ0Qyui1ofIR5EhNdy5bmVXq0U2q_nIQBuVZEEIGMr0PsWo1SXyppJQDKxNCC7yM7dR5ktnzTgR8pPY2e5y65ub-gVnojMFXM3KkGQLzoah2_ZloWwvza8DTMxaLfNDkRGGG3oGiFVXeDXh6iezjMg"/>
+</div>
+<div class="flex items-center gap-3 font-label-sm text-label-sm">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">chat_bubble</span> 4</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">attachment</span> 1</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Column 2 (Active) -->
+<div class="w-80 flex-shrink-0 flex flex-col max-h-full">
+<div class="flex items-center justify-between mb-sm px-sm">
+<h3 class="font-label-md text-label-md text-on-surface-variant uppercase">In Progress <span class="bg-surface-container px-2 py-0.5 rounded ml-2">3</span></h3>
+<button class="text-on-surface-variant hover:bg-surface-container p-1 rounded"><span class="material-symbols-outlined text-[16px]">more_horiz</span></button>
+</div>
+<div class="flex-1 overflow-y-auto space-y-md p-sm bg-surface-container-low rounded border border-outline-variant/50">
+<!-- Selected Card (Simulated) -->
+<div class="bg-surface p-md rounded border-2 border-secondary shadow-sm cursor-pointer relative">
+<div class="flex gap-2 mb-2">
+<span class="px-2 py-0.5 bg-secondary-container text-on-secondary-container font-label-sm text-label-sm rounded-full">Feature</span>
+<span class="px-2 py-0.5 bg-tertiary-fixed text-on-tertiary-fixed font-label-sm text-label-sm rounded-full">Medium</span>
+</div>
+<h4 class="font-title-lg text-title-lg mb-1">Implement Task Detail Drawer Overlay</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2">Design and build the sliding right-side drawer for detailed task inspection, editing, and collaboration features.</p>
+<div class="mt-4 flex items-center justify-between text-on-surface-variant">
+<div class="flex -space-x-2">
+<img alt="Assignee" class="w-6 h-6 rounded-full border border-surface z-10" data-alt="A small circular avatar showing a professional portrait of a man." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBXtNj5-w0OjzLHIpcJk75t-XggzOAwE1BSsTMReWiHgsG0mHxSQdDykMeyCYVPTtiRc2VKu6oaH2LxA1FSymNVexi9Ek-BQJ8uaP5eE9cwYa3-DVaaAw2x9nDRBMni3TOsfbdOMZ7AjfH-6PVTehOa-_ZxiKl-eo4sc9bJz8pI1Z-KyB3lFRHawzHLH7PafB4Y6XeTVRc0iIpBXAZDMGObn4hbJuyyjFNBAUTZoJcPXPrfLa3qPjbFtbXZb21xRuN7s-vif6uPZQ"/>
+<img alt="Assignee" class="w-6 h-6 rounded-full border border-surface z-0" data-alt="A small circular avatar showing a professional portrait." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD-ee0cskt52a-lZrbVz8-m6f0cGGHdPtrdg7i_xM5J_i3xwOx3C_OHM5PVubA3kpQY912HQs63KD_WvuyAp139WqfFqzmOuID4iRRtwxg03F_i40YqtFUXYxOruBp4QqoKvzBjS2foBvkT7fLrrrYyElWAIdhF-nTL95wdNJoPm0KTLEcH5YXk1yrQzn4f66uhPy1YjFKKt9--YE7_1NNacHlE1gcmgRijz92Rx6F20rjQf3jRrxPJSi1JDmw0wORNC3pfFv79Lg"/>
+</div>
+<div class="flex items-center gap-3 font-label-sm text-label-sm">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">check_box</span> 3/5</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">chat_bubble</span> 12</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Overlay Backdrop -->
+<div class="fixed inset-0 bg-primary/20 backdrop-blur-sm z-50 transition-opacity duration-300" id="drawer-backdrop"></div>
+<!-- Task Detail Drawer (Right Side) -->
+<aside class="fixed top-0 right-0 h-full w-full sm:w-[600px] lg:w-[800px] bg-surface shadow-[-10px_0_15px_-3px_rgba(0,0,0,0.1)] z-50 flex flex-col transform transition-transform duration-300 ease-out" id="task-drawer">
+<!-- Drawer Header -->
+<header class="px-xl py-lg border-b border-outline-variant bg-surface-bright flex flex-col gap-md flex-shrink-0">
+<div class="flex items-start justify-between">
+<div class="flex items-center gap-sm font-label-sm text-label-sm text-on-surface-variant">
+<span>NEX-4092</span>
+<span class="w-1 h-1 rounded-full bg-outline-variant"></span>
+<a class="hover:text-secondary hover:underline transition-colors" href="#">Frontend Engineering</a>
+</div>
+<div class="flex items-center gap-xs">
+<button class="p-sm text-on-surface-variant hover:bg-surface-container rounded transition-colors" title="Copy Link">
+<span class="material-symbols-outlined text-[20px]">link</span>
+</button>
+<button class="p-sm text-on-surface-variant hover:bg-surface-container rounded transition-colors" title="Full Screen">
+<span class="material-symbols-outlined text-[20px]">open_in_new</span>
+</button>
+<button class="p-sm text-on-surface-variant hover:bg-surface-container rounded transition-colors ml-2" id="close-drawer" title="Close Drawer">
+<span class="material-symbols-outlined text-[24px]">close</span>
+</button>
+</div>
+</div>
+<!-- Editable Title -->
+<div class="group relative">
+<h1 class="font-headline-md text-headline-md text-on-surface pr-8 py-1 rounded border border-transparent hover:border-outline-variant focus-within:border-secondary focus-within:bg-surface-container-lowest focus-within:shadow-sm transition-all" contenteditable="true">Implement Task Detail Drawer Overlay</h1>
+<span class="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 text-[18px] text-outline opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">edit</span>
+</div>
+<!-- Badges Row -->
+<div class="flex items-center gap-md flex-wrap mt-2">
+<div class="flex items-center gap-2 px-3 py-1 bg-surface-container border border-outline-variant rounded cursor-pointer hover:bg-surface-container-high transition-colors">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+<span class="font-label-md text-label-md">In Progress</span>
+<span class="material-symbols-outlined text-[16px] text-on-surface-variant">arrow_drop_down</span>
+</div>
+<div class="flex items-center gap-2 px-3 py-1 bg-tertiary-fixed border border-tertiary-fixed-dim rounded cursor-pointer hover:opacity-90 transition-opacity">
+<span class="material-symbols-outlined text-[16px] text-on-tertiary-fixed">priority_high</span>
+<span class="font-label-md text-label-md text-on-tertiary-fixed">Medium Priority</span>
+<span class="material-symbols-outlined text-[16px] text-on-tertiary-fixed">arrow_drop_down</span>
+</div>
+</div>
+</header>
+<!-- Drawer Body (Two Columns on larger screens) -->
+<div class="flex-1 overflow-y-auto flex flex-col lg:flex-row bg-surface">
+<!-- Left Content Area -->
+<div class="flex-1 p-xl border-r border-outline-variant flex flex-col gap-2xl">
+<!-- Description Section -->
+<section>
+<h3 class="font-title-lg text-title-lg mb-md flex items-center gap-2">
+<span class="material-symbols-outlined text-[20px] text-on-surface-variant">subject</span>
+                        Description
+                    </h3>
+<div class="bg-surface-container-lowest border border-outline-variant rounded p-4 font-body-sm text-body-sm text-on-surface-variant space-y-4 hover:border-outline transition-colors cursor-text">
+<p>Design and build the sliding right-side drawer for detailed task inspection, editing, and collaboration features. This needs to align closely with the new "Modern Corporate" design system.</p>
+<ul class="list-disc pl-5 space-y-1">
+<li>Must handle robust rich text rendering.</li>
+<li>Should include a responsive sub-grid for attachments.</li>
+<li>Needs smooth 300ms ease-out transitions for entry/exit.</li>
+</ul>
+<p class="text-on-surface"><strong>Acceptance Criteria:</strong> Drawer should not disrupt background board layout; should use proper z-indexing.</p>
+</div>
+</section>
+<!-- Subtasks Section -->
+<section>
+<div class="flex items-center justify-between mb-md">
+<h3 class="font-title-lg text-title-lg flex items-center gap-2">
+<span class="material-symbols-outlined text-[20px] text-on-surface-variant">checklist</span>
+                            Subtasks
+                        </h3>
+<span class="font-label-sm text-label-sm text-on-surface-variant px-2 py-1 bg-surface-container rounded">3 / 5 completed</span>
+</div>
+<div class="flex flex-col gap-2">
+<!-- Progress Bar -->
+<div class="w-full h-1 bg-surface-container rounded-full mb-2 overflow-hidden">
+<div class="h-full bg-secondary w-[60%]"></div>
+</div>
+<!-- Subtask List -->
+<label class="flex items-start gap-3 p-2 rounded hover:bg-surface-container-lowest transition-colors cursor-pointer group">
+<input checked="" class="mt-1 rounded border-outline-variant text-secondary focus:ring-secondary w-4 h-4 bg-surface" type="checkbox"/>
+<span class="font-body-sm text-body-sm text-on-surface-variant line-through flex-1">Create baseline HTML structure and CSS variables</span>
+<span class="material-symbols-outlined text-[16px] text-outline opacity-0 group-hover:opacity-100 transition-opacity">more_vert</span>
+</label>
+<label class="flex items-start gap-3 p-2 rounded hover:bg-surface-container-lowest transition-colors cursor-pointer group">
+<input checked="" class="mt-1 rounded border-outline-variant text-secondary focus:ring-secondary w-4 h-4 bg-surface" type="checkbox"/>
+<span class="font-body-sm text-body-sm text-on-surface-variant line-through flex-1">Implement TopNav and SideNav context</span>
+<span class="material-symbols-outlined text-[16px] text-outline opacity-0 group-hover:opacity-100 transition-opacity">more_vert</span>
+</label>
+<label class="flex items-start gap-3 p-2 rounded hover:bg-surface-container-lowest transition-colors cursor-pointer group">
+<input checked="" class="mt-1 rounded border-outline-variant text-secondary focus:ring-secondary w-4 h-4 bg-surface" type="checkbox"/>
+<span class="font-body-sm text-body-sm text-on-surface-variant line-through flex-1">Design Drawer Header and Meta Data area</span>
+<span class="material-symbols-outlined text-[16px] text-outline opacity-0 group-hover:opacity-100 transition-opacity">more_vert</span>
+</label>
+<label class="flex items-start gap-3 p-2 rounded hover:bg-surface-container-lowest transition-colors cursor-pointer group">
+<input class="mt-1 rounded border-outline-variant text-secondary focus:ring-secondary w-4 h-4 bg-surface" type="checkbox"/>
+<span class="font-body-sm text-body-sm text-on-surface flex-1">Build Rich-Text description mimicking area</span>
+<span class="material-symbols-outlined text-[16px] text-outline opacity-0 group-hover:opacity-100 transition-opacity">more_vert</span>
+</label>
+<label class="flex items-start gap-3 p-2 rounded hover:bg-surface-container-lowest transition-colors cursor-pointer group">
+<input class="mt-1 rounded border-outline-variant text-secondary focus:ring-secondary w-4 h-4 bg-surface" type="checkbox"/>
+<span class="font-body-sm text-body-sm text-on-surface flex-1">Add Comments section with Activity Feed styling</span>
+<span class="material-symbols-outlined text-[16px] text-outline opacity-0 group-hover:opacity-100 transition-opacity">more_vert</span>
+</label>
+<button class="mt-2 flex items-center gap-2 text-secondary hover:text-on-secondary-fixed-variant font-label-md text-label-md w-max p-2 rounded hover:bg-secondary/10 transition-colors">
+<span class="material-symbols-outlined text-[18px]">add</span> Add Subtask
+                        </button>
+</div>
+</section>
+<!-- Attachments Grid -->
+<section>
+<div class="flex items-center justify-between mb-md">
+<h3 class="font-title-lg text-title-lg flex items-center gap-2">
+<span class="material-symbols-outlined text-[20px] text-on-surface-variant">attach_file</span>
+                            Attachments
+                        </h3>
+<button class="text-on-surface-variant hover:text-primary font-label-sm text-label-sm underline transition-colors">View All</button>
+</div>
+<div class="grid grid-cols-2 gap-md">
+<!-- Attachment 1 -->
+<div class="flex items-center gap-3 p-2 border border-outline-variant rounded bg-surface hover:bg-surface-container transition-colors cursor-pointer group relative">
+<div class="w-12 h-12 bg-surface-container-high rounded flex items-center justify-center flex-shrink-0 text-primary-fixed-dim">
+<span class="material-symbols-outlined text-[24px]">image</span>
+</div>
+<div class="overflow-hidden">
+<p class="font-label-sm text-label-sm truncate">drawer_mockup_v2.png</p>
+<p class="font-body-sm text-[10px] text-on-surface-variant">Added 2 hours ago • 2.4 MB</p>
+</div>
+<button class="absolute top-2 right-2 opacity-0 group-hover:opacity-100 text-on-surface-variant transition-opacity hover:text-error">
+<span class="material-symbols-outlined text-[16px]">close</span>
+</button>
+</div>
+<!-- Attachment 2 -->
+<div class="flex items-center gap-3 p-2 border border-dashed border-outline-variant rounded bg-surface-container-lowest hover:bg-surface-container hover:border-solid transition-colors cursor-pointer justify-center text-on-surface-variant">
+<span class="material-symbols-outlined">add</span>
+<span class="font-label-sm text-label-sm">Add File</span>
+</div>
+</div>
+</section>
+<!-- Activity & Comments -->
+<section class="mt-auto">
+<h3 class="font-title-lg text-title-lg mb-lg flex items-center gap-2">
+<span class="material-symbols-outlined text-[20px] text-on-surface-variant">forum</span>
+                        Activity
+                    </h3>
+<div class="space-y-lg relative before:absolute before:inset-y-0 before:left-4 before:-ml-px before:w-0.5 before:bg-outline-variant/30">
+<!-- Comment Input -->
+<div class="relative flex gap-md pl-12 before:absolute before:top-4 before:left-4 before:w-4 before:h-0.5 before:bg-outline-variant/30">
+<img alt="Current User" class="absolute left-0 top-0 w-8 h-8 rounded-full border-2 border-surface z-10" data-alt="A small circular avatar showing a professional portrait of a man." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAN0X-2KJ9k42SqWKoWiHdPOpKNwhICQ3COqBD9O8NZis5zids3fi4DOo6Tx6jtCeiviNhk2gWQWtxhP2a8TeoNWw-ctadrRMKhGH75mTzf0D-z1hKnn5PH6_HcZX4SSOs2SO47ovA-PEME5kopfSRPqL8xJT8xSOr9job7qswjVmY9lMrl-u3wxkLYlk71YKjc-JuxpaUOxkdCBIoJMsju2Kr1scsNqWAbytoPqk1PCT-xzgtDwCNAbxg7uNJJuoABw_xg3MLn9g"/>
+<div class="flex-1 bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden focus-within:border-secondary focus-within:ring-1 focus-within:ring-secondary transition-all">
+<textarea class="w-full p-3 border-none resize-none focus:ring-0 bg-transparent text-body-sm placeholder:text-on-surface-variant/70" placeholder="Write a comment... Use @ to mention" rows="2"></textarea>
+<div class="bg-surface-container-low px-3 py-2 flex items-center justify-between border-t border-outline-variant/50">
+<div class="flex gap-1">
+<button class="p-1 text-on-surface-variant hover:text-primary transition-colors rounded"><span class="material-symbols-outlined text-[18px]">format_bold</span></button>
+<button class="p-1 text-on-surface-variant hover:text-primary transition-colors rounded"><span class="material-symbols-outlined text-[18px]">format_italic</span></button>
+<button class="p-1 text-on-surface-variant hover:text-primary transition-colors rounded"><span class="material-symbols-outlined text-[18px]">alternate_email</span></button>
+<button class="p-1 text-on-surface-variant hover:text-primary transition-colors rounded"><span class="material-symbols-outlined text-[18px]">mood</span></button>
+</div>
+<button class="px-3 py-1 bg-secondary text-on-secondary font-label-sm text-label-sm rounded hover:bg-on-secondary-fixed-variant transition-colors">Save</button>
+</div>
+</div>
+</div>
+<!-- Previous Comment -->
+<div class="relative flex gap-md pl-12 before:absolute before:top-4 before:left-4 before:w-4 before:h-0.5 before:bg-outline-variant/30">
+<img alt="Commenter" class="absolute left-0 top-0 w-8 h-8 rounded-full border-2 border-surface z-10" data-alt="A small circular avatar showing a professional portrait of a woman." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBIC3rj7uyWZXFuuwp6KPWyaTH2j9s8fbPgEVjqeBE0-Z_0CL5A04TisPaZWWKnN6LUau0ETdWR64OfUFojfb9x--8AbcBnl4sKA1dee1ERnbwHD8bA-OeJ-2yQQnsHUjo5wWA9R4gl0LkG2t0d64rKRfyMVb2TTEMWwDN_6GMObWbsam0YP7IIzQOBp7NqvJOyhcp8PTiyQDNqHzD3UxiddT264S6K-lvTk_dAk2oaAGYp_XMy-Yj8XfxiK_w2jnIquqHgQD9HkQ"/>
+<div class="flex-1">
+<div class="flex items-baseline gap-2 mb-1">
+<span class="font-label-md text-label-md">Sarah Jenkins</span>
+<span class="font-body-sm text-[12px] text-on-surface-variant">Yesterday at 4:12 PM</span>
+</div>
+<div class="bg-surface-container p-3 rounded-xl rounded-tl-none font-body-sm text-body-sm text-on-surface">
+<p>I've pushed the initial design tokens to the repo. <span class="text-secondary font-medium cursor-pointer hover:underline">@Marcus</span> can you review the padding variables on the main container?</p>
+</div>
+<div class="flex gap-3 mt-2 font-label-sm text-label-sm text-on-surface-variant">
+<button class="hover:text-primary transition-colors">Reply</button>
+<button class="hover:text-primary transition-colors flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">thumb_up</span> 2</button>
+</div>
+</div>
+</div>
+<!-- System Activity -->
+<div class="relative flex gap-md pl-12 before:absolute before:top-4 before:left-4 before:w-4 before:h-0.5 before:bg-outline-variant/30">
+<div class="absolute left-1 top-1 w-6 h-6 rounded-full bg-surface-variant border-2 border-surface z-10 flex items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined text-[14px]">sell</span>
+</div>
+<div class="flex-1 pt-1">
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+<span class="font-medium text-on-surface">Marcus</span> added the <span class="px-1.5 py-0.5 bg-secondary-container text-on-secondary-container rounded text-[10px] uppercase font-bold tracking-wider">Feature</span> label
+                                    <span class="text-[12px] ml-2">2 days ago</span>
+</p>
+</div>
+</div>
+</div>
+</section>
+</div>
+<!-- Right Sidebar (Meta Data) -->
+<aside class="w-full lg:w-[280px] flex-shrink-0 bg-surface-container-low p-lg flex flex-col gap-xl">
+<!-- Assignee -->
+<div class="space-y-sm">
+<h4 class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Assignee</h4>
+<div class="flex items-center justify-between p-2 rounded hover:bg-surface-container cursor-pointer transition-colors border border-transparent hover:border-outline-variant">
+<div class="flex items-center gap-3">
+<img alt="Marcus" class="w-8 h-8 rounded-full" data-alt="A small circular avatar showing a professional portrait of a man." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCPPkbQjNMtApsiojK1u_kEWupLRQ-G6yVpAXREd6SPggm2ObS2ZKE1rS86H_Mvj2f0xHC2cJRSZgMcWAWVY2aoBQIp-Mwh881stYbi9S3caR36oGhTyrmOsrrX_QTlogipyjEt0Jt-NSOIpS-Y86TsOKW4QOUsB4raodVtZBqT1KplcW1Pw4E651XOyKR-34XjfzrG5zaUYIWq998N3x6PTuuOMXDSYQ-5_FKhpGhx59ET3T3N-eoC43iIDTcVuEZjpIe5fEiFGg"/>
+<span class="font-body-sm text-body-sm font-medium">Marcus Chen</span>
+</div>
+<span class="material-symbols-outlined text-outline">close</span>
+</div>
+</div>
+<!-- Team -->
+<div class="space-y-sm">
+<h4 class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Team</h4>
+<div class="flex items-center gap-2 p-2">
+<span class="material-symbols-outlined text-secondary">group</span>
+<span class="font-body-sm text-body-sm">Frontend Core</span>
+</div>
+</div>
+<!-- Dates -->
+<div class="space-y-sm">
+<h4 class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Due Date</h4>
+<div class="flex items-center justify-between p-2 rounded hover:bg-surface-container cursor-pointer transition-colors border border-transparent hover:border-outline-variant group">
+<div class="flex items-center gap-3 text-error">
+<span class="material-symbols-outlined">event</span>
+<span class="font-body-sm text-body-sm font-medium">Oct 24, 2023</span>
+</div>
+<span class="material-symbols-outlined text-[16px] text-outline opacity-0 group-hover:opacity-100 transition-opacity">edit</span>
+</div>
+</div>
+<!-- Labels -->
+<div class="space-y-sm">
+<h4 class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider flex items-center justify-between">
+                        Labels
+                        <button class="hover:bg-surface-container p-0.5 rounded transition-colors"><span class="material-symbols-outlined text-[16px]">add</span></button>
+</h4>
+<div class="flex flex-wrap gap-2 pt-1">
+<span class="px-2 py-1 bg-secondary-container text-on-secondary-container font-label-sm text-label-sm rounded-full flex items-center gap-1">
+                            Feature <button class="hover:text-primary"><span class="material-symbols-outlined text-[12px]">close</span></button>
+</span>
+<span class="px-2 py-1 bg-surface-variant text-on-surface-variant font-label-sm text-label-sm rounded-full flex items-center gap-1">
+                            UI/UX <button class="hover:text-primary"><span class="material-symbols-outlined text-[12px]">close</span></button>
+</span>
+</div>
+</div>
+<!-- Time Tracking -->
+<div class="space-y-sm mt-auto pt-lg border-t border-outline-variant/50">
+<h4 class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Time Tracking</h4>
+<div class="bg-surface p-3 rounded border border-outline-variant">
+<div class="flex items-center justify-between mb-2">
+<span class="font-body-sm text-body-sm font-medium">Logged Time</span>
+<span class="font-label-sm text-label-sm">4h 30m / 8h</span>
+</div>
+<div class="w-full h-1.5 bg-surface-container-high rounded-full overflow-hidden mb-3">
+<div class="h-full bg-secondary w-[55%]"></div>
+</div>
+<button class="w-full flex items-center justify-center gap-2 py-1.5 border border-outline-variant rounded font-label-sm text-label-sm hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined text-[16px]">play_arrow</span> Start Timer
+                        </button>
+</div>
+</div>
+</aside>
+</div>
+<!-- Drawer Footer -->
+<footer class="px-xl py-md border-t border-outline-variant bg-surface-bright flex items-center justify-between flex-shrink-0">
+<span class="font-body-sm text-[12px] text-on-surface-variant">Created Oct 12, 2023 • Updated 2 hours ago</span>
+<div class="flex items-center gap-md">
+<button class="font-label-md text-label-md text-error hover:bg-error-container hover:text-on-error-container px-4 py-2 rounded transition-colors flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">delete</span> Delete Task
+                </button>
+<button class="font-label-md text-label-md px-4 py-2 bg-primary text-on-primary rounded hover:opacity-90 transition-opacity">Done</button>
+</div>
+</footer>
+</aside>
+</body></html>

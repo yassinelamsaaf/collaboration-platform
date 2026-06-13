@@ -4,10 +4,10 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { finalize } from 'rxjs';
 import Swal from 'sweetalert2';
 
-import { AuthService } from '../../../../core/services/auth.service';
-import { ToastService } from '../../../../core/services/toast.service';
-import { UserProfile } from '../../../../shared/models/auth.models';
-import { mapHttpError } from '../../../../shared/utils/error-mapper';
+import { AuthService } from '@core/services/auth.service';
+import { ToastService } from '@core/services/toast.service';
+import { UserProfile } from '@shared/models/auth.models';
+import { mapHttpError } from '@shared/utils/error-mapper';
 
 @Component({
   selector: 'app-landing-navbar',
@@ -78,6 +78,18 @@ export class NavbarComponent {
     this.mobileMenuOpen = false;
   }
 
+  goToDashboard(): void {
+    this.router.navigate(['/dashboard']);
+    this.menuOpen = false;
+    this.mobileMenuOpen = false;
+  }
+
+  goToContactPage(): void {
+    this.router.navigate(['/contact']);
+    this.menuOpen = false;
+    this.mobileMenuOpen = false;
+  }
+
   onLogout(): void {
     void Swal.fire({
       title: 'Log out?',
@@ -123,6 +135,15 @@ export class NavbarComponent {
   }
 
   scrollToSection(id: string): void {
+    if (this.router.url !== '/') {
+      this.router.navigate(['/']).then(() => {
+        const element = document.getElementById(id);
+        element?.scrollIntoView({ behavior: 'auto', block: 'start' });
+      });
+      this.closeMobileMenu();
+      return;
+    }
+
     const element = document.getElementById(id);
     if (element) {
       element.scrollIntoView({ behavior: 'auto', block: 'start' });

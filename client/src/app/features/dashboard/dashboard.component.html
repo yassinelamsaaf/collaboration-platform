@@ -1,2 +1,237 @@
-<h1>Dashboard</h1>
-<p>Protected page — coming soon.</p>
+<section class="workspace-page">
+  <div class="workspace-page__header">
+    <div>
+      <div class="workspace-page__eyebrow">Personal Overview</div>
+      <h1 class="workspace-page__title">Dashboard</h1>
+      <p class="workspace-page__subtitle">
+        Track delivery health across your projects — workload, deadlines, and recent activity in one place.
+      </p>
+    </div>
+    <a class="workspace-primary-btn" routerLink="/dashboard/projects">
+      <lucide-icon name="folders"></lucide-icon>
+      Browse Projects
+    </a>
+  </div>
+
+  <div class="workspace-data-chip" *ngIf="loading">
+    <lucide-icon name="refresh-cw" class="spin"></lucide-icon>
+    Aggregating your workspace analytics...
+  </div>
+
+  <ng-container *ngIf="!loading && snapshot as data">
+    <!-- Stat cards -->
+    <div class="workspace-grid workspace-grid--stats">
+      <article class="workspace-card metric-card">
+        <div class="metric-card__top">
+          <span class="metric-card__icon metric-card__icon--brand"><lucide-icon name="folders"></lucide-icon></span>
+          <span class="metric-card__label">Active Projects</span>
+        </div>
+        <div class="metric-card__value">{{ data.activeProjectCount }}</div>
+        <div class="metric-card__hint">{{ data.projectCount }} total accessible</div>
+      </article>
+
+      <article class="workspace-card metric-card">
+        <div class="metric-card__top">
+          <span class="metric-card__icon metric-card__icon--accent"><lucide-icon name="list-todo"></lucide-icon></span>
+          <span class="metric-card__label">Tasks Tracked</span>
+        </div>
+        <div class="metric-card__value">{{ data.taskCount }}</div>
+        <div class="metric-card__hint">{{ data.inProgressCount }} in progress</div>
+      </article>
+
+      <article class="workspace-card metric-card">
+        <div class="metric-card__top">
+          <span class="metric-card__icon metric-card__icon--warning"><lucide-icon name="clock-4"></lucide-icon></span>
+          <span class="metric-card__label">Due This Week</span>
+        </div>
+        <div class="metric-card__value">{{ data.dueSoonCount }}</div>
+        <div class="metric-card__hint">Upcoming deadlines</div>
+      </article>
+
+      <article class="workspace-card metric-card metric-card--danger">
+        <div class="metric-card__top">
+          <span class="metric-card__icon metric-card__icon--danger"><lucide-icon name="triangle-alert"></lucide-icon></span>
+          <span class="metric-card__label">Overdue</span>
+        </div>
+        <div class="metric-card__value">{{ data.overdueCount }}</div>
+        <div class="metric-card__hint">Past due, still open</div>
+      </article>
+    </div>
+
+    <!-- Analytics row: donut + priority + project progress -->
+    <div class="workspace-grid workspace-grid--analytics">
+      <section class="workspace-card workspace-stack chart-card">
+        <div class="chart-card__head">
+          <div class="workspace-page__eyebrow">Workload</div>
+          <h2 class="chart-card__title">Task status</h2>
+        </div>
+
+        <div class="donut" *ngIf="donutSegments.length; else noStatus">
+          <svg viewBox="0 0 120 120" class="donut__svg">
+            <circle class="donut__track" cx="60" cy="60" r="52"></circle>
+            <circle
+              *ngFor="let seg of donutSegments"
+              class="donut__seg"
+              cx="60"
+              cy="60"
+              r="52"
+              [attr.stroke]="seg.color"
+              [attr.stroke-dasharray]="seg.dash + ' ' + (circumference - seg.dash)"
+              [attr.stroke-dashoffset]="-seg.offset"
+            ></circle>
+          </svg>
+          <div class="donut__center">
+            <div class="donut__value">{{ data.completionRate }}%</div>
+            <div class="donut__caption">complete</div>
+          </div>
+        </div>
+
+        <ul class="chart-legend" *ngIf="donutSegments.length">
+          <li *ngFor="let seg of donutSegments">
+            <span class="chart-legend__dot" [style.background]="seg.color"></span>
+            <span class="chart-legend__label">{{ seg.label }}</span>
+            <span class="chart-legend__value">{{ seg.value }}</span>
+          </li>
+        </ul>
+
+        <ng-template #noStatus>
+          <div class="workspace-empty">No tasks to analyse yet.</div>
+        </ng-template>
+      </section>
+
+      <section class="workspace-card workspace-stack chart-card">
+        <div class="chart-card__head">
+          <div class="workspace-page__eyebrow">Distribution</div>
+          <h2 class="chart-card__title">By priority</h2>
+        </div>
+
+        <div class="bar-chart">
+          <div class="bar-row" *ngFor="let bar of priorityBars">
+            <span class="bar-row__label">{{ bar.label }}</span>
+            <div class="bar-row__track">
+              <div class="bar-row__fill" [style.width.%]="bar.percent" [style.background]="bar.color"></div>
+            </div>
+            <span class="bar-row__value">{{ bar.value }}</span>
+          </div>
+        </div>
+
+        <div class="mini-stats">
+          <div class="mini-stat">
+            <div class="mini-stat__value">{{ data.myTaskCount }}</div>
+            <div class="mini-stat__label">Assigned to me</div>
+          </div>
+          <div class="mini-stat">
+            <div class="mini-stat__value">{{ data.completedCount }}</div>
+            <div class="mini-stat__label">Completed</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="workspace-card workspace-stack chart-card">
+        <div class="chart-card__head">
+          <div class="workspace-page__eyebrow">Delivery</div>
+          <h2 class="chart-card__title">Project progress</h2>
+        </div>
+
+        <div class="progress-list" *ngIf="data.projectProgress.length; else noProgress">
+          <a
+            class="progress-item"
+            *ngFor="let item of data.projectProgress"
+            [routerLink]="['/dashboard/projects', item.project.slug || item.project.id]"
+          >
+            <div class="progress-item__head">
+              <span class="progress-item__name">{{ item.project.name }}</span>
+              <span class="progress-item__pct">{{ item.percent }}%</span>
+            </div>
+            <div class="progress-bar">
+              <div class="progress-bar__fill" [style.width.%]="item.percent"></div>
+            </div>
+            <div class="progress-item__meta">{{ item.done }}/{{ item.total }} tasks done</div>
+          </a>
+        </div>
+
+        <ng-template #noProgress>
+          <div class="workspace-empty">No project activity yet.</div>
+        </ng-template>
+      </section>
+    </div>
+
+    <!-- Lists row -->
+    <div class="workspace-grid workspace-grid--two">
+      <section class="workspace-card workspace-stack">
+        <div class="workspace-page__header" style="align-items: center">
+          <div>
+            <div class="workspace-page__eyebrow">My work</div>
+            <h2 class="chart-card__title">Tasks assigned to me</h2>
+          </div>
+          <a class="workspace-secondary-btn" routerLink="/dashboard/search">
+            <lucide-icon name="search"></lucide-icon>
+            Search
+          </a>
+        </div>
+
+        <div class="workspace-list" *ngIf="data.myTasks.length; else noTasks">
+          <div class="workspace-list__item" *ngFor="let task of data.myTasks">
+            <div>
+              <div class="workspace-list__title">{{ task.title }}</div>
+              <div class="workspace-list__subtitle">{{ dueLabel(task) }}</div>
+            </div>
+            <div class="workspace-inline-actions">
+              <span class="workspace-pill" [ngClass]="'status-pill--' + task.status">{{ task.status }}</span>
+              <span class="workspace-pill" [ngClass]="'prio-pill--' + task.priority">{{ task.priority }}</span>
+            </div>
+          </div>
+        </div>
+
+        <ng-template #noTasks>
+          <div class="workspace-empty">No open tasks are assigned to you right now.</div>
+        </ng-template>
+      </section>
+
+      <section class="workspace-card workspace-stack">
+        <div>
+          <div class="workspace-page__eyebrow">Schedule</div>
+          <h2 class="chart-card__title">Upcoming deadlines</h2>
+        </div>
+
+        <div class="workspace-list" *ngIf="data.upcomingTasks.length; else noDeadlines">
+          <div class="workspace-list__item" *ngFor="let task of data.upcomingTasks">
+            <div>
+              <div class="workspace-list__title">{{ task.title }}</div>
+              <div class="workspace-list__subtitle">Due {{ dueLabel(task) }}</div>
+            </div>
+            <span class="workspace-pill" [ngClass]="'prio-pill--' + task.priority">{{ task.priority }}</span>
+          </div>
+        </div>
+
+        <ng-template #noDeadlines>
+          <div class="workspace-empty">No deadlines in the next 7 days.</div>
+        </ng-template>
+      </section>
+    </div>
+
+    <!-- Notifications -->
+    <section class="workspace-card workspace-stack">
+      <div>
+        <div class="workspace-page__eyebrow">Notifications</div>
+        <h2 class="chart-card__title">Recent activity</h2>
+      </div>
+
+      <div class="workspace-list" *ngIf="data.recentNotifications.length; else noNotifications">
+        <div class="workspace-list__item" *ngFor="let item of data.recentNotifications">
+          <div>
+            <div class="workspace-list__title">
+              <span class="unread-dot" *ngIf="!item.isRead"></span>{{ item.title }}
+            </div>
+            <div class="workspace-list__subtitle">{{ item.message }}</div>
+          </div>
+          <span class="workspace-list__time">{{ notificationTime(item) }}</span>
+        </div>
+      </div>
+
+      <ng-template #noNotifications>
+        <div class="workspace-empty">No notifications yet.</div>
+      </ng-template>
+    </section>
+  </ng-container>
+</section>

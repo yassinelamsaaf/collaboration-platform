@@ -47,6 +47,17 @@
   background: color.adjust($blue-600, $lightness: -6%);
 }
 
+.btn--secondary {
+  background: $white;
+  color: $gray-900;
+  border-color: $gray-300;
+  box-shadow: none;
+}
+
+.btn--secondary:hover {
+  background: $gray-100;
+}
+
 .btn--social {
   background: $white;
   color: $gray-900;
@@ -137,4 +148,3 @@
   cursor: pointer;
   padding: 0;
 }
-

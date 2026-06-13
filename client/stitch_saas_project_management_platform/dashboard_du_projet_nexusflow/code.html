@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Project Dashboard - NexusFlow</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "tertiary-fixed": "#fcdeb5",
+                        "surface-variant": "#e4e2e4",
+                        "on-secondary": "#ffffff",
+                        "surface-dim": "#dcd9db",
+                        "on-tertiary": "#ffffff",
+                        "secondary-fixed-dim": "#b4c5ff",
+                        "surface-container-highest": "#e4e2e4",
+                        "on-error-container": "#93000a",
+                        "on-surface": "#1b1b1d",
+                        "on-background": "#1b1b1d",
+                        "tertiary-container": "#271901",
+                        "background": "#fcf8fa",
+                        "surface": "#fcf8fa",
+                        "error-container": "#ffdad6",
+                        "primary": "#000000",
+                        "outline": "#76777d",
+                        "on-surface-variant": "#45464d",
+                        "primary-fixed": "#dae2fd",
+                        "on-error": "#ffffff",
+                        "inverse-surface": "#303032",
+                        "secondary-container": "#316bf3",
+                        "on-primary": "#ffffff",
+                        "tertiary-fixed-dim": "#dec29a",
+                        "inverse-primary": "#bec6e0",
+                        "on-primary-fixed": "#131b2e",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container-high": "#eae7e9",
+                        "on-tertiary-container": "#98805d",
+                        "surface-container": "#f0edef",
+                        "on-tertiary-fixed": "#271901",
+                        "secondary-fixed": "#dbe1ff",
+                        "outline-variant": "#c6c6cd",
+                        "primary-container": "#131b2e",
+                        "surface-bright": "#fcf8fa",
+                        "tertiary": "#000000",
+                        "surface-container-low": "#f6f3f5",
+                        "secondary": "#0051d5",
+                        "on-secondary-fixed": "#00174b",
+                        "inverse-on-surface": "#f3f0f2",
+                        "on-tertiary-fixed-variant": "#574425",
+                        "error": "#ba1a1a",
+                        "surface-tint": "#565e74",
+                        "on-primary-container": "#7c839b",
+                        "on-secondary-fixed-variant": "#003ea8",
+                        "on-primary-fixed-variant": "#3f465c",
+                        "primary-fixed-dim": "#bec6e0",
+                        "on-secondary-container": "#fefcff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "lg": "24px",
+                        "container-max": "1440px",
+                        "2xl": "48px",
+                        "xs": "4px",
+                        "md": "16px",
+                        "3xl": "64px",
+                        "xl": "32px",
+                        "sm": "8px",
+                        "base": "4px",
+                        "gutter": "24px"
+                    },
+                    "fontFamily": {
+                        "label-md": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "headline-sm": ["Inter"],
+                        "title-lg": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "body-base": ["Inter"]
+                    },
+                    "fontSize": {
+                        "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "display-lg": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "label-sm": ["11px", { "lineHeight": "14px", "fontWeight": "500" }],
+                        "headline-sm": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "title-lg": ["18px", { "lineHeight": "24px", "fontWeight": "600" }],
+                        "body-sm": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "body-base": ["16px", { "lineHeight": "24px", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined[data-weight="fill"] {
+            font-variation-settings: 'FILL' 1;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-base overflow-x-hidden min-h-screen">
+<!-- TopNavBar -->
+<nav class="bg-surface border-b border-outline-variant fixed top-0 left-0 w-full z-50 flex justify-between items-center px-lg h-16">
+<div class="flex items-center gap-md">
+<div class="font-display-lg text-display-lg font-bold text-primary">NexusFlow</div>
+</div>
+<div class="flex items-center gap-md">
+<!-- Search -->
+<div class="relative hidden md:block w-64">
+<span class="material-symbols-outlined absolute left-sm top-1/2 -translate-y-1/2 text-on-surface-variant" data-icon="search">search</span>
+<input class="w-full bg-surface-container-low border border-outline-variant rounded pl-[36px] pr-sm py-[6px] font-body-sm text-body-sm text-on-surface focus:outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/20" placeholder="Search..." type="text"/>
+</div>
+<button class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-surface-container transition-colors text-on-surface-variant cursor-pointer active:opacity-80">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<div class="w-8 h-8 rounded-full bg-surface-variant border border-outline-variant overflow-hidden cursor-pointer active:opacity-80">
+<img alt="User avatar dropdown" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCmNJ03pDJfN7pxYm5D3DcwMvOKklCCBaMxWIaNJ1-k9NgIbWsc54Ss187KWiJ4LIyfJ2KhQjJjc-jiQu-44rCGN2NaO6q-I-_nRf379aGoarM53NqittYbJu1PhkUyRWwC2dwbRx9BKIpysRG42v8itBa23F8JbpRdPpPNzHMLmJjJQE66QkgltKm1xVY7ri6pzmpiRE1F-fZG9IU0ZNqtlQcaxyuUxPdQsdUbQg6Gwy6c2Id1vVwm0ias0X8ABK5xsXf66Svftg"/>
+</div>
+</div>
+</nav>
+<!-- SideNavBar -->
+<aside class="hidden md:flex flex-col bg-surface-container-low border-r border-outline-variant fixed left-0 top-16 h-[calc(100vh-64px)] w-[240px] z-40 py-lg">
+<div class="px-md mb-lg">
+<div class="flex items-center gap-sm mb-sm">
+<div class="w-8 h-8 rounded bg-primary text-on-primary flex items-center justify-center font-bold">N</div>
+<div>
+<h2 class="font-headline-sm text-headline-sm font-black text-primary truncate leading-none">NexusFlow</h2>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Enterprise Management</p>
+</div>
+</div>
+<button class="w-full bg-secondary text-on-secondary font-label-md text-label-md rounded py-sm px-md flex items-center justify-center gap-sm mt-md hover:bg-secondary/90 transition-colors">
+<span class="material-symbols-outlined text-[16px]" data-icon="add">add</span>
+                New Project
+            </button>
+</div>
+<nav class="flex-1 overflow-y-auto space-y-[2px]">
+<!-- Active Tab: My Projects (closest intent to Project Dashboard) -->
+<a class="group flex items-center gap-md px-md py-sm bg-surface-container-high border-r-4 border-secondary text-primary font-bold font-label-md text-label-md transition-all cursor-pointer" href="#">
+<span class="material-symbols-outlined" data-icon="folder" data-weight="fill">folder</span>
+                My Projects
+            </a>
+<a class="group flex items-center gap-md px-md py-sm text-on-surface-variant font-label-md text-label-md hover:bg-surface-container-high transition-all cursor-pointer" href="#">
+<span class="material-symbols-outlined" data-icon="assignment">assignment</span>
+                My Tasks
+            </a>
+<a class="group flex items-center gap-md px-md py-sm text-on-surface-variant font-label-md text-label-md hover:bg-surface-container-high transition-all cursor-pointer" href="#">
+<span class="material-symbols-outlined" data-icon="pulse">pause</span>
+                My Activity
+            </a>
+<a class="group flex items-center gap-md px-md py-sm text-on-surface-variant font-label-md text-label-md hover:bg-surface-container-high transition-all cursor-pointer" href="#">
+<span class="material-symbols-outlined" data-icon="view_kanban">view_kanban</span>
+                Kanban
+            </a>
+<a class="group flex items-center gap-md px-md py-sm text-on-surface-variant font-label-md text-label-md hover:bg-surface-container-high transition-all cursor-pointer" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+                Dashboard
+            </a>
+</nav>
+<div class="mt-auto border-t border-outline-variant pt-sm">
+<a class="group flex items-center gap-md px-md py-sm text-on-surface-variant font-label-md text-label-md hover:bg-surface-container-high transition-all cursor-pointer" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+                Settings
+            </a>
+<a class="group flex items-center gap-md px-md py-sm text-on-surface-variant font-label-md text-label-md hover:bg-surface-container-high transition-all cursor-pointer" href="#">
+<span class="material-symbols-outlined" data-icon="history">history</span>
+                Activity
+            </a>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="pt-[64px] md:pl-[240px] min-h-screen pb-xl">
+<!-- Sticky Project Header -->
+<header class="bg-surface border-b border-outline-variant sticky top-[64px] z-30 px-lg pt-lg pb-0">
+<div class="max-w-[1440px] mx-auto">
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-md mb-md">
+<div>
+<div class="flex items-center gap-sm mb-xs">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Project P-402</span>
+<span class="px-2 py-[2px] rounded-full bg-secondary/10 text-secondary font-label-sm text-label-sm border border-secondary/20">Lead</span>
+</div>
+<h1 class="font-display-lg text-display-lg text-primary">Website Redesign 2024</h1>
+</div>
+<div class="flex items-center gap-sm">
+<div class="flex -space-x-2 mr-sm">
+<img alt="Team member" class="w-8 h-8 rounded-full border-2 border-surface" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCoV_qwT6-B2mBi35tpkf-qa7QgChmJ4T2u08lL1ByhIdjD7ZOCNuwq2QdWL1C6wv36hBPFO2LscZwBX0wipxlVfVeW1djO9WetpBTi23sDtQZi2W1zzocveTaXMl6BMima48NabDuHsr6vdMr-2gY4hlHoVbzTrSqsfY7zkujpB2oauwsfKZ2nmrX_CQDcPX0CPQV54J_aKX9XXH36otcYxBB97hFFWV-4HTQMpKAaErQ4SnCe9q4F6vXdTUX-RZWStBarCTy9iQ"/>
+<img alt="Team member" class="w-8 h-8 rounded-full border-2 border-surface" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDZkKnGaZpRqp1LDC2jIQTofIpcjluJFBYYFSynXWEHqDmc_I_5F-a3eh_z2hGGf34rAZBdGYu-M8g3q9OooWJq8C1eS7hiogT_6_S6Idd_QlJUQJDZMbhLxBDbJp-2RkRDYrxgrdKMizSjV3yaK3dCZ1i6_9uO2whyM8rMwaJgKMC6njRpp4s8nvWHfybLsB_Y3bASwbFXU7EuaDMSWQuCJIsFx2IlXFOE3UBTv4btpBd8tiuURRqvXlstcqjpdGbMlRLo-dOsQQ"/>
+<div class="w-8 h-8 rounded-full border-2 border-surface bg-surface-container flex items-center justify-center font-label-sm text-label-sm text-on-surface">+3</div>
+</div>
+<button class="px-md py-sm rounded border border-outline-variant text-on-surface font-label-md text-label-md hover:bg-surface-container transition-colors">Share</button>
+<button class="px-md py-sm rounded bg-secondary text-on-secondary font-label-md text-label-md hover:bg-secondary/90 transition-colors">Complete Sprint</button>
+</div>
+</div>
+<!-- Tabs -->
+<div class="flex gap-lg overflow-x-auto no-scrollbar border-b border-transparent">
+<button class="px-xs py-sm border-b-2 border-secondary text-primary font-label-md text-label-md whitespace-nowrap">Dashboard</button>
+<button class="px-xs py-sm border-b-2 border-transparent text-on-surface-variant font-label-md text-label-md hover:text-on-surface whitespace-nowrap">Board</button>
+<button class="px-xs py-sm border-b-2 border-transparent text-on-surface-variant font-label-md text-label-md hover:text-on-surface whitespace-nowrap">Members</button>
+<button class="px-xs py-sm border-b-2 border-transparent text-on-surface-variant font-label-md text-label-md hover:text-on-surface whitespace-nowrap">Activity</button>
+<button class="px-xs py-sm border-b-2 border-transparent text-on-surface-variant font-label-md text-label-md hover:text-on-surface whitespace-nowrap">Settings</button>
+</div>
+</div>
+</header>
+<div class="max-w-[1440px] mx-auto px-md md:px-lg mt-lg space-y-lg">
+<!-- Top KPI Row -->
+<section class="grid grid-cols-2 md:grid-cols-4 gap-md">
+<div class="bg-surface-container-lowest border border-outline-variant rounded p-md flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant mb-sm">Total Tasks</span>
+<span class="font-headline-md text-headline-md text-primary">124</span>
+<div class="mt-auto pt-sm flex items-center gap-xs text-on-surface-variant font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[14px]" data-icon="trending_up">trending_up</span> +12 this week
+                    </div>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant rounded p-md flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant mb-sm">Done</span>
+<span class="font-headline-md text-headline-md text-primary">82</span>
+<div class="mt-auto pt-sm w-full bg-surface-container rounded-full h-1">
+<div class="bg-secondary h-1 rounded-full" style="width: 66%"></div>
+</div>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant rounded p-md flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant mb-sm">In Progress</span>
+<span class="font-headline-md text-headline-md text-primary">35</span>
+<div class="mt-auto pt-sm flex items-center gap-xs text-secondary font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[14px]" data-icon="sync">sync</span> Active
+                    </div>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant rounded p-md flex flex-col border-l-4 border-l-error">
+<span class="font-label-sm text-label-sm text-error mb-sm">Overdue</span>
+<span class="font-headline-md text-headline-md text-error">7</span>
+<div class="mt-auto pt-sm flex items-center gap-xs text-error font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[14px]" data-icon="warning">warning</span> Requires attention
+                    </div>
+</div>
+</section>
+<!-- Main Grid Layout (Bento Style) -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-lg">
+<!-- Left: Charts (4 cols) -->
+<section class="lg:col-span-4 space-y-md">
+<div class="bg-surface-container-lowest border border-outline-variant rounded p-md">
+<h3 class="font-title-lg text-title-lg text-primary mb-md">Completion Status</h3>
+<!-- Donut Chart Placeholder (SVG) -->
+<div class="relative w-48 h-48 mx-auto mb-md">
+<svg class="w-full h-full transform -rotate-90" viewbox="0 0 36 36">
+<circle cx="18" cy="18" fill="transparent" r="15.91549430918954" stroke="#f0edef" stroke-width="4"></circle>
+<circle cx="18" cy="18" fill="transparent" r="15.91549430918954" stroke="#0051d5" stroke-dasharray="66 34" stroke-linecap="round" stroke-width="4"></circle>
+<circle cx="18" cy="18" fill="transparent" r="15.91549430918954" stroke="#ba1a1a" stroke-dasharray="5 95" stroke-dashoffset="-66" stroke-linecap="round" stroke-width="4"></circle>
+</svg>
+<div class="absolute inset-0 flex flex-col items-center justify-center">
+<span class="font-headline-md text-headline-md text-primary leading-none">66%</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Done</span>
+</div>
+</div>
+<!-- Legend -->
+<div class="space-y-sm">
+<div class="flex items-center justify-between font-body-sm text-body-sm">
+<div class="flex items-center gap-xs"><div class="w-3 h-3 rounded-full bg-secondary"></div><span class="text-on-surface">Done</span></div>
+<span class="font-label-md text-label-md">82</span>
+</div>
+<div class="flex items-center justify-between font-body-sm text-body-sm">
+<div class="flex items-center gap-xs"><div class="w-3 h-3 rounded-full bg-surface-container-highest"></div><span class="text-on-surface">In Progress</span></div>
+<span class="font-label-md text-label-md">35</span>
+</div>
+<div class="flex items-center justify-between font-body-sm text-body-sm">
+<div class="flex items-center gap-xs"><div class="w-3 h-3 rounded-full bg-error"></div><span class="text-on-surface">Overdue</span></div>
+<span class="font-label-md text-label-md">7</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Center: Active Tasks (5 cols) -->
+<section class="lg:col-span-5">
+<div class="bg-surface-container-lowest border border-outline-variant rounded p-md h-full">
+<div class="flex items-center justify-between mb-md">
+<h3 class="font-title-lg text-title-lg text-primary">Active Tasks</h3>
+<button class="text-secondary font-label-md text-label-md hover:underline">View All</button>
+</div>
+<div class="space-y-sm">
+<!-- Task Item -->
+<div class="p-sm border border-outline-variant rounded hover:bg-surface-container transition-colors cursor-pointer flex gap-md items-start">
+<div class="mt-xs text-on-surface-variant">
+<span class="material-symbols-outlined" data-icon="radio_button_unchecked">radio_button_unchecked</span>
+</div>
+<div class="flex-1">
+<h4 class="font-label-md text-label-md text-on-surface mb-xs">Finalize Homepage Wireframes</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-1">Review spacing and typography tokens with the design team.</p>
+<div class="mt-sm flex gap-sm items-center">
+<span class="px-2 py-[2px] rounded-full bg-error/10 text-error font-label-sm text-label-sm">High Priority</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant flex items-center gap-xs">
+<span class="material-symbols-outlined text-[14px]" data-icon="calendar_today">calendar_today</span> Today
+                                        </span>
+</div>
+</div>
+<img alt="Assignee" class="w-6 h-6 rounded-full" src="https://lh3.googleusercontent.com/aida-public/AB6AXuABEphI1tvUlTKNDFJU7-x5YRQWdIKoyGLcCKzLl0-G8NU0lqFGnOr87xa-ur7zO0wUjrV8LxrqbtGGS_YdbDB7XEFIXWoNJzx-sejr7fmQORioSgeBmLvzp1tNWOCMzlp8mzLimirYyxNY1y22C4zSMDI7UZxHKzmcZO6a6GSWouuidz1c2tcypGZ-KSQaKAOZxIuLlLx26JuBISNxa4wjDLtuzb6OtN7rWIa6A1ttjLTAKe7qflh5YgpxKuhCv5o1YztUnzUyog"/>
+</div>
+<!-- Task Item -->
+<div class="p-sm border border-outline-variant rounded hover:bg-surface-container transition-colors cursor-pointer flex gap-md items-start">
+<div class="mt-xs text-secondary">
+<span class="material-symbols-outlined" data-icon="hourglass_empty">hourglass_empty</span>
+</div>
+<div class="flex-1">
+<h4 class="font-label-md text-label-md text-on-surface mb-xs">Setup CI/CD Pipeline</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-1">Configure GitHub actions for staging deployment.</p>
+<div class="mt-sm flex gap-sm items-center">
+<span class="px-2 py-[2px] rounded-full bg-surface-container-high text-on-surface font-label-sm text-label-sm">Backend</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant flex items-center gap-xs">
+<span class="material-symbols-outlined text-[14px]" data-icon="calendar_today">calendar_today</span> Tomorrow
+                                        </span>
+</div>
+</div>
+<img alt="Assignee" class="w-6 h-6 rounded-full" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDY0eqeSXpb0DJxMkoUw720fFIVKJmq4SI5ZnNQov8x59I8WeLfWf096Gw8Gl9CSkoRyYXHPsvx4EeEqJ-m_rweEyLIK5M8F0yFqOUnpo50uzrWGiwtkMX4A_wK88fxqpNB8uCyoQpFJACclCbUPsqI9ZztYNmZpuhg1mTebSBI4lEv9QqKyM2-x6WWxYJKLFSFlLa9JS9lZOtDKqkG8CPcmNDp3TmAnfM_4gZhjYIeomwMxlNlK5id64HTWNYmcIX2AiGG3-RtYg"/>
+</div>
+<!-- Task Item -->
+<div class="p-sm border border-outline-variant rounded hover:bg-surface-container transition-colors cursor-pointer flex gap-md items-start opacity-70">
+<div class="mt-xs text-on-surface-variant">
+<span class="material-symbols-outlined" data-icon="check_circle">check_circle</span>
+</div>
+<div class="flex-1">
+<h4 class="font-label-md text-label-md text-on-surface mb-xs line-through">Draft PRD Document</h4>
+<div class="mt-sm flex gap-sm items-center">
+<span class="font-label-sm text-label-sm text-on-surface-variant flex items-center gap-xs">
+<span class="material-symbols-outlined text-[14px]" data-icon="done_all">done_all</span> Completed yesterday
+                                        </span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Right: Team Members (3 cols) -->
+<section class="lg:col-span-3 space-y-md">
+<div class="bg-surface-container-lowest border border-outline-variant rounded p-md">
+<div class="flex items-center justify-between mb-md">
+<h3 class="font-title-lg text-title-lg text-primary">Team</h3>
+<button class="w-6 h-6 rounded hover:bg-surface-container flex items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined text-[18px]" data-icon="more_vert">more_vert</span>
+</button>
+</div>
+<ul class="space-y-sm">
+<li class="flex items-center justify-between p-xs rounded hover:bg-surface-container">
+<div class="flex items-center gap-sm">
+<img alt="Alex M" class="w-8 h-8 rounded-full" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBzEbcqPqP1UO9wfQ-ol-FIAVtlPCuL67-k-wJztpwDJZNpcqwdm6SA7V3NCWb70IuL6_mlt0iOUNR5EH5jBZPB967_PHESrjhRwe9RcjbBpnnC586LGRyNOCkhjzzF72cYBxZ-8XXhjBu4oJWrK9FtBr3chBSDpteSOUa2Y5LWHE9l9O3ieodQsx2XxmSygiBWidqV02OYQtRI9r2NCnaMz2QBgt4Zt-QxnkS-RwRnuDAYh8yGQUZpWMqVCGzIc_ioKkBjQMUoew"/>
+<div>
+<div class="font-label-md text-label-md text-on-surface">Alex M.</div>
+<div class="font-label-sm text-label-sm text-on-surface-variant">Product Manager</div>
+</div>
+</div>
+</li>
+<li class="flex items-center justify-between p-xs rounded hover:bg-surface-container">
+<div class="flex items-center gap-sm">
+<img alt="Sarah J" class="w-8 h-8 rounded-full" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDpxE-9pYaa03N09TOV5Otmts_CXXCYrUI00d7Jc9_ix3vow4f7rVkBEuseKIlR-eUhe6Ed3-VDgU1JdAODRZdWLoqbosnXSB_G9ewXtTpce58a2ib453gHect7zMF0TvLPWhaqjc2smgdhaM1oaXHZQh6svC7t2NDToIAgzBjpcvdKYigKq0WM5Lst2ZlRzE8ILYvhHNCgQ9gEUfca9R6-oyOSPokDSWEG8vHEPJdCFvch0xi2qRwbkYoLHTqRkzjxF8F_JTJAZw"/>
+<div>
+<div class="font-label-md text-label-md text-on-surface">Sarah J.</div>
+<div class="font-label-sm text-label-sm text-on-surface-variant">Lead Designer</div>
+</div>
+</div>
+</li>
+<li class="flex items-center justify-between p-xs rounded hover:bg-surface-container">
+<div class="flex items-center gap-sm">
+<img alt="Dev Team" class="w-8 h-8 rounded-full" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCQ0jf7C1ricZq1povbWiAutvzPSmw6gsrxyNlfG09KUbc5Vb1hv29lIBsupyTcfw20oxchvT2gdbti93T6yoF-x-rTFSZW06HBRcOqt8qqioKN0oT63du-1MBtatyA_tXtP4ELmoyy0GLc3AsF08mffd6RYC9tt1boH2rWYT_0gevHbI2DJ6Yo1jmgcL5ot6tI62Uwv3vnYGCY4oOy11Wo-3GEag_y-Rf5c7dmzalfX_YWP7_eisZEXOZKSWlRiHfPkpz3jqobxg"/>
+<div>
+<div class="font-label-md text-label-md text-on-surface">Michael T.</div>
+<div class="font-label-sm text-label-sm text-on-surface-variant">Sr. Engineer</div>
+</div>
+</div>
+</li>
+</ul>
+<button class="mt-md w-full py-xs border border-dashed border-outline-variant rounded text-on-surface-variant font-label-md text-label-md hover:bg-surface-container transition-colors flex items-center justify-center gap-xs">
+<span class="material-symbols-outlined text-[16px]" data-icon="add">add</span> Add Member
+                        </button>
+</div>
+</section>
+</div>
+<!-- Bottom: Recent Activity -->
+<section>
+<div class="bg-surface-container-lowest border border-outline-variant rounded p-md">
+<h3 class="font-title-lg text-title-lg text-primary mb-md">Recent Activity</h3>
+<div class="relative pl-md border-l-2 border-surface-container-high space-y-lg">
+<!-- Activity Item -->
+<div class="relative">
+<div class="absolute -left-[25px] w-3 h-3 bg-secondary rounded-full border-2 border-surface-container-lowest"></div>
+<div class="font-label-sm text-label-sm text-on-surface-variant mb-xs">2 hours ago</div>
+<div class="font-body-sm text-body-sm text-on-surface">
+<span class="font-label-md text-label-md">Sarah J.</span> moved <span class="font-label-md text-label-md">Finalize Homepage Wireframes</span> to In Progress.
+                            </div>
+</div>
+<!-- Activity Item -->
+<div class="relative">
+<div class="absolute -left-[25px] w-3 h-3 bg-surface-container-high rounded-full border-2 border-surface-container-lowest"></div>
+<div class="font-label-sm text-label-sm text-on-surface-variant mb-xs">Yesterday, 4:30 PM</div>
+<div class="font-body-sm text-body-sm text-on-surface">
+<span class="font-label-md text-label-md">Alex M.</span> uploaded a new document: <em>Q3_Planning_V2.pdf</em>.
+                            </div>
+</div>
+<!-- Activity Item -->
+<div class="relative">
+<div class="absolute -left-[25px] w-3 h-3 bg-surface-container-high rounded-full border-2 border-surface-container-lowest"></div>
+<div class="font-label-sm text-label-sm text-on-surface-variant mb-xs">Yesterday, 10:15 AM</div>
+<div class="font-body-sm text-body-sm text-on-surface">
+<span class="font-label-md text-label-md">Michael T.</span> commented on <span class="font-label-md text-label-md">Setup CI/CD Pipeline</span>.
+                                <div class="mt-sm p-sm bg-surface-container-low rounded border border-outline-variant text-on-surface-variant text-body-sm">
+                                    "I'll need access to the production environment variables to complete this step."
+                                </div>
+</div>
+</div>
+</div>
+</div>
+</section>
+</div>
+</main>
+</body></html>

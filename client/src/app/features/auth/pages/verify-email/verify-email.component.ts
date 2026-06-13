@@ -13,11 +13,11 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { finalize } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
-import { AuthService } from '../../../../core/services/auth.service';
-import { ToastService } from '../../../../core/services/toast.service';
-import { getControlError, markAllTouched } from '../../../../shared/utils/form-helpers';
-import { mapHttpError } from '../../../../shared/utils/error-mapper';
-import { MessageResponse } from '../../../../shared/models/auth.models';
+import { AuthService } from '@core/services/auth.service';
+import { ToastService } from '@core/services/toast.service';
+import { getControlError, markAllTouched } from '@shared/utils/form-helpers';
+import { mapHttpError } from '@shared/utils/error-mapper';
+import { MessageResponse } from '@shared/models/auth.models';
 
 @Component({
   selector: 'app-verify-email',
@@ -48,9 +48,11 @@ export class VerifyEmailComponent implements OnInit {
 
   loading = false;
   resending = false;
+  private redirectUrl = '/dashboard/projects';
 
   ngOnInit(): void {
     const email = this.route.snapshot.queryParamMap.get('email');
+    this.redirectUrl = this.route.snapshot.queryParamMap.get('redirect') || '/dashboard/projects';
     if (email) {
       this.form.patchValue({ email });
     }
@@ -80,7 +82,10 @@ export class VerifyEmailComponent implements OnInit {
       .subscribe({
         next: (response: MessageResponse) => {
             this.toast.success(response.message);
-          window.setTimeout(() => this.router.navigate(['/auth/login']), 800);
+          window.setTimeout(
+            () => this.router.navigate(['/auth/login'], { queryParams: { redirect: this.redirectUrl } }),
+            800
+          );
         },
         error: (error: unknown) => {
             this.toast.error(mapHttpError(error, 'Verification failed. Please try again.'));

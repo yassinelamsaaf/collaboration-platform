@@ -1,0 +1,58 @@
+<section class="auth-center">
+  <div class="auth-card auth-card--wide">
+    <div class="auth-card__icon">
+      <lucide-icon name="mail"></lucide-icon>
+    </div>
+
+    <div *ngIf="loading" class="auth-card__subtitle">Loading invitation details...</div>
+
+    <ng-container *ngIf="!loading && preview as invitation">
+      <h1 class="auth-card__title">Project invitation</h1>
+      <p class="auth-card__subtitle">
+        You were invited to join <strong>{{ invitation.projectName }}</strong> as <strong>{{ invitation.role }}</strong>.
+      </p>
+
+      <div class="workspace-list">
+        <div class="workspace-list__item">
+          <div>
+            <div class="workspace-list__title">Invitation email</div>
+            <div class="workspace-list__subtitle">{{ invitation.email }}</div>
+          </div>
+          <span class="workspace-pill workspace-pill--neutral">{{ invitation.status }}</span>
+        </div>
+
+        <div class="workspace-list__item">
+          <div>
+            <div class="workspace-list__title">Expires</div>
+            <div class="workspace-list__subtitle">{{ invitation.expiresAt | date: 'medium' }}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="auth-form__panel" *ngIf="!isSignedIn">
+        <a class="btn btn--primary" [routerLink]="['/auth/login']" [queryParams]="authQueryParams()">
+          Sign In to Accept
+        </a>
+        <a class="btn btn--secondary" [routerLink]="['/auth/register']" [queryParams]="authQueryParams()">
+          Create Account First
+        </a>
+      </div>
+
+      <div class="auth-form__panel" *ngIf="isSignedIn && !emailMatches">
+        <div class="workspace-empty">
+          You are signed in as {{ profile?.email }}, but this invitation belongs to {{ invitation.email }}.
+        </div>
+        <a class="btn btn--secondary" [routerLink]="['/auth/login']" [queryParams]="authQueryParams()">
+          Switch Account
+        </a>
+      </div>
+
+      <div class="auth-form__panel" *ngIf="isSignedIn && emailMatches">
+        <button class="btn btn--primary" type="button" (click)="acceptInvitation()" [disabled]="accepting || invitation.status !== 'PENDING'">
+          {{ accepting ? 'Accepting...' : 'Accept Invitation' }}
+        </button>
+        <p class="auth-inline">You are signed in with the correct email, so you can join directly.</p>
+      </div>
+    </ng-container>
+  </div>
+</section>

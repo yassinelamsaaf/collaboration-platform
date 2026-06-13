@@ -1,0 +1,347 @@
+<section class="workspace-page">
+  <div class="workspace-empty" *ngIf="loading && !snapshot">Loading members, teams, and invitations...</div>
+
+  <div class="workspace-data-chip" *ngIf="loading && snapshot">
+    <lucide-icon name="refresh-cw"></lucide-icon>
+    Refreshing project structure...
+  </div>
+
+  <ng-container *ngIf="snapshot as data">
+    <div class="workspace-page__header">
+      <div>
+        <div class="workspace-page__eyebrow">Project Structure</div>
+        <h1 class="workspace-page__title">Members & Teams</h1>
+        <p class="workspace-page__subtitle">
+          This page handles the project structure layer: who belongs to the project, who is still invited, and how people are grouped into teams.
+        </p>
+      </div>
+
+      <div class="workspace-inline-actions">
+        <a class="workspace-secondary-btn" [routerLink]="['/dashboard/projects', data.project.slug || data.project.id]">
+          <lucide-icon name="layout-dashboard"></lucide-icon>
+          Overview
+        </a>
+        <a class="workspace-primary-btn" [routerLink]="['/dashboard/projects', data.project.slug || data.project.id, 'kanban']">
+          <lucide-icon name="square-kanban"></lucide-icon>
+          Open Kanban
+        </a>
+      </div>
+    </div>
+
+    <div class="workspace-tabs">
+      <a class="workspace-tabs__link" [routerLink]="['/dashboard/projects', data.project.slug || data.project.id]">
+        <lucide-icon name="layout-dashboard"></lucide-icon>
+        Overview
+      </a>
+      <a class="workspace-tabs__link is-active" [routerLink]="['/dashboard/projects', data.project.slug || data.project.id, 'teams']">
+        <lucide-icon name="users"></lucide-icon>
+        Members & Teams
+      </a>
+      <a class="workspace-tabs__link" [routerLink]="['/dashboard/projects', data.project.slug || data.project.id, 'kanban']">
+        <lucide-icon name="square-kanban"></lucide-icon>
+        Kanban
+      </a>
+    </div>
+
+    <div class="workspace-grid workspace-grid--stats">
+      <article class="workspace-card metric-card">
+        <div class="metric-card__label">Members</div>
+        <div class="metric-card__value">{{ data.members.length }}</div>
+        <div class="metric-card__hint">Accepted project access</div>
+      </article>
+      <article class="workspace-card metric-card">
+        <div class="metric-card__label">Pending Invitations</div>
+        <div class="metric-card__value">{{ pendingInvitationCount() }}</div>
+        <div class="metric-card__hint">People not onboarded yet</div>
+      </article>
+      <article class="workspace-card metric-card">
+        <div class="metric-card__label">Teams</div>
+        <div class="metric-card__value">{{ data.teams.length }}</div>
+        <div class="metric-card__hint">Operational groups inside the project</div>
+      </article>
+      <article class="workspace-card metric-card">
+        <div class="metric-card__label">Your Access</div>
+        <div class="metric-card__value" style="font-size: 1.35rem">{{ data.project.currentUserRole }}</div>
+        <div class="metric-card__hint">Role applied at project level</div>
+      </article>
+    </div>
+
+    <div class="workspace-grid workspace-grid--two">
+      <section class="workspace-card workspace-stack">
+        <div>
+          <div class="workspace-page__eyebrow">Project Access</div>
+          <h2 class="workspace-page__title" style="font-size: 1.45rem">Members</h2>
+        </div>
+
+        <div class="workspace-list" *ngIf="data.members.length; else noMembers">
+          <div class="workspace-list__item" *ngFor="let member of data.members">
+            <div>
+              <div class="workspace-list__title">{{ member.memberName }}</div>
+              <div class="workspace-list__subtitle">{{ member.memberEmail }}</div>
+            </div>
+
+            <div class="workspace-inline-actions">
+              <select
+                class="workspace-select workspace-select--compact"
+                [value]="member.role"
+                [disabled]="!canManageRoles || member.role === 'OWNER'"
+                (change)="changeProjectRole(member, $any($event.target).value)"
+              >
+                <option value="OWNER" [disabled]="true">OWNER</option>
+                <option *ngFor="let role of projectRoles" [value]="role">{{ role }}</option>
+              </select>
+
+              <button
+                class="workspace-ghost-btn workspace-ghost-btn--danger"
+                type="button"
+                (click)="removeProjectMember(member)"
+                [disabled]="!canRemoveMember(member)"
+              >
+                <lucide-icon name="x"></lucide-icon>
+                Remove
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <ng-template #noMembers>
+          <div class="workspace-empty">No project members found.</div>
+        </ng-template>
+      </section>
+
+      <section class="workspace-stack">
+        <article class="workspace-card workspace-stack">
+          <div class="workspace-section-head">
+            <div>
+              <div class="workspace-page__eyebrow">Team Setup</div>
+              <h2 class="workspace-page__title" style="font-size: 1.45rem">Create team</h2>
+            </div>
+            <button
+              class="workspace-secondary-btn"
+              type="button"
+              *ngIf="canManageProject"
+              (click)="showTeamForm = !showTeamForm"
+            >
+              <lucide-icon [name]="showTeamForm ? 'x' : 'plus'"></lucide-icon>
+              {{ showTeamForm ? 'Close' : 'New Team' }}
+            </button>
+          </div>
+
+          <form class="workspace-form" *ngIf="showTeamForm" (ngSubmit)="createTeam()">
+            <div class="workspace-field">
+              <label for="team-name">Team name</label>
+              <input
+                id="team-name"
+                class="workspace-input"
+                type="text"
+                name="team-name"
+                [(ngModel)]="teamForm.name"
+                [disabled]="!canManageProject || saving"
+                placeholder="Backend, Product, Design..."
+              />
+            </div>
+
+            <div class="workspace-field">
+              <label for="team-description">Description</label>
+              <textarea
+                id="team-description"
+                class="workspace-textarea"
+                name="team-description"
+                [(ngModel)]="teamForm.description"
+                [disabled]="!canManageProject || saving"
+                placeholder="Explain the team purpose and ownership."
+              ></textarea>
+            </div>
+
+            <button class="workspace-primary-btn" type="submit" [disabled]="!canManageProject || saving">
+              <lucide-icon name="plus"></lucide-icon>
+              {{ saving ? 'Saving...' : 'Create Team' }}
+            </button>
+          </form>
+        </article>
+
+        <article class="workspace-card workspace-stack">
+          <div class="workspace-section-head">
+            <div>
+              <div class="workspace-page__eyebrow">Invitations</div>
+              <h2 class="workspace-page__title" style="font-size: 1.45rem">Invite member</h2>
+            </div>
+            <button
+              class="workspace-secondary-btn"
+              type="button"
+              *ngIf="canManageProject"
+              (click)="showInviteForm = !showInviteForm"
+            >
+              <lucide-icon [name]="showInviteForm ? 'x' : 'user-plus'"></lucide-icon>
+              {{ showInviteForm ? 'Close' : 'Invite' }}
+            </button>
+          </div>
+
+          <form class="workspace-form" *ngIf="showInviteForm" (ngSubmit)="inviteMember()">
+            <div class="workspace-field">
+              <label for="invite-email">Email address</label>
+              <input
+                id="invite-email"
+                class="workspace-input"
+                type="email"
+                name="invite-email"
+                [(ngModel)]="inviteForm.email"
+                [disabled]="!canManageProject || saving"
+                placeholder="collaborator@example.com"
+              />
+            </div>
+
+            <div class="workspace-field">
+              <label for="invite-role">Project role</label>
+              <select
+                id="invite-role"
+                class="workspace-select"
+                name="invite-role"
+                [(ngModel)]="inviteForm.role"
+                [disabled]="!canManageProject || saving"
+              >
+                <option *ngFor="let role of projectRoles" [value]="role">{{ role }}</option>
+              </select>
+            </div>
+
+            <button class="workspace-primary-btn" type="submit" [disabled]="!canManageProject || saving">
+              <lucide-icon name="send"></lucide-icon>
+              Send Invitation
+            </button>
+          </form>
+        </article>
+      </section>
+    </div>
+
+    <div class="workspace-grid workspace-grid--two">
+      <section class="workspace-card workspace-stack">
+        <div>
+          <div class="workspace-page__eyebrow">Pending Access</div>
+          <h2 class="workspace-page__title" style="font-size: 1.45rem">Invitation queue</h2>
+        </div>
+
+        <div class="workspace-list" *ngIf="data.invitations.length; else noInvitations">
+          <div class="workspace-list__item" *ngFor="let invitation of data.invitations">
+            <div>
+              <div class="workspace-list__title">{{ invitation.email }}</div>
+              <div class="workspace-list__subtitle">
+                {{ invitation.role }} · {{ invitation.status }} · expires {{ invitation.expiresAt | date: 'mediumDate' }}
+              </div>
+            </div>
+
+            <div class="workspace-inline-actions">
+              <span class="workspace-pill workspace-pill--neutral">{{ invitation.status }}</span>
+              <button
+                class="workspace-ghost-btn workspace-ghost-btn--danger"
+                type="button"
+                *ngIf="invitation.status === 'PENDING'"
+                [disabled]="!canManageProject"
+                (click)="cancelInvitation(invitation.id)"
+              >
+                <lucide-icon name="x"></lucide-icon>
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <ng-template #noInvitations>
+          <div class="workspace-empty">No invitations are currently in flight.</div>
+        </ng-template>
+      </section>
+
+      <section class="workspace-card workspace-stack">
+        <div>
+          <div class="workspace-page__eyebrow">Team Composition</div>
+          <h2 class="workspace-page__title" style="font-size: 1.45rem">Manage team members</h2>
+        </div>
+
+        <div class="workspace-inline-actions" *ngIf="data.teams.length; else noTeams">
+          <button
+            class="workspace-chip-btn"
+            type="button"
+            *ngFor="let team of data.teams"
+            [class.is-active]="team.id === selectedTeamId"
+            (click)="selectTeam(team.id)"
+          >
+            {{ team.name }}
+          </button>
+        </div>
+
+        <form class="workspace-form" *ngIf="selectedTeam as team" (ngSubmit)="addTeamMember()">
+          <div class="workspace-field">
+            <label for="team-member">Project member</label>
+            <select
+              id="team-member"
+              class="workspace-select"
+              name="team-member"
+              [(ngModel)]="teamMemberForm.userId"
+              [disabled]="!canManageProject"
+            >
+              <option value="">Select a member</option>
+              <option *ngFor="let member of teamMemberCandidates()" [value]="member.userId">
+                {{ member.memberName }} - {{ member.memberEmail }}
+              </option>
+            </select>
+          </div>
+
+          <div class="workspace-field">
+            <label for="team-member-role">Team role</label>
+            <select
+              id="team-member-role"
+              class="workspace-select"
+              name="team-member-role"
+              [(ngModel)]="teamMemberForm.role"
+              [disabled]="!canManageProject"
+            >
+              <option *ngFor="let role of teamRoles" [value]="role">{{ role }}</option>
+            </select>
+          </div>
+
+          <button class="workspace-primary-btn" type="submit" [disabled]="!canManageProject">
+            <lucide-icon name="badge-plus"></lucide-icon>
+            Add to {{ team.name }}
+          </button>
+        </form>
+
+        <div class="workspace-list" *ngIf="selectedTeamMembers.length">
+          <div class="workspace-list__item" *ngFor="let member of selectedTeamMembers">
+            <div>
+              <div class="workspace-list__title">{{ member.memberName }}</div>
+              <div class="workspace-list__subtitle">{{ member.memberEmail }}</div>
+            </div>
+
+            <div class="workspace-inline-actions">
+              <select
+                class="workspace-select workspace-select--compact"
+                [value]="member.role"
+                [disabled]="!canManageProject"
+                (change)="changeTeamMemberRole(member, $any($event.target).value)"
+              >
+                <option *ngFor="let role of teamRoles" [value]="role">{{ role }}</option>
+              </select>
+
+              <button
+                class="workspace-ghost-btn workspace-ghost-btn--danger"
+                type="button"
+                [disabled]="!canManageProject"
+                (click)="removeTeamMember(member)"
+              >
+                <lucide-icon name="x"></lucide-icon>
+                Remove
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="workspace-empty" *ngIf="selectedTeam && !selectedTeamMembers.length">
+          No members assigned to {{ selectedTeam.name }} yet.
+        </div>
+
+        <ng-template #noTeams>
+          <div class="workspace-empty">Create a team first to assign members.</div>
+        </ng-template>
+      </section>
+    </div>
+  </ng-container>
+</section>

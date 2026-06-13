@@ -2,31 +2,30 @@
   <div class="auth-layout__panel auth-layout__panel--media">
     <div class="auth-media">
       <div class="auth-media__bg"></div>
-      <div class="auth-media__content">
-        <div class="auth-brand">NexusFlow</div>
+        <div class="auth-media__content">
+        <div class="auth-brand">Collab Platform</div>
         <p class="auth-media__copy">
-          The ultimate high-performance hub for enterprise velocity and executive oversight.
+          Create your account, verify your email, then join the collaboration spaces shared with you.
         </p>
 
         <div class="testimonial-card">
           <div class="testimonial-card__stars">
-            <img src="/assets/images/icon-star.png" alt="" />
-            <img src="/assets/images/icon-star.png" alt="" />
-            <img src="/assets/images/icon-star.png" alt="" />
-            <img src="/assets/images/icon-star.png" alt="" />
-            <img src="/assets/images/icon-star.png" alt="" />
+            <span class="testimonial-card__star" aria-hidden="true">★</span>
+            <span class="testimonial-card__star" aria-hidden="true">★</span>
+            <span class="testimonial-card__star" aria-hidden="true">★</span>
+            <span class="testimonial-card__star" aria-hidden="true">★</span>
+            <span class="testimonial-card__star" aria-hidden="true">★</span>
           </div>
           <p class="testimonial-card__quote">
-            "NexusFlow has fundamentally transformed how our executive team tracks project
-            velocity. It's the most precise tool we've ever used."
+            "Onboarding is finally simple: register, verify, and step straight into the right project."
           </p>
           <div class="testimonial-card__author">
             <div class="testimonial-card__avatar">
               <img src="/assets/images/login-avatar.png" alt="" />
             </div>
             <div>
-              <div class="testimonial-card__name">Marcus Thorne</div>
-              <div class="testimonial-card__role">CTO, Vertex Dynamics</div>
+              <div class="testimonial-card__name">Workspace Team</div>
+              <div class="testimonial-card__role">Project collaboration</div>
             </div>
           </div>
         </div>
@@ -38,13 +37,14 @@
     <div class="auth-form">
       <div class="auth-form__header">
         <h1>Create your account</h1>
-        <p>Enter your details below to get started with NexusFlow.</p>
+        <p>Register once, verify your email, and start collaborating.</p>
       </div>
 
       <div class="auth-tabs">
         <a
           class="auth-tabs__item"
           routerLink="/auth/login"
+          [queryParams]="{ redirect: route.snapshot.queryParamMap.get('redirect') }"
           routerLinkActive="is-active"
           [routerLinkActiveOptions]="{ exact: true }"
         >
@@ -54,6 +54,7 @@
         <a
           class="auth-tabs__item"
           routerLink="/auth/register"
+          [queryParams]="{ redirect: route.snapshot.queryParamMap.get('redirect') }"
           routerLinkActive="is-active"
           [routerLinkActiveOptions]="{ exact: true }"
         >
@@ -63,23 +64,8 @@
       </div>
 
       <div class="auth-form__panel is-signup">
-        <div class="auth-social">
-          <button class="btn btn--social btn--social-google" type="button">
-            <span class="social-icon social-icon--google" aria-hidden="true">
-              <lucide-icon name="globe"></lucide-icon>
-            </span>
-            Sign up with Google
-          </button>
-          <button class="btn btn--social btn--social-github" type="button">
-            <span class="social-icon" aria-hidden="true">
-              <lucide-icon name="github"></lucide-icon>
-            </span>
-            Sign up with GitHub
-          </button>
-        </div>
-
         <div class="auth-divider">
-          <span>OR EMAIL</span>
+          <span>EMAIL REGISTRATION</span>
         </div>
 
         <form class="form-stack" [formGroup]="form" (ngSubmit)="onSubmit()">
@@ -154,14 +140,16 @@
 
         <div class="auth-links">
           <span>Already have an account?</span>
-          <a class="link" routerLink="/auth/login">Sign In</a>
+          <a class="link" routerLink="/auth/login" [queryParams]="{ redirect: route.snapshot.queryParamMap.get('redirect') }">Sign In</a>
         </div>
 
         <div class="auth-legal">
-          <span>&copy; 2024 NexusFlow Enterprise Solutions. All rights reserved.</span>
+          <span class="auth-legal__caption">Collaboration Platform workspace access</span>
           <div class="auth-legal__links">
-            <a class="link" href="#">Privacy Policy</a>
-            <a class="link" href="#">Terms of Service</a>
+            <a class="link" routerLink="/contact">Contact</a>
+            <a class="link" routerLink="/support">Support</a>
+            <a class="link" routerLink="/privacy">Privacy</a>
+            <a class="link" routerLink="/terms">Terms</a>
           </div>
         </div>
       </div>

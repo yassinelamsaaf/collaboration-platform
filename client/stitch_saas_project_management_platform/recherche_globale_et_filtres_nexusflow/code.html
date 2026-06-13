@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>NexusFlow - Search Results</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "secondary-container": "#316bf3",
+                        "secondary": "#0051d5",
+                        "on-secondary-fixed": "#00174b",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container-high": "#eae7e9",
+                        "on-tertiary-fixed-variant": "#574425",
+                        "tertiary-container": "#271901",
+                        "surface-variant": "#e4e2e4",
+                        "primary": "#000000",
+                        "on-surface-variant": "#45464d",
+                        "inverse-primary": "#bec6e0",
+                        "background": "#fcf8fa",
+                        "outline-variant": "#c6c6cd",
+                        "surface-tint": "#565e74",
+                        "surface": "#fcf8fa",
+                        "surface-dim": "#dcd9db",
+                        "outline": "#76777d",
+                        "surface-container-low": "#f6f3f5",
+                        "on-secondary-fixed-variant": "#003ea8",
+                        "on-secondary-container": "#fefcff",
+                        "on-error": "#ffffff",
+                        "surface-container": "#f0edef",
+                        "inverse-surface": "#303032",
+                        "on-surface": "#1b1b1d",
+                        "error": "#ba1a1a",
+                        "secondary-fixed": "#dbe1ff",
+                        "primary-fixed": "#dae2fd",
+                        "on-primary-fixed": "#131b2e",
+                        "tertiary-fixed-dim": "#dec29a",
+                        "on-background": "#1b1b1d",
+                        "surface-container-highest": "#e4e2e4",
+                        "secondary-fixed-dim": "#b4c5ff",
+                        "on-tertiary-container": "#98805d",
+                        "on-primary": "#ffffff",
+                        "tertiary-fixed": "#fcdeb5",
+                        "on-secondary": "#ffffff",
+                        "on-primary-fixed-variant": "#3f465c",
+                        "inverse-on-surface": "#f3f0f2",
+                        "tertiary": "#000000",
+                        "on-error-container": "#93000a",
+                        "primary-fixed-dim": "#bec6e0",
+                        "surface-bright": "#fcf8fa",
+                        "primary-container": "#131b2e",
+                        "error-container": "#ffdad6",
+                        "on-primary-container": "#7c839b",
+                        "on-tertiary": "#ffffff",
+                        "on-tertiary-fixed": "#271901"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "sm": "8px",
+                        "2xl": "48px",
+                        "lg": "24px",
+                        "3xl": "64px",
+                        "container-max": "1440px",
+                        "gutter": "24px",
+                        "xs": "4px",
+                        "md": "16px",
+                        "base": "4px",
+                        "xl": "32px"
+                    },
+                    "fontFamily": {
+                        "body-base": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "title-lg": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "headline-sm": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "label-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "body-base": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "title-lg": ["18px", {"lineHeight": "24px", "fontWeight": "600"}],
+                        "label-sm": ["11px", {"lineHeight": "14px", "fontWeight": "500"}],
+                        "headline-sm": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                        "display-lg": ["36px", {"lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined[data-weight="fill"] {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-base antialiased flex h-screen overflow-hidden">
+<!-- SideNavBar -->
+<nav class="bg-primary-container text-on-primary-container fixed left-0 top-0 h-screen w-60 border-r border-outline-variant flex flex-col p-md gap-sm z-20">
+<!-- Header -->
+<div class="mb-lg flex flex-col gap-sm">
+<div class="flex items-center gap-sm">
+<img alt="Organization Logo" class="w-8 h-8 rounded bg-surface-container" data-alt="A sleek, minimalist corporate logo featuring an abstract geometric shape in cool blue tones, representing technology and enterprise efficiency. The logo is clean, modern, and highly legible, set against a solid dark background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCiuNg4oX5Q4CEAS0eJEQgrTc_pjb-0SB9JOzF38HBd9TvI0_4B8spQuOcwPLt47YoHbLnhDNvjzrmlx2RAaSuzRo72E6oK7hesWUGSlAcYrI2wzJQxHKntemdzMkXIoo4cPWvWufrkigYGc_BEzpOdS4SLw23RI8a6Pt76WcY8vPIggUG4Cvdg0NXVgjxWyjAxQ0TpgilZSJow36k62bpZsAU0DpQajQeR-P9axORf1iG6XM2exv9UKPXTDf15UBbmnoxQeYtZeQ"/>
+<div class="flex flex-col">
+<span class="font-title-lg text-title-lg font-bold text-on-primary-container">NexusFlow</span>
+<span class="font-label-sm text-label-sm text-on-primary-container/70">Enterprise</span>
+</div>
+</div>
+</div>
+<!-- Navigation Links -->
+<div class="flex flex-col gap-xs flex-1">
+<a class="text-on-primary-container/70 hover:text-on-primary-container hover:bg-on-primary-container/10 flex items-center gap-md px-md py-sm transition-all rounded" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-label-md text-label-md">Dashboard</span>
+</a>
+<a class="bg-primary-fixed text-primary-container rounded flex items-center gap-md px-md py-sm focus:ring-2 focus:ring-secondary transition-shadow" href="#">
+<span class="material-symbols-outlined" data-icon="assignment_turned_in">assignment_turned_in</span>
+<span class="font-label-md text-label-md">Projects</span>
+</a>
+<a class="text-on-primary-container/70 hover:text-on-primary-container hover:bg-on-primary-container/10 flex items-center gap-md px-md py-sm transition-all rounded" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-label-md text-label-md">Settings</span>
+</a>
+</div>
+<!-- CTA -->
+<button class="mt-auto bg-secondary text-on-secondary hover:bg-secondary/90 font-label-md text-label-md py-sm px-md rounded transition-colors w-full flex justify-center items-center gap-sm">
+<span class="material-symbols-outlined" data-icon="add">add</span>
+            New Project
+        </button>
+</nav>
+<!-- Main Content Area -->
+<main class="ml-60 flex-1 flex flex-col h-screen overflow-hidden">
+<!-- TopNavBar (Search Context) -->
+<header class="bg-surface text-primary border-b border-outline-variant flex justify-between items-center w-full px-lg h-16 shrink-0 z-10 relative">
+<div class="flex-1 flex items-center">
+<!-- Search Input Group -->
+<div class="relative w-full max-w-2xl flex items-center">
+<span class="material-symbols-outlined absolute left-sm text-on-surface-variant pointer-events-none" data-icon="search">search</span>
+<input class="w-full bg-surface-container-low border border-outline-variant rounded pl-10 pr-sm py-sm font-body-sm text-body-sm text-on-surface focus:outline-none focus:ring-1 focus:ring-secondary focus:border-secondary transition-shadow" placeholder="Search Phase 5..." type="text" value="Phase 5"/>
+<button class="absolute right-sm text-on-surface-variant hover:text-primary p-xs rounded hover:bg-surface-variant transition-colors">
+<span class="material-symbols-outlined text-sm" data-icon="close">close</span>
+</button>
+</div>
+</div>
+<!-- Trailing Actions -->
+<div class="flex items-center gap-sm ml-lg">
+<button class="p-sm text-on-surface-variant hover:text-primary hover:bg-surface-container-low transition-colors rounded-full relative">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+<span class="absolute top-1.5 right-1.5 w-2 h-2 bg-error rounded-full"></span>
+</button>
+<button class="p-sm text-on-surface-variant hover:text-primary hover:bg-surface-container-low transition-colors rounded-full">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+</button>
+<button class="p-sm text-on-surface-variant hover:text-primary hover:bg-surface-container-low transition-colors rounded-full">
+<span class="material-symbols-outlined" data-icon="apps">apps</span>
+</button>
+<img alt="User profile" class="w-8 h-8 rounded-full border border-outline-variant cursor-pointer ml-sm" data-alt="A professional headshot of a smiling man in a modern corporate setting. He is wearing a dark blue blazer over a light shirt. The background is a slightly blurred office environment with bright, natural lighting. The image conveys approachability and professionalism." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD_rtio3GuX8_aFhDZLDO2tPDrLx3ancNO3PXJg0v9ojMszS_2Z9RMVI__xHfFDYq1pQGF2w4KJojAhQnM-TRkfyHueYYwsKW9XbPcZr-orS3FOn6_2iuCIYj1BA3rrgx_Jj7vRUTUwsiO7xRTpEPvQV61FKnCuw7DfleGjMkgfPrPzLKL9OfOT0FYJdFAi6cDNRCyea-k0RnewijB8jFCvzMo22Q9sh6SLe90Ii7JO7YFYNGNU0aEHJAkX6tj7mTr3c3ISFd2cCQ"/>
+</div>
+</header>
+<!-- Search Canvas Layout -->
+<div class="flex-1 flex overflow-hidden">
+<!-- Filters Sidebar -->
+<aside class="w-64 bg-surface border-r border-outline-variant shrink-0 overflow-y-auto p-lg flex flex-col gap-lg">
+<div class="flex items-center justify-between">
+<h2 class="font-title-lg text-title-lg text-on-surface">Filters</h2>
+<button class="text-secondary font-label-md text-label-md hover:underline">Clear all</button>
+</div>
+<!-- Filter Group: Type -->
+<div class="flex flex-col gap-sm">
+<h3 class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Result Type</h3>
+<div class="flex flex-col gap-xs">
+<label class="flex items-center gap-sm cursor-pointer group">
+<input checked="" class="w-4 h-4 text-secondary border-outline-variant rounded focus:ring-secondary focus:ring-offset-surface" type="checkbox"/>
+<span class="font-body-sm text-body-sm text-on-surface group-hover:text-primary">Projects</span>
+<span class="ml-auto font-label-sm text-label-sm text-on-surface-variant">12</span>
+</label>
+<label class="flex items-center gap-sm cursor-pointer group">
+<input checked="" class="w-4 h-4 text-secondary border-outline-variant rounded focus:ring-secondary focus:ring-offset-surface" type="checkbox"/>
+<span class="font-body-sm text-body-sm text-on-surface group-hover:text-primary">Tasks</span>
+<span class="ml-auto font-label-sm text-label-sm text-on-surface-variant">45</span>
+</label>
+<label class="flex items-center gap-sm cursor-pointer group">
+<input class="w-4 h-4 text-secondary border-outline-variant rounded focus:ring-secondary focus:ring-offset-surface" type="checkbox"/>
+<span class="font-body-sm text-body-sm text-on-surface group-hover:text-primary">Members</span>
+<span class="ml-auto font-label-sm text-label-sm text-on-surface-variant">3</span>
+</label>
+</div>
+</div>
+<!-- Filter Group: Status -->
+<div class="flex flex-col gap-sm">
+<h3 class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Status</h3>
+<div class="flex flex-col gap-xs">
+<label class="flex items-center gap-sm cursor-pointer group">
+<input checked="" class="w-4 h-4 text-secondary border-outline-variant rounded focus:ring-secondary focus:ring-offset-surface" type="checkbox"/>
+<span class="font-body-sm text-body-sm text-on-surface group-hover:text-primary">In Progress</span>
+</label>
+<label class="flex items-center gap-sm cursor-pointer group">
+<input class="w-4 h-4 text-secondary border-outline-variant rounded focus:ring-secondary focus:ring-offset-surface" type="checkbox"/>
+<span class="font-body-sm text-body-sm text-on-surface group-hover:text-primary">Completed</span>
+</label>
+<label class="flex items-center gap-sm cursor-pointer group">
+<input class="w-4 h-4 text-secondary border-outline-variant rounded focus:ring-secondary focus:ring-offset-surface" type="checkbox"/>
+<span class="font-body-sm text-body-sm text-on-surface group-hover:text-primary">Blocked</span>
+</label>
+</div>
+</div>
+</aside>
+<!-- Results Canvas -->
+<div class="flex-1 overflow-y-auto bg-surface-container-low p-lg lg:p-xl">
+<div class="max-w-container-max mx-auto flex flex-col gap-xl">
+<!-- Search Meta -->
+<div class="flex flex-col gap-sm">
+<h1 class="font-headline-md text-headline-md text-on-surface">57 results for "Phase 5"</h1>
+<div class="flex items-center gap-sm flex-wrap">
+<span class="font-body-sm text-body-sm text-on-surface-variant">Active filters:</span>
+<div class="flex items-center gap-xs bg-surface border border-outline-variant rounded-full px-sm py-1">
+<span class="font-label-sm text-label-sm text-on-surface">Type: Projects, Tasks</span>
+<button class="text-on-surface-variant hover:text-primary flex items-center"><span class="material-symbols-outlined text-[14px]" data-icon="close">close</span></button>
+</div>
+<div class="flex items-center gap-xs bg-surface border border-outline-variant rounded-full px-sm py-1">
+<span class="font-label-sm text-label-sm text-on-surface">Status: In Progress</span>
+<button class="text-on-surface-variant hover:text-primary flex items-center"><span class="material-symbols-outlined text-[14px]" data-icon="close">close</span></button>
+</div>
+</div>
+</div>
+<!-- Bento Grid Layout for Results -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-lg">
+<!-- Projects Section (Spans full width or large portion) -->
+<div class="lg:col-span-12 flex flex-col gap-md">
+<h2 class="font-title-lg text-title-lg text-on-surface flex items-center gap-sm border-b border-outline-variant pb-xs">
+<span class="material-symbols-outlined text-secondary" data-icon="assignment_turned_in">assignment_turned_in</span>
+                                Projects
+                            </h2>
+<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-md">
+<!-- Project Card 1 -->
+<div class="bg-surface border border-outline-variant rounded p-md flex flex-col gap-md hover:border-secondary transition-colors cursor-pointer group">
+<div class="flex justify-between items-start">
+<div class="flex flex-col gap-xs">
+<span class="font-label-sm text-label-sm text-secondary bg-secondary/10 px-xs py-[2px] rounded w-fit">In Progress</span>
+<h3 class="font-title-lg text-title-lg text-on-surface group-hover:text-secondary transition-colors">Phase 5 Migration</h3>
+</div>
+<button class="text-on-surface-variant hover:text-primary"><span class="material-symbols-outlined" data-icon="more_vert">more_vert</span></button>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2">Migrating legacy databases to the new Phase 5 architecture. Requires coordination with DevOps.</p>
+<div class="mt-auto pt-md border-t border-outline-variant flex justify-between items-center">
+<div class="flex -space-x-2">
+<img alt="Team member" class="w-6 h-6 rounded-full border border-surface" data-alt="Close up portrait of a young professional woman with dark hair. She has a neutral, focused expression. The background is a soft, out-of-focus modern office setting. The lighting is natural and bright." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBJks7-lXRjeJREMNQdxP1vkIXQccYKerRp3-aHwQ1ZhmKUFHkjPFsNHbML4NBQX2lgkhwdzghJEfdmiyp7o38XCiRSGOFvwyTC0XSoGVn-j3QiX8pCx0UFJp09JLNwvzar5RIppznQTpo24T6fhVuO2TTe1qaLG_N4aooALM5rhERy13XqSwCyUW3amxfZFMUXUo1qAKiap8eI6FEFWZtVfLMC4McrasWqOf8AIWEijs5vhoop6-R0RRozV0Rpd2gyBROuHMq6EA"/>
+<div class="w-6 h-6 rounded-full border border-surface bg-surface-container flex items-center justify-center font-label-sm text-label-sm text-on-surface">+2</div>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant flex items-center gap-xs">
+<span class="material-symbols-outlined text-[14px]" data-icon="calendar_today">calendar_today</span> Oct 24
+                                        </span>
+</div>
+</div>
+<!-- Project Card 2 -->
+<div class="bg-surface border border-outline-variant rounded p-md flex flex-col gap-md hover:border-secondary transition-colors cursor-pointer group">
+<div class="flex justify-between items-start">
+<div class="flex flex-col gap-xs">
+<span class="font-label-sm text-label-sm text-secondary bg-secondary/10 px-xs py-[2px] rounded w-fit">Planning</span>
+<h3 class="font-title-lg text-title-lg text-on-surface group-hover:text-secondary transition-colors">Phase 5 UI Refresh</h3>
+</div>
+<button class="text-on-surface-variant hover:text-primary"><span class="material-symbols-outlined" data-icon="more_vert">more_vert</span></button>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2">Updating the core component library to align with the new Phase 5 design specifications.</p>
+<div class="mt-auto pt-md border-t border-outline-variant flex justify-between items-center">
+<div class="flex -space-x-2">
+<img alt="Team member" class="w-6 h-6 rounded-full border border-surface" data-alt="Portrait of a male professional with short dark hair and a light beard. He is wearing a dark gray sweater. The background is a clean, neutral gray studio backdrop. He has a serious, analytical expression." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCEWE3wXqYDJNs9IUCL4Q0J9O-fhX4K_kEP2gNZGbBXAOFwsL7zKftueepmgx4olzpN20at9rkvdw8I6tEN6P9afq63I0WX5ffW-4wmXG9ULREQzUuhYdJUfyJroB-8eO6uiRkQgnoXmKPtoS-nIaawVdp7aOCKKnUpoLwuOyBA952dGJQibttH-41cHcMP2S1xQBIfI86OEiTyiQHedpjzigkYHYi26vNwQQ4P2gmL03761iujw7TEuPpqmIFHPRAgGjOssQUGJg"/>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant flex items-center gap-xs">
+<span class="material-symbols-outlined text-[14px]" data-icon="calendar_today">calendar_today</span> Nov 12
+                                        </span>
+</div>
+</div>
+</div>
+</div>
+<!-- Tasks Section (Takes up remaining space) -->
+<div class="lg:col-span-12 flex flex-col gap-md mt-lg">
+<h2 class="font-title-lg text-title-lg text-on-surface flex items-center gap-sm border-b border-outline-variant pb-xs">
+<span class="material-symbols-outlined text-secondary" data-icon="check_circle">check_circle</span>
+                                Tasks
+                            </h2>
+<div class="flex flex-col gap-sm">
+<!-- Task Item 1 -->
+<div class="bg-surface border border-outline-variant rounded p-sm flex items-center gap-md hover:bg-surface-container-low transition-colors cursor-pointer group">
+<span class="material-symbols-outlined text-outline group-hover:text-secondary" data-icon="radio_button_unchecked">radio_button_unchecked</span>
+<div class="flex-1 flex flex-col">
+<span class="font-body-sm text-body-sm text-on-surface font-medium group-hover:text-secondary transition-colors">Review Phase 5 Security Audit</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant flex items-center gap-xs">
+<span class="material-symbols-outlined text-[14px]" data-icon="subdirectory_arrow_right">subdirectory_arrow_right</span> In Project: Phase 5 Migration
+                                        </span>
+</div>
+<div class="flex items-center gap-sm">
+<span class="font-label-sm text-label-sm text-error bg-error/10 px-xs py-[2px] rounded">High Priority</span>
+<img alt="Assignee" class="w-6 h-6 rounded-full border border-outline-variant" data-alt="Close up portrait of a young professional woman with dark hair. She has a neutral, focused expression. The background is a soft, out-of-focus modern office setting. The lighting is natural and bright." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDst01FNERDUJ6XTwvMo8ditLL8FQfoyPulxy9umPpBB5y0UGrMOtZ8Gl4ATmlFJZha25skLOayhUhCg-IrBlZj1UpJkIyrLFZt0TdKVD338YoWqHu5-qEj--T2aUEQae5z9dfGKbYNmwnSpj9XcWukmByi7LdKO2FtgPE0DstsA1FukAfls4Jfv-7G0WUwUGNw7QxbRqqugYV3uS2_U6MGzYRXjqhLTN0ZdxXLEN6jaZhh9YPl9SFR8TqKG7WThf0Ok0F6-O_YIw"/>
+</div>
+</div>
+<!-- Task Item 2 -->
+<div class="bg-surface border border-outline-variant rounded p-sm flex items-center gap-md hover:bg-surface-container-low transition-colors cursor-pointer group">
+<span class="material-symbols-outlined text-outline group-hover:text-secondary" data-icon="radio_button_unchecked">radio_button_unchecked</span>
+<div class="flex-1 flex flex-col">
+<span class="font-body-sm text-body-sm text-on-surface font-medium group-hover:text-secondary transition-colors">Draft Phase 5 Release Notes</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant flex items-center gap-xs">
+<span class="material-symbols-outlined text-[14px]" data-icon="subdirectory_arrow_right">subdirectory_arrow_right</span> In Project: Documentation
+                                        </span>
+</div>
+<div class="flex items-center gap-sm">
+<span class="font-label-sm text-label-sm text-on-surface-variant border border-outline-variant px-xs py-[2px] rounded">Normal</span>
+<div class="w-6 h-6 rounded-full bg-surface-container-highest flex items-center justify-center border border-outline-variant">
+<span class="material-symbols-outlined text-[14px] text-on-surface-variant" data-icon="person">person</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</body></html>

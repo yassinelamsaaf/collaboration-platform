@@ -19,6 +19,12 @@
   justify-content: space-between;
 }
 
+.form-field__row--password {
+  align-items: flex-end;
+  gap: 12px;
+  margin-bottom: 2px;
+}
+
 .form-label {
   align-self: flex-start;
   font-size: 12px;
@@ -174,4 +180,3 @@
   width: 18px;
   height: 18px;
 }
-

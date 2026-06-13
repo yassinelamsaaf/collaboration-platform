@@ -130,7 +130,12 @@ public class InvitationService {
             invitation.setAcceptedByUserId(currentUserId);
             invitation.setAcceptedAt(LocalDateTime.now());
             projectInvitationRepository.save(invitation);
-            return projectMapper.toMemberResponse(projectLookupService.requireProjectMember(project.getId(), currentUserId));
+            ProjectMember member = projectLookupService.requireProjectMember(project.getId(), currentUserId);
+            return projectMapper.toMemberResponse(
+                    member,
+                    identityAccessService.requireUserUsername(member.getUserId()),
+                    identityAccessService.requireUserEmail(member.getUserId())
+            );
         }
 
         ProjectMember member = projectMemberRepository.save(ProjectMember.builder()
@@ -144,7 +149,11 @@ public class InvitationService {
         invitation.setAcceptedAt(LocalDateTime.now());
         projectInvitationRepository.save(invitation);
 
-        return projectMapper.toMemberResponse(member);
+        return projectMapper.toMemberResponse(
+                member,
+                identityAccessService.requireUserUsername(member.getUserId()),
+                identityAccessService.requireUserEmail(member.getUserId())
+        );
     }
 
     @Transactional

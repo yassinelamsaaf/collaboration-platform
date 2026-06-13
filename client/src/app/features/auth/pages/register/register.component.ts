@@ -1,15 +1,15 @@
 import { ChangeDetectionStrategy, Component, DestroyRef, inject } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { finalize } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
-import { AuthService } from '../../../../core/services/auth.service';
-import { ToastService } from '../../../../core/services/toast.service';
-import { getControlError, markAllTouched } from '../../../../shared/utils/form-helpers';
-import { mapHttpError } from '../../../../shared/utils/error-mapper';
-import { matchFields } from '../../../../shared/utils/validators';
-import { MessageResponse } from '../../../../shared/models/auth.models';
+import { AuthService } from '@core/services/auth.service';
+import { ToastService } from '@core/services/toast.service';
+import { getControlError, markAllTouched } from '@shared/utils/form-helpers';
+import { mapHttpError } from '@shared/utils/error-mapper';
+import { matchFields } from '@shared/utils/validators';
+import { MessageResponse } from '@shared/models/auth.models';
 
 @Component({
   selector: 'app-register',
@@ -21,6 +21,7 @@ import { MessageResponse } from '../../../../shared/models/auth.models';
 export class RegisterComponent {
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
+  readonly route = inject(ActivatedRoute);
   private readonly destroyRef = inject(DestroyRef);
   private readonly toast = inject(ToastService);
   private readonly fb = inject(FormBuilder);
@@ -38,6 +39,7 @@ export class RegisterComponent {
   loading = false;
   showPassword = false;
   showConfirmPassword = false;
+  private readonly redirectUrl = this.route.snapshot.queryParamMap.get('redirect') || '/dashboard/projects';
 
   onSubmit(): void {
     if (this.form.invalid) {
@@ -59,7 +61,9 @@ export class RegisterComponent {
         next: (response: MessageResponse) => {
             this.toast.success(response.message);
           window.setTimeout(() => {
-            this.router.navigate(['/auth/verify-email'], { queryParams: { email: payload.email } });
+            this.router.navigate(['/auth/verify-email'], {
+              queryParams: { email: payload.email, redirect: this.redirectUrl }
+            });
           }, 900);
         },
         error: (error: unknown) => {

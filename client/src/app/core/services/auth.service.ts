@@ -9,7 +9,7 @@ import {
   RegisterRequest,
   UserProfile,
   VerifyCodeRequest
-} from '../../shared/models/auth.models';
+} from '@shared/models/auth.models';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -22,31 +22,31 @@ export class AuthService {
   constructor(private readonly api: ApiService) {}
 
   forgotPassword(payload: { email: string }): Observable<MessageResponse> {
-    return this.api.post<MessageResponse>('forgot-password', payload);
+    return this.api.post<MessageResponse>('auth/forgot-password', payload);
   }
 
   resetPassword(payload: { email: string; code: string; newPassword: string }): Observable<MessageResponse> {
-    return this.api.post<MessageResponse>('reset-password', payload);
+    return this.api.post<MessageResponse>('auth/reset-password', payload);
   }
 
   resendResetCode(email: string): Observable<MessageResponse> {
-    return this.api.post<MessageResponse>('resend-reset-code', null, { email });
+    return this.api.post<MessageResponse>('auth/resend-reset-code', null, { email });
   }
 
   register(payload: RegisterRequest): Observable<MessageResponse> {
-    return this.api.post<MessageResponse>('register', payload);
+    return this.api.post<MessageResponse>('auth/register', payload);
   }
 
   verifyCode(payload: VerifyCodeRequest): Observable<MessageResponse> {
-    return this.api.post<MessageResponse>('verify-code', payload);
+    return this.api.post<MessageResponse>('auth/verify-code', payload);
   }
 
   resendCode(email: string): Observable<MessageResponse> {
-    return this.api.post<MessageResponse>('resend-code', null, { email });
+    return this.api.post<MessageResponse>('auth/resend-code', null, { email });
   }
 
   login(payload: LoginRequest): Observable<AuthResponse> {
-    return this.api.post<AuthResponse>('login', payload).pipe(
+    return this.api.post<AuthResponse>('auth/login', payload).pipe(
       tap((profile) => {
         this.authenticatedSubject.next(true);
         this.profileSubject.next(profile);
@@ -55,7 +55,7 @@ export class AuthService {
   }
 
   logout(): Observable<MessageResponse> {
-    return this.api.post<MessageResponse>('logout', null).pipe(
+    return this.api.post<MessageResponse>('auth/logout', null).pipe(
       tap(() => {
         this.authenticatedSubject.next(false);
         this.profileSubject.next(null);
@@ -64,7 +64,7 @@ export class AuthService {
   }
 
   checkSession(): Observable<MessageResponse> {
-    return this.api.post<MessageResponse>('refresh', null).pipe(
+    return this.api.post<MessageResponse>('auth/refresh', null).pipe(
       tap(() => this.authenticatedSubject.next(true)),
       catchError((error) => {
         this.authenticatedSubject.next(false);
@@ -74,7 +74,7 @@ export class AuthService {
   }
 
   getProfile(): Observable<UserProfile | null> {
-    return this.api.get<UserProfile>('me').pipe(
+    return this.api.get<UserProfile>('auth/me').pipe(
       tap((profile) => this.profileSubject.next(profile)),
       catchError(() => {
         this.profileSubject.next(null);

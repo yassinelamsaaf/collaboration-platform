@@ -1,0 +1,258 @@
+<section class="workspace-page">
+  <div class="workspace-empty" *ngIf="loading">Loading task details...</div>
+
+  <ng-container *ngIf="project && bundle as data">
+    <div class="workspace-page__header">
+      <div>
+        <div class="workspace-page__eyebrow">Task Detail</div>
+        <h1 class="workspace-page__title">{{ data.task.title }}</h1>
+        <p class="workspace-page__subtitle">
+          {{ data.task.description || 'This task does not have a detailed description yet.' }}
+        </p>
+      </div>
+
+      <div class="workspace-inline-actions">
+        <a class="workspace-secondary-btn" [routerLink]="['/dashboard/projects', project.slug || project.id, 'kanban']">
+          <lucide-icon name="square-kanban"></lucide-icon>
+          Back to Kanban
+        </a>
+      </div>
+    </div>
+
+    <div class="workspace-detail-grid">
+      <section class="workspace-stack">
+        <article class="workspace-card workspace-stack">
+          <div class="workspace-page__header" style="align-items: center">
+            <div>
+              <div class="workspace-page__eyebrow">Core State</div>
+              <h2 class="workspace-page__title" style="font-size: 1.45rem">Task snapshot</h2>
+            </div>
+
+            <select
+              class="workspace-select workspace-select--compact"
+              [value]="data.task.status"
+              [disabled]="!canEditTaskSpace"
+              (change)="updateStatus($any($event.target).value)"
+            >
+              <option *ngFor="let status of statuses" [value]="status">{{ status }}</option>
+            </select>
+          </div>
+
+          <div class="workspace-inline-actions">
+            <span class="workspace-data-chip">
+              <lucide-icon name="triangle-alert"></lucide-icon>
+              {{ data.task.priority }}
+            </span>
+            <span class="workspace-data-chip">
+              <lucide-icon name="user"></lucide-icon>
+              {{ assigneeLabel(data.task.assigneeId) }}
+            </span>
+            <span class="workspace-data-chip">
+              <lucide-icon name="clock3"></lucide-icon>
+              {{ data.task.totalTimeMinutes }} min tracked
+            </span>
+            <span class="workspace-data-chip">
+              <lucide-icon name="message-square"></lucide-icon>
+              {{ data.comments.length }} comments
+            </span>
+          </div>
+        </article>
+
+        <article class="workspace-card workspace-stack">
+          <div>
+            <div class="workspace-page__eyebrow">Collaboration</div>
+            <h2 class="workspace-page__title" style="font-size: 1.45rem">Comments</h2>
+          </div>
+
+          <form class="workspace-form" *ngIf="canEditTaskSpace" (ngSubmit)="addComment()">
+            <div class="workspace-field">
+              <label for="comment-content">New comment</label>
+              <textarea
+                id="comment-content"
+                class="workspace-textarea"
+                name="comment-content"
+                [(ngModel)]="commentForm.content"
+                placeholder="Write the update, blocker, or decision."
+              ></textarea>
+            </div>
+            <button class="workspace-primary-btn" type="submit">
+              <lucide-icon name="send"></lucide-icon>
+              Post Comment
+            </button>
+          </form>
+
+          <div class="workspace-list" *ngIf="data.comments.length; else noComments">
+            <div class="workspace-list__item" *ngFor="let comment of data.comments">
+              <div>
+                <div class="workspace-list__title">{{ actorLabel(comment.userId) }}</div>
+                <div class="workspace-list__subtitle">{{ comment.content }}</div>
+              </div>
+              <span class="workspace-pill workspace-pill--neutral">{{ comment.createdAt | date: 'short' }}</span>
+            </div>
+          </div>
+
+          <ng-template #noComments>
+            <div class="workspace-empty">No comments have been posted yet.</div>
+          </ng-template>
+        </article>
+
+        <article class="workspace-card workspace-stack">
+          <div>
+            <div class="workspace-page__eyebrow">Execution</div>
+            <h2 class="workspace-page__title" style="font-size: 1.45rem">Subtasks</h2>
+          </div>
+
+          <form class="workspace-form" *ngIf="canEditTaskSpace" (ngSubmit)="addSubTask()">
+            <div class="workspace-form__row">
+              <div class="workspace-field">
+                <label for="subtask-title">Subtask title</label>
+                <input
+                  id="subtask-title"
+                  class="workspace-input"
+                  type="text"
+                  name="subtask-title"
+                  [(ngModel)]="subTaskForm.title"
+                  placeholder="Design final invitation page"
+                />
+              </div>
+
+              <div class="workspace-field">
+                <label for="subtask-assignee">Assignee</label>
+                <select id="subtask-assignee" class="workspace-select" name="subtask-assignee" [(ngModel)]="subTaskForm.assigneeId">
+                  <option value="">Unassigned</option>
+                  <option *ngFor="let member of assigneeOptions" [value]="member.id">
+                    {{ member.memberName }}
+                  </option>
+                </select>
+              </div>
+            </div>
+            <button class="workspace-primary-btn" type="submit">
+              <lucide-icon name="plus"></lucide-icon>
+              Add Subtask
+            </button>
+          </form>
+
+          <div class="workspace-list" *ngIf="data.subTasks.length; else noSubtasks">
+            <label class="workspace-list__item workspace-list__item--check" *ngFor="let subTask of data.subTasks">
+                <div class="workspace-inline-actions">
+                  <input
+                    type="checkbox"
+                    [checked]="subTask.isDone"
+                  [disabled]="!canEditTaskSpace"
+                  (change)="toggleSubTask(subTask.id, $any($event.target).checked)"
+                />
+                <div>
+                  <div class="workspace-list__title">{{ subTask.title }}</div>
+                  <div class="workspace-list__subtitle">{{ assigneeLabel(subTask.assigneeId) }}</div>
+                </div>
+              </div>
+              <span class="workspace-pill" [class.workspace-pill--success]="subTask.isDone" [class.workspace-pill--neutral]="!subTask.isDone">
+                {{ subTask.isDone ? 'DONE' : 'OPEN' }}
+              </span>
+            </label>
+          </div>
+
+          <ng-template #noSubtasks>
+            <div class="workspace-empty">This task has no subtasks yet.</div>
+          </ng-template>
+        </article>
+      </section>
+
+      <section class="workspace-stack">
+        <article class="workspace-card workspace-stack">
+          <div>
+            <div class="workspace-page__eyebrow">Files</div>
+            <h2 class="workspace-page__title" style="font-size: 1.45rem">Attachments</h2>
+          </div>
+
+          <form class="workspace-form" *ngIf="canEditTaskSpace" (ngSubmit)="addAttachment()">
+            <div class="workspace-field">
+              <label for="attachment-name">File name</label>
+              <input id="attachment-name" class="workspace-input" type="text" name="attachment-name" [(ngModel)]="attachmentForm.fileName" />
+            </div>
+
+            <div class="workspace-field">
+              <label for="attachment-url">File URL</label>
+              <input id="attachment-url" class="workspace-input" type="url" name="attachment-url" [(ngModel)]="attachmentForm.fileUrl" />
+            </div>
+
+            <div class="workspace-field">
+              <label for="attachment-size">Size in bytes</label>
+              <input id="attachment-size" class="workspace-input" type="number" name="attachment-size" [(ngModel)]="attachmentForm.fileSize" />
+            </div>
+
+            <button class="workspace-primary-btn" type="submit">
+              <lucide-icon name="paperclip"></lucide-icon>
+              Add Attachment
+            </button>
+          </form>
+
+          <div class="workspace-list" *ngIf="data.attachments.length; else noAttachments">
+            <a class="workspace-list__item" *ngFor="let attachment of data.attachments" [href]="attachment.fileUrl" target="_blank" rel="noreferrer">
+              <div>
+                <div class="workspace-list__title">{{ attachment.fileName }}</div>
+                <div class="workspace-list__subtitle">{{ attachment.fileSize }} bytes</div>
+              </div>
+              <lucide-icon name="paperclip"></lucide-icon>
+            </a>
+          </div>
+
+          <ng-template #noAttachments>
+            <div class="workspace-empty">No attachments linked to this task.</div>
+          </ng-template>
+        </article>
+
+        <article class="workspace-card workspace-stack">
+          <div>
+            <div class="workspace-page__eyebrow">Time Tracking</div>
+            <h2 class="workspace-page__title" style="font-size: 1.45rem">Time entries</h2>
+          </div>
+
+          <form class="workspace-form" *ngIf="canEditTaskSpace" (ngSubmit)="addTimeEntry()">
+            <div class="workspace-form__row">
+              <div class="workspace-field">
+                <label for="time-duration">Minutes</label>
+                <input id="time-duration" class="workspace-input" type="number" name="time-duration" [(ngModel)]="timeEntryForm.durationMinutes" />
+              </div>
+
+              <div class="workspace-field">
+                <label for="time-date">Date</label>
+                <input id="time-date" class="workspace-input" type="date" name="time-date" [(ngModel)]="timeEntryForm.date" />
+              </div>
+            </div>
+
+            <div class="workspace-field">
+              <label for="time-description">Description</label>
+              <textarea
+                id="time-description"
+                class="workspace-textarea"
+                name="time-description"
+                [(ngModel)]="timeEntryForm.description"
+                placeholder="Describe what was done during this time slot."
+              ></textarea>
+            </div>
+
+            <button class="workspace-primary-btn" type="submit">
+              <lucide-icon name="clock4"></lucide-icon>
+              Add Time Entry
+            </button>
+          </form>
+
+          <div class="workspace-list" *ngIf="data.timeEntries.length; else noEntries">
+            <div class="workspace-list__item" *ngFor="let entry of data.timeEntries">
+              <div>
+                <div class="workspace-list__title">{{ entry.durationMinutes }} minutes</div>
+                <div class="workspace-list__subtitle">{{ entry.description || 'No description provided.' }}</div>
+              </div>
+              <span class="workspace-pill workspace-pill--neutral">{{ entry.date | date: 'mediumDate' }}</span>
+            </div>
+          </div>
+
+          <ng-template #noEntries>
+            <div class="workspace-empty">No time entries logged yet.</div>
+          </ng-template>
+        </article>
+      </section>
+    </div>
+  </ng-container>
+</section>

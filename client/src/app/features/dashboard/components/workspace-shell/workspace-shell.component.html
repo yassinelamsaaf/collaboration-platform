@@ -1,0 +1,134 @@
+<div class="workspace-root">
+  <div class="workspace-shell" [class.is-sidebar-open]="sidebarOpen">
+    <button
+      class="workspace-overlay"
+      type="button"
+      *ngIf="sidebarOpen && isCompactViewport"
+      (click)="closeSidebar()"
+      aria-label="Close navigation"
+    ></button>
+
+    <aside class="workspace-sidebar" [attr.aria-hidden]="isCompactViewport && !sidebarOpen ? 'true' : 'false'">
+      <div class="workspace-brand workspace-brand--sidebar">
+        <div class="workspace-brand__badge">
+          <lucide-icon name="briefcase-business"></lucide-icon>
+        </div>
+        <div>
+          <div class="workspace-brand__title">CollabFlow</div>
+          <div class="workspace-brand__meta">Project management workspace</div>
+        </div>
+        <button class="workspace-ghost-btn workspace-sidebar__close" type="button" (click)="closeSidebar()" aria-label="Close menu">
+          <lucide-icon name="x"></lucide-icon>
+        </button>
+      </div>
+
+      <a class="workspace-primary-btn" routerLink="/dashboard/projects" (click)="closeSidebar()">
+        <lucide-icon name="badge-plus"></lucide-icon>
+        New Project
+      </a>
+
+      <nav class="workspace-nav">
+        <a class="workspace-nav__link" routerLink="/dashboard" routerLinkActive="is-active" [routerLinkActiveOptions]="{ exact: true }" (click)="closeSidebar()">
+          <lucide-icon name="layout-dashboard"></lucide-icon>
+          Dashboard
+        </a>
+        <a class="workspace-nav__link" routerLink="/dashboard/projects" routerLinkActive="is-active" [routerLinkActiveOptions]="{ exact: true }" (click)="closeSidebar()">
+          <lucide-icon name="folders"></lucide-icon>
+          Projects
+        </a>
+        <a class="workspace-nav__link" routerLink="/dashboard/search" routerLinkActive="is-active" (click)="closeSidebar()">
+          <lucide-icon name="search"></lucide-icon>
+          Search
+        </a>
+      </nav>
+
+      <div class="workspace-sidebar__projects" *ngIf="showProjectShortcuts">
+        <div class="workspace-sidebar__projects-title">Current Project</div>
+        <a class="workspace-nav__link" [routerLink]="['/dashboard/projects', currentProjectRef]" routerLinkActive="is-active" [routerLinkActiveOptions]="{ exact: true }" (click)="closeSidebar()">
+          <lucide-icon name="layout-dashboard"></lucide-icon>
+          Overview
+        </a>
+        <a class="workspace-nav__link" [routerLink]="['/dashboard/projects', currentProjectRef, 'teams']" routerLinkActive="is-active" (click)="closeSidebar()">
+          <lucide-icon name="users"></lucide-icon>
+          Members & Teams
+        </a>
+        <a class="workspace-nav__link" [routerLink]="['/dashboard/projects', currentProjectRef, 'kanban']" routerLinkActive="is-active" (click)="closeSidebar()">
+          <lucide-icon name="square-kanban"></lucide-icon>
+          Kanban
+        </a>
+      </div>
+
+      <div class="workspace-sidebar__projects" *ngIf="projects.length">
+        <div class="workspace-sidebar__projects-title">Recent Projects</div>
+        <a
+          class="workspace-sidebar__project"
+          *ngFor="let project of projects"
+          [class.is-active]="isCurrentProject(project)"
+          [routerLink]="['/dashboard/projects', project.slug || project.id]"
+          (click)="closeSidebar()"
+        >
+          <div class="workspace-sidebar__project-name">{{ project.name }}</div>
+          <div class="workspace-sidebar__project-role">{{ project.currentUserRole }} · {{ project.status }}</div>
+        </a>
+      </div>
+
+      <div class="workspace-sidebar__projects" style="margin-top: auto">
+        <div class="workspace-sidebar__projects-title">Account</div>
+        <div class="workspace-sidebar__project">
+          <div class="workspace-sidebar__project-name">{{ profileName }}</div>
+          <div class="workspace-sidebar__project-role">{{ profileEmail }}</div>
+        </div>
+        <button class="workspace-ghost-btn" type="button" (click)="logout()" style="justify-content: flex-start; color: #e5edf8">
+          <lucide-icon name="log-out"></lucide-icon>
+          Sign out
+        </button>
+      </div>
+    </aside>
+
+    <section class="workspace-main">
+      <header class="workspace-topbar">
+        <div class="workspace-topbar__left">
+          <button class="workspace-ghost-btn workspace-mobile-toggle" type="button" (click)="toggleSidebar()" aria-label="Toggle navigation menu">
+            <lucide-icon [name]="sidebarOpen ? 'x' : 'menu'"></lucide-icon>
+          </button>
+
+          <form class="workspace-searchbar" (ngSubmit)="submitSearch()">
+            <lucide-icon name="search"></lucide-icon>
+            <input
+              type="text"
+              name="workspace-search"
+              [(ngModel)]="searchQuery"
+              placeholder="Search projects, tasks, members..."
+            />
+          </form>
+        </div>
+
+        <div class="workspace-topbar__right">
+          <a class="workspace-secondary-btn workspace-topbar__search-link" routerLink="/dashboard/search">
+            <lucide-icon name="filter"></lucide-icon>
+            Search Hub
+          </a>
+
+          <a class="workspace-ghost-btn workspace-topbar__bell" routerLink="/dashboard">
+            <lucide-icon name="bell"></lucide-icon>
+            <span
+              *ngIf="unreadCount > 0"
+              class="workspace-topbar__badge"
+            >
+              {{ unreadCount > 9 ? '9+' : unreadCount }}
+            </span>
+          </a>
+
+          <div class="workspace-data-chip workspace-topbar__profile">
+            <span class="workspace-topbar__avatar">
+              {{ firstLetter(profileName) }}
+            </span>
+            <span class="workspace-topbar__profile-name">{{ profileName }}</span>
+          </div>
+        </div>
+      </header>
+
+      <router-outlet></router-outlet>
+    </section>
+  </div>
+</div>

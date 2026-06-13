@@ -1,0 +1,59 @@
+<section class="workspace-page">
+  <div class="workspace-page__header">
+    <div>
+      <div class="workspace-page__eyebrow">Search</div>
+      <h1 class="workspace-page__title">Workspace search</h1>
+      <p class="workspace-page__subtitle">
+        Search is scoped to one project at a time because most useful results depend on project context: members, teams, and tasks are not global objects.
+      </p>
+    </div>
+  </div>
+
+  <section class="workspace-card workspace-stack">
+    <form class="workspace-form" (ngSubmit)="submit()">
+      <div class="workspace-form__row">
+        <div class="workspace-field">
+          <label for="search-query">Keywords</label>
+          <input
+            id="search-query"
+            class="workspace-input"
+            type="text"
+            name="search-query"
+            [(ngModel)]="query"
+            placeholder="project member, kanban, invitation, dashboard..."
+          />
+        </div>
+
+        <div class="workspace-field">
+          <label for="search-project">Project scope</label>
+          <select id="search-project" class="workspace-select" name="search-project" [(ngModel)]="selectedProjectRef">
+            <option value="">Select a project</option>
+            <option *ngFor="let project of projects" [value]="project.slug || project.id">{{ project.name }}</option>
+          </select>
+        </div>
+      </div>
+
+      <button class="workspace-primary-btn" type="submit" [disabled]="loading || !selectedProjectRef">
+        <lucide-icon name="search"></lucide-icon>
+        Search Project
+      </button>
+    </form>
+  </section>
+
+  <div class="workspace-empty" *ngIf="searching">Searching project content...</div>
+  <div class="workspace-empty" *ngIf="!searching && !results.length && query">No matching results were found.</div>
+
+  <div class="workspace-list" *ngIf="results.length">
+    <a class="workspace-list__item" *ngFor="let result of results" [routerLink]="result.route">
+      <div>
+        <div class="workspace-list__title">{{ result.title }}</div>
+        <div class="workspace-list__subtitle">{{ result.subtitle }}</div>
+      </div>
+
+      <div class="workspace-inline-actions">
+        <span class="workspace-pill workspace-pill--neutral">{{ result.kind }}</span>
+        <span class="workspace-pill workspace-pill--primary" *ngIf="result.meta">{{ result.meta }}</span>
+      </div>
+    </a>
+  </div>
+</section>
