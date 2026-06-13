@@ -48,7 +48,7 @@
               {{ assigneeLabel(data.task.assigneeId) }}
             </span>
             <span class="workspace-data-chip">
-              <lucide-icon name="clock3"></lucide-icon>
+              <lucide-icon name="clock-3"></lucide-icon>
               {{ data.task.totalTimeMinutes }} min tracked
             </span>
             <span class="workspace-data-chip">
@@ -221,7 +221,7 @@
               <h2 class="workspace-page__title" style="font-size: 1.45rem">Time entries</h2>
             </div>
             <button class="workspace-secondary-btn" type="button" *ngIf="canEditTaskSpace" (click)="showTimeForm = !showTimeForm">
-              <lucide-icon [name]="showTimeForm ? 'x' : 'clock4'"></lucide-icon>
+              <lucide-icon [name]="showTimeForm ? 'x' : 'clock-4'"></lucide-icon>
               {{ showTimeForm ? 'Close' : 'Log time' }}
             </button>
           </div>
@@ -251,7 +251,7 @@
             </div>
 
             <button class="workspace-primary-btn" type="submit">
-              <lucide-icon name="clock4"></lucide-icon>
+              <lucide-icon name="clock-4"></lucide-icon>
               Add Time Entry
             </button>
           </form>

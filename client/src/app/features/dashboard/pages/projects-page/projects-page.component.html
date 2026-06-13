@@ -12,43 +12,6 @@
   <div class="workspace-split">
     <section class="workspace-card workspace-stack">
       <div>
-        <div class="workspace-page__eyebrow">Create</div>
-        <h2 class="workspace-page__title" style="font-size: 1.45rem">New project</h2>
-      </div>
-
-      <form class="workspace-form" (ngSubmit)="submit()">
-        <div class="workspace-field">
-          <label for="project-name">Project name</label>
-          <input
-            id="project-name"
-            class="workspace-input"
-            type="text"
-            name="project-name"
-            [(ngModel)]="form.name"
-            placeholder="Platform redesign, Mobile release, Internal tooling..."
-          />
-        </div>
-
-        <div class="workspace-field">
-          <label for="project-description">Description</label>
-          <textarea
-            id="project-description"
-            class="workspace-textarea"
-            name="project-description"
-            [(ngModel)]="form.description"
-            placeholder="State the goal, the business context, or the delivery scope."
-          ></textarea>
-        </div>
-
-        <button class="workspace-primary-btn" type="submit" [disabled]="creating">
-          <lucide-icon name="badge-plus"></lucide-icon>
-          {{ creating ? 'Creating...' : 'Create Project' }}
-        </button>
-      </form>
-    </section>
-
-    <section class="workspace-card workspace-stack">
-      <div>
         <div class="workspace-page__eyebrow">Overview</div>
         <h2 class="workspace-page__title" style="font-size: 1.45rem">All projects</h2>
       </div>
@@ -101,6 +64,43 @@
       <ng-template #noProjects>
         <div class="workspace-empty" *ngIf="!loading">No projects found yet.</div>
       </ng-template>
+    </section>
+
+    <section class="workspace-card workspace-stack">
+      <div>
+        <div class="workspace-page__eyebrow">Create</div>
+        <h2 class="workspace-page__title" style="font-size: 1.45rem">New project</h2>
+      </div>
+
+      <form class="workspace-form" (ngSubmit)="submit()">
+        <div class="workspace-field">
+          <label for="project-name">Project name</label>
+          <input
+            id="project-name"
+            class="workspace-input"
+            type="text"
+            name="project-name"
+            [(ngModel)]="form.name"
+            placeholder="Platform redesign, Mobile release, Internal tooling..."
+          />
+        </div>
+
+        <div class="workspace-field">
+          <label for="project-description">Description</label>
+          <textarea
+            id="project-description"
+            class="workspace-textarea"
+            name="project-description"
+            [(ngModel)]="form.description"
+            placeholder="State the goal, the business context, or the delivery scope."
+          ></textarea>
+        </div>
+
+        <button class="workspace-primary-btn" type="submit" [disabled]="creating">
+          <lucide-icon name="badge-plus"></lucide-icon>
+          {{ creating ? 'Creating...' : 'Create Project' }}
+        </button>
+      </form>
     </section>
   </div>
 </section>

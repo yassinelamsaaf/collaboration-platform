@@ -1,5 +1,5 @@
 <div class="workspace-root">
-  <div class="workspace-shell" [class.is-sidebar-open]="sidebarOpen">
+  <div class="workspace-shell" [class.is-sidebar-open]="sidebarOpen" [class.is-sidebar-collapsed]="sidebarCollapsed && !isCompactViewport">
     <button
       class="workspace-overlay"
       type="button"
@@ -9,83 +9,91 @@
     ></button>
 
     <aside class="workspace-sidebar" [attr.aria-hidden]="isCompactViewport && !sidebarOpen ? 'true' : 'false'">
-      <div class="workspace-brand workspace-brand--sidebar">
-        <div class="workspace-brand__badge">
-          <lucide-icon name="briefcase-business"></lucide-icon>
+      <div class="workspace-sidebar__top">
+        <div class="workspace-brand workspace-brand--sidebar">
+          <a class="workspace-brand__inner" routerLink="/" (click)="closeSidebar()">
+            <div class="workspace-brand__badge">
+              <lucide-icon name="briefcase-business"></lucide-icon>
+            </div>
+            <div class="workspace-brand__text">
+              <div class="workspace-brand__title">CollabFlow</div>
+              <div class="workspace-brand__meta">Project management workspace</div>
+            </div>
+          </a>
+          <button class="workspace-ghost-btn workspace-sidebar__collapse-btn" type="button" (click)="toggleCollapse(); $event.stopPropagation()" title="Toggle sidebar">
+            <lucide-icon [name]="sidebarCollapsed ? 'chevron-right' : 'chevron-left'"></lucide-icon>
+          </button>
         </div>
-        <div>
-          <div class="workspace-brand__title">CollabFlow</div>
-          <div class="workspace-brand__meta">Project management workspace</div>
-        </div>
-        <button class="workspace-ghost-btn workspace-sidebar__close" type="button" (click)="closeSidebar()" aria-label="Close menu">
-          <lucide-icon name="x"></lucide-icon>
-        </button>
-      </div>
 
-      <a class="workspace-primary-btn" routerLink="/dashboard/projects" (click)="closeSidebar()">
-        <lucide-icon name="badge-plus"></lucide-icon>
-        New Project
-      </a>
-
-      <nav class="workspace-nav">
-        <a class="workspace-nav__link" routerLink="/dashboard" routerLinkActive="is-active" [routerLinkActiveOptions]="{ exact: true }" (click)="closeSidebar()">
-          <lucide-icon name="layout-dashboard"></lucide-icon>
-          Dashboard
-        </a>
-        <a class="workspace-nav__link" routerLink="/dashboard/my-tasks" routerLinkActive="is-active" (click)="closeSidebar()">
-          <lucide-icon name="list-todo"></lucide-icon>
-          My Tasks
-        </a>
-        <a class="workspace-nav__link" routerLink="/dashboard/projects" routerLinkActive="is-active" [routerLinkActiveOptions]="{ exact: true }" (click)="closeSidebar()">
-          <lucide-icon name="folders"></lucide-icon>
-          Projects
-        </a>
-        <a class="workspace-nav__link" routerLink="/dashboard/search" routerLinkActive="is-active" (click)="closeSidebar()">
-          <lucide-icon name="search"></lucide-icon>
-          Search
-        </a>
-      </nav>
-
-      <div class="workspace-sidebar__projects" *ngIf="showProjectShortcuts">
-        <div class="workspace-sidebar__projects-title">Current Project</div>
-        <a class="workspace-nav__link" [routerLink]="['/dashboard/projects', currentProjectRef]" routerLinkActive="is-active" [routerLinkActiveOptions]="{ exact: true }" (click)="closeSidebar()">
-          <lucide-icon name="layout-dashboard"></lucide-icon>
-          Overview
-        </a>
-        <a class="workspace-nav__link" [routerLink]="['/dashboard/projects', currentProjectRef, 'teams']" routerLinkActive="is-active" (click)="closeSidebar()">
-          <lucide-icon name="users"></lucide-icon>
-          Members & Teams
-        </a>
-        <a class="workspace-nav__link" [routerLink]="['/dashboard/projects', currentProjectRef, 'kanban']" routerLinkActive="is-active" (click)="closeSidebar()">
-          <lucide-icon name="square-kanban"></lucide-icon>
-          Kanban
+        <a class="workspace-primary-btn" routerLink="/dashboard/projects" (click)="closeSidebar()">
+          <lucide-icon name="badge-plus"></lucide-icon>
+          <span class="workspace-btn__label">New Project</span>
         </a>
       </div>
 
-      <div class="workspace-sidebar__projects" *ngIf="projects.length">
-        <div class="workspace-sidebar__projects-title">Recent Projects</div>
-        <a
-          class="workspace-sidebar__project"
-          *ngFor="let project of projects"
-          [class.is-active]="isCurrentProject(project)"
-          [routerLink]="['/dashboard/projects', project.slug || project.id]"
-          (click)="closeSidebar()"
-        >
-          <div class="workspace-sidebar__project-name">{{ project.name }}</div>
-          <div class="workspace-sidebar__project-role">{{ project.currentUserRole }} · {{ project.status }}</div>
-        </a>
+      <div class="workspace-sidebar__scroll">
+        <nav class="workspace-nav">
+          <a class="workspace-nav__link" routerLink="/dashboard" routerLinkActive="is-active" [routerLinkActiveOptions]="{ exact: true }" (click)="closeSidebar()">
+            <lucide-icon name="layout-dashboard"></lucide-icon>
+            <span class="workspace-nav__label">Dashboard</span>
+          </a>
+          <a class="workspace-nav__link" routerLink="/dashboard/my-tasks" routerLinkActive="is-active" (click)="closeSidebar()">
+            <lucide-icon name="list-todo"></lucide-icon>
+            <span class="workspace-nav__label">My Tasks</span>
+          </a>
+          <a class="workspace-nav__link" routerLink="/dashboard/projects" routerLinkActive="is-active" [routerLinkActiveOptions]="{ exact: true }" (click)="closeSidebar()">
+            <lucide-icon name="folders"></lucide-icon>
+            <span class="workspace-nav__label">Projects</span>
+          </a>
+          <a class="workspace-nav__link" routerLink="/dashboard/search" routerLinkActive="is-active" (click)="closeSidebar()">
+            <lucide-icon name="search"></lucide-icon>
+            <span class="workspace-nav__label">Search</span>
+          </a>
+        </nav>
+
+        <div class="workspace-sidebar__projects" *ngIf="showProjectShortcuts">
+          <div class="workspace-sidebar__projects-title">Current Project</div>
+          <a class="workspace-nav__link" [routerLink]="['/dashboard/projects', currentProjectRef]" routerLinkActive="is-active" [routerLinkActiveOptions]="{ exact: true }" (click)="closeSidebar()">
+            <lucide-icon name="layout-dashboard"></lucide-icon>
+            <span class="workspace-nav__label">Overview</span>
+          </a>
+          <a class="workspace-nav__link" [routerLink]="['/dashboard/projects', currentProjectRef, 'teams']" routerLinkActive="is-active" (click)="closeSidebar()">
+            <lucide-icon name="users"></lucide-icon>
+            <span class="workspace-nav__label">Members &amp; Teams</span>
+          </a>
+          <a class="workspace-nav__link" [routerLink]="['/dashboard/projects', currentProjectRef, 'kanban']" routerLinkActive="is-active" (click)="closeSidebar()">
+            <lucide-icon name="square-kanban"></lucide-icon>
+            <span class="workspace-nav__label">Kanban</span>
+          </a>
+        </div>
+
+        <div class="workspace-sidebar__projects" *ngIf="projects.length">
+          <div class="workspace-sidebar__projects-title">Recent Projects</div>
+          <a
+            class="workspace-sidebar__project"
+            *ngFor="let project of projects"
+            [class.is-active]="isCurrentProject(project)"
+            [routerLink]="['/dashboard/projects', project.slug || project.id]"
+            (click)="closeSidebar()"
+          >
+            <div class="workspace-sidebar__project-name">{{ project.name }}</div>
+            <div class="workspace-sidebar__project-role">{{ project.currentUserRole }} · {{ project.status }}</div>
+          </a>
+        </div>
       </div>
 
-      <div class="workspace-sidebar__projects" style="margin-top: auto">
-        <div class="workspace-sidebar__projects-title">Account</div>
-        <div class="workspace-sidebar__project">
-          <div class="workspace-sidebar__project-name">{{ profileName }}</div>
-          <div class="workspace-sidebar__project-role">{{ profileEmail }}</div>
+      <div class="workspace-sidebar__bottom">
+        <div class="workspace-sidebar__projects">
+          <div class="workspace-sidebar__projects-title">Account</div>
+          <div class="workspace-sidebar__project">
+            <div class="workspace-sidebar__project-name">{{ profileName }}</div>
+            <div class="workspace-sidebar__project-role">{{ profileEmail }}</div>
+          </div>
+          <a class="workspace-nav__link" routerLink="/dashboard/settings" routerLinkActive="is-active" (click)="closeSidebar()">
+            <lucide-icon name="settings"></lucide-icon>
+            <span class="workspace-nav__label">Settings</span>
+          </a>
         </div>
-        <button class="workspace-ghost-btn" type="button" (click)="logout()" style="justify-content: flex-start; color: #e5edf8">
-          <lucide-icon name="log-out"></lucide-icon>
-          Sign out
-        </button>
       </div>
     </aside>
 
@@ -113,15 +121,7 @@
             Search Hub
           </a>
 
-          <a class="workspace-ghost-btn workspace-topbar__bell" routerLink="/dashboard">
-            <lucide-icon name="bell"></lucide-icon>
-            <span
-              *ngIf="unreadCount > 0"
-              class="workspace-topbar__badge"
-            >
-              {{ unreadCount > 9 ? '9+' : unreadCount }}
-            </span>
-          </a>
+          <app-notification-panel></app-notification-panel>
 
           <div class="workspace-data-chip workspace-topbar__profile">
             <span class="workspace-topbar__avatar">

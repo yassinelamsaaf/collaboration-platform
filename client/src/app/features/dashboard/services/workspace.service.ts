@@ -238,7 +238,7 @@ export class WorkspaceService {
     projectRef: string,
     teamRef: string,
     taskId: string,
-    payload: { title: string; assigneeId?: string | null }
+    payload: { title: string; assigneeId?: string | null; status?: string }
   ): Observable<SubTask> {
     return this.api.post<SubTask>(`projects/${projectRef}/teams/${teamRef}/tasks/${taskId}/subtasks`, payload);
   }
@@ -248,7 +248,7 @@ export class WorkspaceService {
     teamRef: string,
     taskId: string,
     subTaskId: string,
-    payload: { title?: string; isDone?: boolean; assigneeId?: string | null }
+    payload: { title?: string; isDone?: boolean; status?: string; assigneeId?: string | null }
   ): Observable<SubTask> {
     return this.api.patch<SubTask>(`projects/${projectRef}/teams/${teamRef}/tasks/${taskId}/subtasks/${subTaskId}`, payload);
   }

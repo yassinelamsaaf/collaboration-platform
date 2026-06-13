@@ -33,51 +33,56 @@
       Contact Us
     </button>
 
-    <div class="profile-menu" *ngIf="profile; else loginButton">
-      <button class="profile-button" type="button" (click)="toggleMenu()">
-        <span class="profile-button__badge">{{ initials }}</span>
-        <span class="profile-button__label">{{ displayName }}</span>
-        <lucide-icon name="chevron-down"></lucide-icon>
-      </button>
-      <div class="profile-dropdown" [class.is-open]="menuOpen">
-        <button class="profile-dropdown__item" type="button" (click)="goToDashboard()">
-          <lucide-icon name="layout-dashboard"></lucide-icon>
-          Dashboard
+    <ng-container *ngIf="authReady">
+      <div class="profile-menu" *ngIf="profile; else loginButton">
+        <button class="profile-button" type="button" (click)="toggleMenu()">
+          <span class="profile-button__badge">{{ initials }}</span>
+          <span class="profile-button__label">{{ displayName }}</span>
+          <lucide-icon name="chevron-down"></lucide-icon>
         </button>
-        <button class="profile-dropdown__item" type="button" (click)="goToContactPage()">
-          <lucide-icon name="mail"></lucide-icon>
-          Contact support
-        </button>
-        <button class="profile-dropdown__item" type="button" (click)="onLogout()" [disabled]="loading">
-          <lucide-icon name="log-out"></lucide-icon>
-          Log out
-        </button>
-        <span class="profile-error" *ngIf="errorMessage">{{ errorMessage }}</span>
+        <div class="profile-dropdown" [class.is-open]="menuOpen">
+          <button class="profile-dropdown__item" type="button" (click)="goToDashboard()">
+            <lucide-icon name="layout-dashboard"></lucide-icon>
+            Dashboard
+          </button>
+          <button class="profile-dropdown__item" type="button" (click)="goToContactPage()">
+            <lucide-icon name="mail"></lucide-icon>
+            Contact support
+          </button>
+          <button class="profile-dropdown__item" type="button" (click)="onLogout()" [disabled]="loading">
+            <lucide-icon name="log-out"></lucide-icon>
+            Log out
+          </button>
+          <span class="profile-error" *ngIf="errorMessage">{{ errorMessage }}</span>
+        </div>
       </div>
-    </div>
 
-    <ng-template #loginButton>
-      <button class="btn btn--primary" type="button" (click)="onLogin()">
-        Log In
-        <lucide-icon name="arrow-right"></lucide-icon>
-      </button>
-    </ng-template>
+      <ng-template #loginButton>
+        <button class="btn btn--primary" type="button" (click)="onLogin()">
+          Log In
+          <lucide-icon name="arrow-right"></lucide-icon>
+        </button>
+      </ng-template>
+    </ng-container>
+
   </div>
 
-  <button
-    class="landing-menu-toggle"
-    type="button"
-    *ngIf="!profile; else profileToggle"
-    (click)="toggleMobileMenu()"
-  >
-    <lucide-icon name="menu"></lucide-icon>
-  </button>
-  <ng-template #profileToggle>
-    <button class="landing-menu-toggle is-profile" type="button" (click)="toggleMobileMenu()">
-      <span class="profile-button__badge">{{ initials }}</span>
-      <lucide-icon name="chevron-down"></lucide-icon>
+  <ng-container *ngIf="authReady">
+    <button
+      class="landing-menu-toggle"
+      type="button"
+      *ngIf="!profile; else profileToggle"
+      (click)="toggleMobileMenu()"
+    >
+      <lucide-icon name="menu"></lucide-icon>
     </button>
-  </ng-template>
+    <ng-template #profileToggle>
+      <button class="landing-menu-toggle is-profile" type="button" (click)="toggleMobileMenu()">
+        <span class="profile-button__badge">{{ initials }}</span>
+        <lucide-icon name="chevron-down"></lucide-icon>
+      </button>
+    </ng-template>
+  </ng-container>
 </header>
 
 <div class="landing-mobile" [class.is-open]="mobileMenuOpen">
@@ -126,34 +131,36 @@
 
     <div class="landing-mobile__divider"></div>
 
-    <ng-container *ngIf="profile; else mobileLoggedOut">
-      <div class="landing-mobile__profile">
-        <span class="profile-button__badge">{{ initials }}</span>
-        <div>
-          <div class="landing-mobile__name">{{ displayName }}</div>
-          <div class="landing-mobile__meta">Logged in</div>
+    <ng-container *ngIf="authReady">
+      <ng-container *ngIf="profile; else mobileLoggedOut">
+        <div class="landing-mobile__profile">
+          <span class="profile-button__badge">{{ initials }}</span>
+          <div>
+            <div class="landing-mobile__name">{{ displayName }}</div>
+            <div class="landing-mobile__meta">Logged in</div>
+          </div>
         </div>
-      </div>
-      <button class="landing-mobile__item" type="button" (click)="goToDashboard()">
-        <lucide-icon name="layout-dashboard"></lucide-icon>
-        Dashboard
-      </button>
-      <button class="landing-mobile__item" type="button" (click)="goToContactPage()">
-        <lucide-icon name="mail"></lucide-icon>
-        Contact support
-      </button>
-      <button class="landing-mobile__item" type="button" (click)="onLogout()" [disabled]="loading">
-        <lucide-icon name="log-out"></lucide-icon>
-        Log out
-      </button>
-      <span class="profile-error" *ngIf="errorMessage">{{ errorMessage }}</span>
-    </ng-container>
+        <button class="landing-mobile__item" type="button" (click)="goToDashboard()">
+          <lucide-icon name="layout-dashboard"></lucide-icon>
+          Dashboard
+        </button>
+        <button class="landing-mobile__item" type="button" (click)="goToContactPage()">
+          <lucide-icon name="mail"></lucide-icon>
+          Contact support
+        </button>
+        <button class="landing-mobile__item" type="button" (click)="onLogout()" [disabled]="loading">
+          <lucide-icon name="log-out"></lucide-icon>
+          Log out
+        </button>
+        <span class="profile-error" *ngIf="errorMessage">{{ errorMessage }}</span>
+      </ng-container>
 
-    <ng-template #mobileLoggedOut>
-      <button class="landing-mobile__item" type="button" (click)="onLogin()">
-        <lucide-icon name="log-in"></lucide-icon>
-        Log In
-      </button>
-    </ng-template>
+      <ng-template #mobileLoggedOut>
+        <button class="landing-mobile__item" type="button" (click)="onLogin()">
+          <lucide-icon name="log-in"></lucide-icon>
+          Log In
+        </button>
+      </ng-template>
+    </ng-container>
   </aside>
 </div>

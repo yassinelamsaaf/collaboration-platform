@@ -31,6 +31,90 @@ export class ProjectTeamsComponent implements OnInit {
   showTeamForm = false;
   showInviteForm = false;
 
+  memberSearchQuery = '';
+  memberTeamFilter = '';
+  membersPage = 0;
+  readonly membersPageSize = 4;
+
+  private get userIdsByTeam(): Record<string, Set<string>> {
+    const map: Record<string, Set<string>> = {};
+    for (const [teamId, members] of Object.entries(this.snapshotTeamMembers)) {
+      map[teamId] = new Set(members.map((m) => m.userId));
+    }
+    return map;
+  }
+
+  get filteredMembers(): ProjectMember[] {
+    let members = this.snapshot?.members ?? [];
+
+    const teamFilter = this.memberTeamFilter;
+    if (teamFilter) {
+      if (teamFilter === '__none__') {
+        const inAnyTeam = new Set(
+          Object.values(this.snapshotTeamMembers).flatMap((m) => m.map((tm) => tm.userId))
+        );
+        members = members.filter((m) => !inAnyTeam.has(m.userId));
+      } else {
+        const teamUserIds = this.userIdsByTeam[teamFilter];
+        if (teamUserIds) {
+          members = members.filter((m) => teamUserIds.has(m.userId));
+        }
+      }
+    }
+
+    const q = this.memberSearchQuery.trim().toLowerCase();
+    if (q) {
+      members = members.filter(
+        (m) => m.memberName.toLowerCase().includes(q) || m.memberEmail.toLowerCase().includes(q)
+      );
+    }
+
+    return members;
+  }
+
+  get totalMembersPages(): number {
+    return Math.max(1, Math.ceil(this.filteredMembers.length / this.membersPageSize));
+  }
+
+  get paginatedMembers(): ProjectMember[] {
+    const start = this.membersPage * this.membersPageSize;
+    return this.filteredMembers.slice(start, start + this.membersPageSize);
+  }
+
+  prevMembersPage(): void {
+    this.membersPage = Math.max(0, this.membersPage - 1);
+  }
+
+  nextMembersPage(): void {
+    this.membersPage = Math.min(this.totalMembersPages - 1, this.membersPage + 1);
+  }
+
+  onMemberFilterChange(): void {
+    this.membersPage = 0;
+  }
+
+  memberTeamNames(userId: string): string[] {
+    const teams = this.snapshot?.teams ?? [];
+    const names: string[] = [];
+    for (const team of teams) {
+      const teamMembers = this.snapshotTeamMembers[team.id];
+      if (teamMembers?.some((tm) => tm.userId === userId)) {
+        names.push(team.name);
+      }
+    }
+    return names;
+  }
+
+  get memberTeamOptions(): { id: string; name: string }[] {
+    const teams = (this.snapshot?.teams ?? []).map((t) => ({ id: t.id, name: t.name }));
+    const totalMembers = this.snapshot?.members.length ?? 0;
+    const inAnyTeam = new Set(
+      Object.values(this.snapshotTeamMembers).flatMap((m) => m.map((tm) => tm.userId))
+    );
+    const noTeamCount = totalMembers - inAnyTeam.size;
+    return [{ id: '', name: 'All members' }, ...teams, { id: '__none__', name: `No team (${noTeamCount})` }];
+  }
+
   readonly inviteForm = {
     email: '',
     role: 'MEMBER' as ProjectRole

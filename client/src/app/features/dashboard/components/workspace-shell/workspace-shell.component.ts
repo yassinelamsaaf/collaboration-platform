@@ -16,11 +16,11 @@ import { mapHttpError } from '@shared/utils/error-mapper';
 })
 export class WorkspaceShellComponent implements OnInit {
   projects: Project[] = [];
-  unreadCount = 0;
   profileName = 'Workspace';
   profileEmail = '';
   searchQuery = '';
   sidebarOpen = false;
+  sidebarCollapsed = false;
   currentProjectRef = '';
   isCompactViewport = false;
 
@@ -29,7 +29,12 @@ export class WorkspaceShellComponent implements OnInit {
     private readonly workspaceService: WorkspaceService,
     private readonly router: Router,
     private readonly toast: ToastService
-  ) {}
+  ) {
+    const saved = localStorage.getItem('workspace:sidebarCollapsed');
+    if (saved === 'true') {
+      this.sidebarCollapsed = true;
+    }
+  }
 
   ngOnInit(): void {
     this.syncViewport();
@@ -53,21 +58,17 @@ export class WorkspaceShellComponent implements OnInit {
       }
     });
 
-    this.workspaceService.countUnreadNotifications().subscribe({
-      next: (count) => {
-        this.unreadCount = count;
-      },
-      error: () => {
-        this.unreadCount = 0;
-      }
-    });
-
     this.router.events
       .pipe(filter((event): event is NavigationEnd => event instanceof NavigationEnd))
       .subscribe((event) => {
         this.syncRouteContext(event.urlAfterRedirects);
         this.closeSidebar();
       });
+  }
+
+  toggleCollapse(): void {
+    this.sidebarCollapsed = !this.sidebarCollapsed;
+    localStorage.setItem('workspace:sidebarCollapsed', String(this.sidebarCollapsed));
   }
 
   submitSearch(): void {

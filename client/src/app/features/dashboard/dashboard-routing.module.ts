@@ -9,6 +9,7 @@ import { ProjectKanbanComponent } from './pages/project-kanban/project-kanban.co
 import { ProjectOverviewComponent } from './pages/project-overview/project-overview.component';
 import { ProjectTeamsComponent } from './pages/project-teams/project-teams.component';
 import { ProjectsPageComponent } from './pages/projects-page/projects-page.component';
+import { SettingsPageComponent } from './pages/settings/settings-page.component';
 import { TaskDetailComponent } from './pages/task-detail/task-detail.component';
 
 const routes: Routes = [
@@ -23,7 +24,8 @@ const routes: Routes = [
       { path: 'projects/:projectRef/teams', component: ProjectTeamsComponent },
       { path: 'projects/:projectRef/kanban', component: ProjectKanbanComponent },
       { path: 'projects/:projectRef/tasks/:teamRef/:taskId', component: TaskDetailComponent },
-      { path: 'search', component: GlobalSearchComponent }
+      { path: 'search', component: GlobalSearchComponent },
+      { path: 'settings', component: SettingsPageComponent }
     ]
   }
 ];

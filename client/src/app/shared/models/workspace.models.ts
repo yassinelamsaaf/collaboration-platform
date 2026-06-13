@@ -123,6 +123,7 @@ export interface SubTask {
   assigneeId: string | null;
   title: string;
   isDone: boolean;
+  status: TaskStatus;
   createdAt: string;
   updatedAt: string;
 }
@@ -169,11 +170,13 @@ export interface NotificationItem {
 }
 
 export interface NotificationPrefs {
-  taskAssignedEmail: boolean;
-  statusChangedEmail: boolean;
-  commentAddedEmail: boolean;
-  deadlineApproachingEmail: boolean;
-  memberInvitedEmail: boolean;
+  id?: string;
+  userId?: string;
+  emailOnTaskAssignment: boolean;
+  emailOnStatusChange: boolean;
+  emailOnCommentAdded: boolean;
+  emailOnDeadlineApproaching: boolean;
+  emailOnMemberInvited: boolean;
 }
 
 export interface ActivityLog {

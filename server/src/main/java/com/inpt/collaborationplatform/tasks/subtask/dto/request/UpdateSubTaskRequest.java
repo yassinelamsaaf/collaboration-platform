@@ -1,5 +1,6 @@
 package com.inpt.collaborationplatform.tasks.subtask.dto.request;
 
+import com.inpt.collaborationplatform.tasks.task.entity.TaskStatus;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
@@ -9,6 +10,8 @@ public class UpdateSubTaskRequest {
     private String title;
 
     private Boolean isDone;
+
+    private TaskStatus status;
 
     private String assigneeId;
 }

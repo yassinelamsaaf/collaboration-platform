@@ -182,14 +182,28 @@
           <h2 class="workspace-page__title" style="font-size: 1.45rem">Audit trail</h2>
         </div>
 
-        <div class="workspace-list" *ngIf="data.activity.length; else noActivity">
-          <div class="workspace-list__item" *ngFor="let item of data.activity | slice: 0 : 8">
+        <input
+          class="workspace-input"
+          type="text"
+          [(ngModel)]="activitySearchQuery"
+          (ngModelChange)="onActivityFilterChange()"
+          placeholder="Search audit trail..."
+        />
+
+        <div class="workspace-list" *ngIf="paginatedActivity.length; else noActivity">
+          <div class="workspace-list__item" *ngFor="let item of paginatedActivity">
             <div>
               <div class="workspace-list__title">{{ item.action }}</div>
               <div class="workspace-list__subtitle">{{ item.details }}</div>
             </div>
             <span class="workspace-pill workspace-pill--neutral">{{ item.entityType }}</span>
           </div>
+        </div>
+
+        <div class="workspace-pagination" *ngIf="totalActivityPages > 1">
+          <button class="workspace-secondary-btn" (click)="prevActivityPage()" [disabled]="activityPage === 0">Prev</button>
+          <span class="workspace-pagination__info">Page {{ activityPage + 1 }} / {{ totalActivityPages }}</span>
+          <button class="workspace-secondary-btn" (click)="nextActivityPage()" [disabled]="activityPage >= totalActivityPages - 1">Next</button>
         </div>
 
         <ng-template #noActivity>

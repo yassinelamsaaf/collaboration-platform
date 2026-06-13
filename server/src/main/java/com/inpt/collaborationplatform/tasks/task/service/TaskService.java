@@ -198,7 +198,7 @@ public class TaskService {
     private TaskAggregates computeAggregates(String taskId) {
         var subTasks = subTaskRepository.findByTask_IdOrderByCreatedAtAsc(taskId);
         int subTaskCount = subTasks.size();
-        int completedSubTaskCount = (int) subTasks.stream().filter(SubTask::isDone).count();
+        int completedSubTaskCount = (int) subTasks.stream().filter(st -> st.getStatus() == com.inpt.collaborationplatform.tasks.task.entity.TaskStatus.DONE).count();
         int commentCount = collaborationQueryService.countCommentsForTask(taskId);
         int attachmentCount = collaborationQueryService.countAttachmentsForTask(taskId);
         int totalTimeMinutes = timeEntryRepository.sumDurationMinutesByTask_Id(taskId);

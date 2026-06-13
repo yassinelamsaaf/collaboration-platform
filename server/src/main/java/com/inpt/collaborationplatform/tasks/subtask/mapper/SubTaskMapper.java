@@ -14,6 +14,7 @@ public class SubTaskMapper {
                 subTask.getAssigneeId(),
                 subTask.getTitle(),
                 subTask.isDone(),
+                subTask.getStatus(),
                 subTask.getCreatedAt(),
                 subTask.getUpdatedAt()
         );

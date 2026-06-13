@@ -1,8 +1,11 @@
 package com.inpt.collaborationplatform.tasks.subtask.entity;
 
 import com.inpt.collaborationplatform.tasks.task.entity.Task;
+import com.inpt.collaborationplatform.tasks.task.entity.TaskStatus;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -44,6 +47,11 @@ public class SubTask {
     @Builder.Default
     @Column(nullable = false)
     private boolean isDone = false;
+
+    @Builder.Default
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    private TaskStatus status = TaskStatus.TODO;
 
     private LocalDateTime createdAt;
 

@@ -1,0 +1,46 @@
+<div class="workspace-notif-container">
+  <button class="workspace-ghost-btn workspace-topbar__bell" type="button" (click)="toggle($event)">
+    <lucide-icon name="bell"></lucide-icon>
+    <span *ngIf="unreadCount > 0" class="workspace-topbar__badge">
+      {{ unreadCount > 99 ? '+99' : unreadCount }}
+    </span>
+  </button>
+
+  <div class="workspace-notif-panel" *ngIf="isOpen" (click)="$event.stopPropagation()">
+    <div class="workspace-notif-panel__head">
+      <span class="workspace-notif-panel__title">Notifications</span>
+      <button class="workspace-notif-panel__mark-all" type="button" (click)="markAllAsRead()" *ngIf="unreadCount > 0">
+        Mark all read
+      </button>
+    </div>
+
+    <div class="workspace-notif-panel__body">
+      <div class="workspace-notif-item" *ngFor="let notification of notifications">
+        <div class="workspace-notif-item__dot" [class.is-unread]="!notification.isRead"></div>
+        <div class="workspace-notif-item__content">
+          <div class="workspace-notif-item__title">{{ notification.title }}</div>
+          <div class="workspace-notif-item__message">{{ notification.message }}</div>
+          <div class="workspace-notif-item__time">{{ notificationTime(notification) }}</div>
+        </div>
+        <button
+          class="workspace-notif-item__read-btn"
+          type="button"
+          *ngIf="!notification.isRead"
+          (click)="markAsRead(notification.id)"
+          title="Mark as read"
+        >
+          <lucide-icon name="check"></lucide-icon>
+        </button>
+      </div>
+
+      <div class="workspace-empty" *ngIf="notifications.length === 0">
+        No notifications yet.
+      </div>
+      <div class="workspace-notif-panel__more" *ngIf="hasMore">
+        <button type="button" (click)="loadMore()">
+          View more
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

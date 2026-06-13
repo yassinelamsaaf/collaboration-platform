@@ -18,6 +18,9 @@
   --workspace-success: #0f766e;
   --workspace-warning: #b45309;
   --workspace-danger: #b91c1c;
+  --workspace-radius-sm: 4px;
+  --workspace-radius-md: 6px;
+  --workspace-radius-lg: 8px;
 }
 
 .workspace-root {
@@ -29,9 +32,10 @@
 }
 
 .workspace-shell {
-  min-height: 100vh;
+  height: 100vh;
   display: grid;
   grid-template-columns: 260px minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr);
 }
 
 .workspace-sidebar {
@@ -39,13 +43,42 @@
   top: 0;
   height: 100vh;
   padding: 24px 18px;
+  padding-bottom: 0;
   background: linear-gradient(180deg, #0f172a 0%, #172236 100%);
   color: #e5edf8;
   border-right: 1px solid rgba(255, 255, 255, 0.08);
   display: flex;
   flex-direction: column;
-  gap: 22px;
   z-index: 14;
+}
+
+.workspace-sidebar__top {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  padding-bottom: 22px;
+}
+
+.workspace-sidebar__scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.workspace-sidebar__scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.workspace-sidebar__bottom {
+  flex: none;
+  padding: 18px 0 24px;
 }
 
 .workspace-overlay {
@@ -67,6 +100,37 @@
   background: rgba(255, 255, 255, 0.08);
 }
 
+.workspace-sidebar__collapse-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  min-width: 40px;
+  height: 40px;
+  padding: 0;
+  border-radius: 999px;
+  border: none;
+  background: rgba(255, 255, 255, 0.08);
+  color: #e5edf8;
+  cursor: pointer;
+  align-self: center;
+  transition: background 0.16s ease, color 0.16s ease;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.15);
+    color: #fff;
+  }
+}
+
+.workspace-brand__inner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  text-decoration: none;
+  color: inherit;
+}
+
 .workspace-brand {
   display: flex;
   align-items: center;
@@ -76,7 +140,7 @@
 .workspace-brand__badge {
   width: 42px;
   height: 42px;
-  border-radius: 12px;
+  border-radius: var(--workspace-radius-md);
   background: linear-gradient(135deg, #2563eb, #1d4ed8);
   color: #fff;
   display: grid;
@@ -97,14 +161,24 @@
 .workspace-secondary-btn,
 .workspace-ghost-btn {
   border: none;
-  border-radius: 12px;
+  border-radius: var(--workspace-radius-md);
   font: inherit;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 10px;
   cursor: pointer;
+  white-space: nowrap;
+  text-decoration: none;
   transition: transform 0.16s ease, background 0.16s ease, border-color 0.16s ease, color 0.16s ease;
+}
+
+.workspace-primary-btn lucide-icon,
+.workspace-secondary-btn lucide-icon,
+.workspace-ghost-btn lucide-icon {
+  flex: none;
+  line-height: 0;
+  display: inline-flex;
 }
 
 .workspace-primary-btn {
@@ -152,7 +226,7 @@
   gap: 12px;
   min-height: 44px;
   padding: 0 14px;
-  border-radius: 12px;
+  border-radius: var(--workspace-radius-md);
   color: rgba(229, 237, 248, 0.78);
   transition: background 0.16s ease, color 0.16s ease;
 }
@@ -178,7 +252,7 @@
 
 .workspace-sidebar__project {
   padding: 10px 12px;
-  border-radius: 10px;
+  border-radius: var(--workspace-radius-md);
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid transparent;
   transition: border-color 0.16s ease, background 0.16s ease;
@@ -208,8 +282,100 @@
 
 .workspace-main {
   min-width: 0;
+  min-height: 0;
   display: flex;
   flex-direction: column;
+  overflow-y: auto;
+}
+
+/* ---- Collapsed sidebar ---- */
+.workspace-shell.is-sidebar-collapsed {
+  grid-template-columns: 72px minmax(0, 1fr);
+}
+
+.workspace-shell.is-sidebar-collapsed .workspace-sidebar {
+  padding: 20px 10px 0;
+  align-items: center;
+  gap: 18px;
+}
+
+.workspace-shell.is-sidebar-collapsed .workspace-sidebar__top,
+.workspace-shell.is-sidebar-collapsed .workspace-sidebar__scroll,
+.workspace-shell.is-sidebar-collapsed .workspace-sidebar__bottom {
+  width: 100%;
+}
+
+.workspace-shell.is-sidebar-collapsed .workspace-sidebar__top {
+  padding-bottom: 0;
+  align-items: center;
+}
+
+.workspace-shell.is-sidebar-collapsed .workspace-sidebar__scroll {
+  align-items: center;
+}
+
+.workspace-shell.is-sidebar-collapsed .workspace-sidebar__bottom {
+  padding: 10px 0;
+  display: flex;
+  justify-content: center;
+}
+
+.workspace-shell.is-sidebar-collapsed .workspace-brand__inner,
+.workspace-shell.is-sidebar-collapsed .workspace-nav__label,
+.workspace-shell.is-sidebar-collapsed .workspace-btn__label,
+.workspace-shell.is-sidebar-collapsed .workspace-sidebar__close,
+.workspace-shell.is-sidebar-collapsed .workspace-sidebar__scroll .workspace-sidebar__projects {
+  display: none;
+}
+
+.workspace-shell.is-sidebar-collapsed .workspace-sidebar__bottom .workspace-sidebar__projects-title,
+.workspace-shell.is-sidebar-collapsed .workspace-sidebar__bottom .workspace-sidebar__project {
+  display: none;
+}
+
+.workspace-shell.is-sidebar-collapsed .workspace-sidebar__bottom .workspace-ghost-btn {
+  justify-content: center;
+}
+
+.workspace-shell.is-sidebar-collapsed .workspace-sidebar__bottom .workspace-ghost-btn lucide-icon {
+  margin: 0;
+}
+
+.workspace-shell.is-sidebar-collapsed .workspace-brand--sidebar {
+  justify-content: center;
+  width: 100%;
+  padding: 0;
+}
+
+.workspace-shell.is-sidebar-collapsed .workspace-nav {
+  width: 100%;
+  align-items: center;
+}
+
+.workspace-shell.is-sidebar-collapsed .workspace-nav__link {
+  justify-content: center;
+  padding: 0;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--workspace-radius-md);
+}
+
+.workspace-shell.is-sidebar-collapsed .workspace-sidebar .workspace-primary-btn {
+  width: 44px;
+  min-width: 44px;
+  padding: 0;
+  justify-content: center;
+  border-radius: var(--workspace-radius-md);
+}
+
+.workspace-shell.is-sidebar-collapsed .workspace-sidebar__collapse-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.12);
+  color: #e5edf8;
+}
+
+.workspace-shell.is-sidebar-collapsed .workspace-sidebar__collapse-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
 }
 
 .workspace-topbar__left,
@@ -285,7 +451,7 @@
   min-width: 0;
   max-width: 540px;
   padding: 0 14px;
-  border-radius: 14px;
+  border-radius: var(--workspace-radius-md);
   border: 1px solid var(--workspace-border);
   background: rgba(255, 255, 255, 0.88);
 }
@@ -338,7 +504,7 @@
 .workspace-card {
   background: var(--workspace-surface);
   border: 1px solid var(--workspace-border);
-  border-radius: 18px;
+  border-radius: var(--workspace-radius-lg);
   padding: 20px;
   box-shadow: 0 14px 34px rgba(15, 23, 42, 0.05);
 }
@@ -400,7 +566,7 @@
   justify-content: space-between;
   gap: 16px;
   padding: 14px 16px;
-  border-radius: 14px;
+  border-radius: var(--workspace-radius-md);
   background: var(--workspace-surface-soft);
   border: 1px solid var(--workspace-border);
 }
@@ -479,7 +645,7 @@
   place-items: center;
   width: 32px;
   height: 32px;
-  border-radius: 9px;
+  border-radius: var(--workspace-radius-sm);
   flex: none;
 
   lucide-icon {
@@ -647,7 +813,7 @@
 
 .mini-stat {
   border: 1px solid var(--workspace-border);
-  border-radius: 12px;
+  border-radius: var(--workspace-radius-md);
   padding: 12px;
   background: var(--workspace-surface-soft);
 }
@@ -674,7 +840,7 @@
 .progress-item {
   display: block;
   padding: 12px;
-  border-radius: 12px;
+  border-radius: var(--workspace-radius-md);
   border: 1px solid var(--workspace-border);
   background: var(--workspace-surface-soft);
   transition: border-color 0.16s ease, background 0.16s ease;
@@ -748,7 +914,7 @@
 /* ---- Project cards (stitch-style flat cards) ---- */
 .project-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  grid-template-columns: repeat(2, 1fr);
   gap: 16px;
 }
 
@@ -758,7 +924,7 @@
   gap: 10px;
   padding: 18px;
   border: 1px solid var(--workspace-border);
-  border-radius: 14px;
+  border-radius: var(--workspace-radius-md);
   background: var(--workspace-surface);
   transition: border-color 0.16s ease, box-shadow 0.16s ease;
 
@@ -869,7 +1035,7 @@
   min-height: 44px;
   padding: 0 14px;
   border: 1px solid var(--workspace-border);
-  border-radius: 12px;
+  border-radius: var(--workspace-radius-md);
   background: var(--workspace-surface);
 }
 
@@ -889,7 +1055,7 @@
   text-align: center;
   color: var(--workspace-muted);
   border: 1px dashed var(--workspace-border-strong);
-  border-radius: 16px;
+  border-radius: var(--workspace-radius-lg);
   background: rgba(255, 255, 255, 0.5);
 }
 
@@ -906,7 +1072,7 @@
   gap: 12px;
   min-height: 420px;
   padding: 16px;
-  border-radius: 18px;
+  border-radius: var(--workspace-radius-lg);
   background: rgba(255, 255, 255, 0.75);
   border: 1px solid var(--workspace-border);
 }
@@ -923,7 +1089,7 @@
   flex-direction: column;
   gap: 12px;
   padding: 16px;
-  border-radius: 16px;
+  border-radius: var(--workspace-radius-lg);
   background: var(--workspace-surface);
   border: 1px solid var(--workspace-border);
   box-shadow: 0 12px 24px rgba(15, 23, 42, 0.05);
@@ -984,7 +1150,7 @@
   justify-content: center;
   gap: 8px;
   padding: 0 14px;
-  border-radius: 12px;
+  border-radius: var(--workspace-radius-md);
   border: 1px solid var(--workspace-border);
   background: var(--workspace-surface);
   color: var(--workspace-muted);
@@ -1007,7 +1173,7 @@
   align-items: center;
   gap: 6px;
   padding: 8px 10px;
-  border-radius: 10px;
+  border-radius: var(--workspace-radius-md);
   background: var(--workspace-surface-soft);
   color: var(--workspace-muted);
   font-size: 0.88rem;
@@ -1084,7 +1250,7 @@
     width: 42px;
     min-width: 42px;
     padding: 0;
-    border-radius: 12px;
+    border-radius: var(--workspace-radius-md);
     border: 1px solid var(--workspace-border);
     background: var(--workspace-surface);
     color: var(--workspace-brand);
@@ -1093,6 +1259,10 @@
 
   .workspace-sidebar__close {
     display: inline-flex;
+  }
+
+  .workspace-sidebar__collapse-btn {
+    display: none;
   }
 
   .workspace-topbar {
@@ -1137,6 +1307,16 @@
   .workspace-page__header {
     align-items: flex-start;
     flex-direction: column;
+  }
+
+  .workspace-page__header .workspace-primary-btn,
+  .workspace-page__header .workspace-secondary-btn {
+    width: 100%;
+  }
+
+  .workspace-form .workspace-primary-btn,
+  .workspace-form .workspace-secondary-btn {
+    width: 100%;
   }
 
   .workspace-form__row {

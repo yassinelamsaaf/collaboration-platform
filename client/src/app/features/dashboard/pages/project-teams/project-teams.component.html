@@ -73,11 +73,36 @@
           <h2 class="workspace-page__title" style="font-size: 1.45rem">Members</h2>
         </div>
 
-        <div class="workspace-list" *ngIf="data.members.length; else noMembers">
-          <div class="workspace-list__item" *ngFor="let member of data.members">
-            <div>
+        <div class="workspace-inline-actions" style="width: 100%">
+          <input
+            class="workspace-input"
+            style="flex: 1; min-width: 0"
+            type="text"
+            [(ngModel)]="memberSearchQuery"
+            (ngModelChange)="onMemberFilterChange()"
+            placeholder="Search by name or email..."
+          />
+          <select
+            class="workspace-select workspace-select--compact"
+            [(ngModel)]="memberTeamFilter"
+            (ngModelChange)="onMemberFilterChange()"
+          >
+            <option *ngFor="let opt of memberTeamOptions" [value]="opt.id">{{ opt.name }}</option>
+          </select>
+        </div>
+
+        <div class="workspace-list" *ngIf="filteredMembers.length; else noMembers">
+          <div class="workspace-list__item" *ngFor="let member of paginatedMembers">
+            <div style="min-width: 0">
               <div class="workspace-list__title">{{ member.memberName }}</div>
               <div class="workspace-list__subtitle">{{ member.memberEmail }}</div>
+              <div class="workspace-inline-actions" style="margin-top: 6px" *ngIf="memberTeamNames(member.userId).length">
+                <span
+                  class="workspace-pill workspace-pill--neutral"
+                  style="font-size: 0.72rem; min-height: 22px; padding: 0 7px"
+                  *ngFor="let teamName of memberTeamNames(member.userId)"
+                >{{ teamName }}</span>
+              </div>
             </div>
 
             <div class="workspace-inline-actions">
@@ -104,8 +129,23 @@
           </div>
         </div>
 
+        <div class="workspace-inline-actions" *ngIf="filteredMembers.length > membersPageSize" style="justify-content: center; margin-top: 8px">
+          <button class="workspace-chip-btn" type="button" (click)="prevMembersPage()" [disabled]="membersPage === 0">
+            <lucide-icon name="chevron-left" style="width: 14px; height: 14px"></lucide-icon>
+            Prev
+          </button>
+          <span class="workspace-data-chip" style="font-size: 0.82rem">
+            Page {{ membersPage + 1 }} of {{ totalMembersPages }}
+          </span>
+          <button class="workspace-chip-btn" type="button" (click)="nextMembersPage()" [disabled]="membersPage >= totalMembersPages - 1">
+            Next
+            <lucide-icon name="chevron-right" style="width: 14px; height: 14px"></lucide-icon>
+          </button>
+        </div>
+
         <ng-template #noMembers>
-          <div class="workspace-empty">No project members found.</div>
+          <div class="workspace-empty" *ngIf="!memberSearchQuery.trim()">No project members found.</div>
+          <div class="workspace-empty" *ngIf="memberSearchQuery.trim()">No members match your search.</div>
         </ng-template>
       </section>
 

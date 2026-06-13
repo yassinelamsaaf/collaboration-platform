@@ -1,0 +1,99 @@
+<section class="workspace-page">
+  <div class="workspace-page__header">
+    <div>
+      <div class="workspace-page__eyebrow">Settings</div>
+      <h1 class="workspace-page__title">Settings</h1>
+      <p class="workspace-page__subtitle">Manage your profile, avatar and notification preferences.</p>
+    </div>
+  </div>
+
+  <div class="workspace-stack">
+    <!-- Profile -->
+    <div class="workspace-card">
+      <h2 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 16px">Profile</h2>
+      <div class="workspace-form">
+        <div class="workspace-field">
+          <label>Email</label>
+          <div class="workspace-input" style="display: flex; align-items: center; opacity: 0.6; cursor: not-allowed">
+            {{ profile?.email ?? '—' }}
+          </div>
+        </div>
+        <div class="workspace-field">
+          <label>Username</label>
+          <input class="workspace-input" type="text" [(ngModel)]="username" placeholder="Your display name" />
+        </div>
+        <div>
+          <button class="workspace-primary-btn" type="button" (click)="saveProfile()" [disabled]="savingProfile || !username.trim()">
+            <lucide-icon name="loader-circle" class="spin" *ngIf="savingProfile"></lucide-icon>
+            {{ savingProfile ? 'Saving…' : 'Save' }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Avatar -->
+    <div class="workspace-card">
+      <h2 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 16px">Avatar</h2>
+      <p style="color: var(--workspace-muted); font-size: 0.92rem; margin-bottom: 12px">
+        Upload a profile picture. Square images work best.
+      </p>
+      <div class="workspace-inline-actions">
+        <label class="workspace-secondary-btn" style="cursor: pointer">
+          <lucide-icon name="upload"></lucide-icon>
+          {{ uploadingAvatar ? 'Uploading…' : 'Choose image' }}
+          <input type="file" accept="image/*" (change)="onAvatarSelected($event)" style="display: none" />
+        </label>
+      </div>
+    </div>
+
+    <!-- Notification Preferences -->
+    <div class="workspace-card">
+      <h2 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 16px">Notification Preferences</h2>
+      <div class="workspace-form">
+        <label class="settings-toggle">
+          <input type="checkbox" [(ngModel)]="prefs.emailOnTaskAssignment" />
+          <span class="settings-toggle__slider"></span>
+          <span class="settings-toggle__label">Task assigned</span>
+        </label>
+        <label class="settings-toggle">
+          <input type="checkbox" [(ngModel)]="prefs.emailOnStatusChange" />
+          <span class="settings-toggle__slider"></span>
+          <span class="settings-toggle__label">Status changed</span>
+        </label>
+        <label class="settings-toggle">
+          <input type="checkbox" [(ngModel)]="prefs.emailOnCommentAdded" />
+          <span class="settings-toggle__slider"></span>
+          <span class="settings-toggle__label">Comment added</span>
+        </label>
+        <label class="settings-toggle">
+          <input type="checkbox" [(ngModel)]="prefs.emailOnDeadlineApproaching" />
+          <span class="settings-toggle__slider"></span>
+          <span class="settings-toggle__label">Deadline approaching</span>
+        </label>
+        <label class="settings-toggle">
+          <input type="checkbox" [(ngModel)]="prefs.emailOnMemberInvited" />
+          <span class="settings-toggle__slider"></span>
+          <span class="settings-toggle__label">Member invited</span>
+        </label>
+        <div style="margin-top: 8px">
+          <button class="workspace-primary-btn" type="button" (click)="saveNotificationPrefs()" [disabled]="savingPrefs">
+            <lucide-icon name="loader-circle" class="spin" *ngIf="savingPrefs"></lucide-icon>
+            {{ savingPrefs ? 'Saving…' : 'Save preferences' }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sign out -->
+    <div class="workspace-card" style="border-color: var(--workspace-danger);">
+      <h2 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 8px">Sign out</h2>
+      <p style="color: var(--workspace-muted); font-size: 0.92rem; margin-bottom: 12px">
+        You will be redirected to the login page.
+      </p>
+      <button class="workspace-ghost-btn workspace-ghost-btn--danger" type="button" (click)="logout()">
+        <lucide-icon name="log-out"></lucide-icon>
+        Sign out
+      </button>
+    </div>
+  </div>
+</section>

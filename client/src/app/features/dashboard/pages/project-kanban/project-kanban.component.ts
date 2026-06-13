@@ -3,7 +3,15 @@ import { ActivatedRoute } from '@angular/router';
 
 import { ToastService } from '@core/services/toast.service';
 import { mapHttpError } from '@shared/utils/error-mapper';
-import { Priority, ProjectWorkspaceSnapshot, Task, TaskStatus, Team, TeamMember } from '@shared/models/workspace.models';
+import {
+  Priority,
+  ProjectWorkspaceSnapshot,
+  SubTask,
+  Task,
+  TaskStatus,
+  Team,
+  TeamMember
+} from '@shared/models/workspace.models';
 import { WorkspaceService } from '@features/dashboard/services/workspace.service';
 
 @Component({
@@ -36,6 +44,19 @@ export class ProjectKanbanComponent implements OnInit {
     assigneeId: ''
   };
 
+  viewMode: 'tasks' | 'subtasks' = 'tasks';
+  selectedSubTaskTaskId = '';
+  subTasks: SubTask[] = [];
+  subTasksLoading = false;
+  creatingSubTask = false;
+  showSubTaskForm = false;
+  draggedSubTask: SubTask | null = null;
+
+  readonly subTaskForm = {
+    title: '',
+    assigneeId: ''
+  };
+
   constructor(
     private readonly route: ActivatedRoute,
     private readonly workspaceService: WorkspaceService,
@@ -48,7 +69,6 @@ export class ProjectKanbanComponent implements OnInit {
       if (!projectRef) {
         return;
       }
-
       this.projectRef = projectRef;
       this.loadWorkspace();
     });
@@ -57,6 +77,13 @@ export class ProjectKanbanComponent implements OnInit {
       this.focusedTaskId = params.get('task') ?? '';
       this.selectedTeamRef = params.get('team') ?? this.selectedTeamRef;
     });
+  }
+
+  onViewModeChange(): void {
+    if (this.viewMode === 'subtasks') {
+      this.selectedSubTaskTaskId = '';
+    }
+    this.subTasks = [];
   }
 
   get canEditTasks(): boolean {
@@ -88,15 +115,21 @@ export class ProjectKanbanComponent implements OnInit {
     });
   }
 
-  // --- Drag & drop ---
+  // --- Task drag & drop ---
   onDragStart(task: Task): void {
     if (this.canEditTasks) {
       this.draggedTask = task;
     }
   }
 
+  onSubTaskDragStart(subTask: SubTask): void {
+    if (this.canEditTasks) {
+      this.draggedSubTask = subTask;
+    }
+  }
+
   onDragOver(event: DragEvent, status: TaskStatus): void {
-    if (this.draggedTask) {
+    if (this.draggedTask || this.draggedSubTask) {
       event.preventDefault();
       this.dragOverStatus = status;
     }
@@ -109,11 +142,16 @@ export class ProjectKanbanComponent implements OnInit {
   }
 
   onDrop(status: TaskStatus): void {
-    const task = this.draggedTask;
-    this.draggedTask = null;
-    this.dragOverStatus = null;
-    if (task) {
+    if (this.draggedTask) {
+      const task = this.draggedTask;
+      this.draggedTask = null;
+      this.dragOverStatus = null;
       this.moveTask(task, status);
+    } else if (this.draggedSubTask) {
+      const subTask = this.draggedSubTask;
+      this.draggedSubTask = null;
+      this.dragOverStatus = null;
+      this.moveSubTask(subTask, status);
     }
   }
 
@@ -178,8 +216,6 @@ export class ProjectKanbanComponent implements OnInit {
       return;
     }
 
-    // Optimistic update: move the card immediately so the board feels instant,
-    // then reconcile with the server. Revert on failure.
     const previous = task.status;
     task.status = status;
 
@@ -192,10 +228,132 @@ export class ProjectKanbanComponent implements OnInit {
     });
   }
 
+  // --- Subtask view ---
+  get selectedSubTaskTask(): Task | null {
+    if (!this.selectedSubTaskTaskId || !this.snapshot) {
+      return null;
+    }
+    return this.snapshot.tasks.find((t) => t.id === this.selectedSubTaskTaskId) ?? null;
+  }
+
+  get subTaskTaskOptions(): Task[] {
+    return this.filteredTasks();
+  }
+
+  get selectedSubTaskTeamRef(): string {
+    const task = this.selectedSubTaskTask;
+    if (!task) {
+      return '';
+    }
+    const team = this.snapshot?.teams.find((t) => t.id === task.teamId);
+    return team ? team.slug || team.id : task.teamId;
+  }
+
+  subTasksForStatus(status: TaskStatus): SubTask[] {
+    return this.subTasks.filter((st) => st.status === status);
+  }
+
+  onSubTaskTaskChange(): void {
+    this.subTasks = [];
+    this.selectedSubTaskTaskId = this.selectedSubTaskTaskId;
+    this.showSubTaskForm = false;
+    this.loadSubTasks();
+  }
+
+  loadSubTasks(): void {
+    const task = this.selectedSubTaskTask;
+    const teamRef = this.selectedSubTaskTeamRef;
+    if (!task || !teamRef) {
+      this.subTasks = [];
+      return;
+    }
+
+    this.subTasksLoading = true;
+    this.workspaceService.listSubTasks(this.projectRef, teamRef, task.id).subscribe({
+      next: (subTasks) => {
+        this.subTasks = subTasks;
+        this.subTasksLoading = false;
+      },
+      error: (error: unknown) => {
+        this.toast.error(mapHttpError(error, 'Unable to load subtasks.'));
+        this.subTasksLoading = false;
+      }
+    });
+  }
+
+  createSubTask(): void {
+    const task = this.selectedSubTaskTask;
+    const teamRef = this.selectedSubTaskTeamRef;
+    if (!this.canEditTasks || !task || !teamRef || !this.subTaskForm.title.trim()) {
+      return;
+    }
+
+    this.creatingSubTask = true;
+    this.workspaceService
+      .createSubTask(this.projectRef, teamRef, task.id, {
+        title: this.subTaskForm.title.trim(),
+        assigneeId: this.subTaskForm.assigneeId || null
+      })
+      .subscribe({
+        next: () => {
+          this.subTaskForm.title = '';
+          this.subTaskForm.assigneeId = '';
+          this.creatingSubTask = false;
+          this.showSubTaskForm = false;
+          this.toast.success('Sub-task created.');
+          this.loadSubTasks();
+        },
+        error: (error: unknown) => {
+          this.toast.error(mapHttpError(error, 'Unable to create sub-task.'));
+          this.creatingSubTask = false;
+        }
+      });
+  }
+
+  moveSubTask(subTask: SubTask, status: TaskStatus): void {
+    const task = this.selectedSubTaskTask;
+    const teamRef = this.selectedSubTaskTeamRef;
+    if (!this.canEditTasks || !task || !teamRef || subTask.status === status) {
+      return;
+    }
+
+    const previous = subTask.status;
+    subTask.status = status;
+    subTask.isDone = status === 'DONE';
+
+    this.workspaceService
+      .updateSubTask(this.projectRef, teamRef, task.id, subTask.id, { status, isDone: subTask.isDone })
+      .subscribe({
+        next: () => this.loadSubTasks(),
+        error: (error: unknown) => {
+          subTask.status = previous;
+          subTask.isDone = previous === 'DONE';
+          this.toast.error(mapHttpError(error, 'Unable to move the sub-task.'));
+        }
+      });
+  }
+
+  deleteSubTask(subTask: SubTask): void {
+    const task = this.selectedSubTaskTask;
+    const teamRef = this.selectedSubTaskTeamRef;
+    if (!this.canEditTasks || !task || !teamRef) {
+      return;
+    }
+
+    this.workspaceService.deleteSubTask(this.projectRef, teamRef, task.id, subTask.id).subscribe({
+      next: () => {
+        this.toast.success('Sub-task deleted.');
+        this.loadSubTasks();
+      },
+      error: (error: unknown) => {
+        this.toast.error(mapHttpError(error, 'Unable to delete sub-task.'));
+      }
+    });
+  }
+
+  // --- Shared ---
   teamRefByTask(task: Task): string {
     const team = this.snapshot?.teams.find((entry) => entry.id === task.teamId);
-    // Fall back to the task's teamId UUID (the backend accepts UUID or slug as
-    // teamRef) so the link never produces an empty, non-matching route segment.
     return team ? team.slug || team.id : task.teamId;
   }
 
@@ -218,6 +376,18 @@ export class ProjectKanbanComponent implements OnInit {
     }
 
     return (this.teamMembersByTeamId[selectedTeam.id] ?? []).map((member) => ({
+      value: member.id,
+      label: `${member.memberName} - ${member.role}`
+    }));
+  }
+
+  subTaskAssigneeOptions(): { value: string; label: string }[] {
+    const task = this.selectedSubTaskTask;
+    if (!task) {
+      return [];
+    }
+    const members = this.teamMembersByTeamId[task.teamId] ?? [];
+    return members.map((member) => ({
       value: member.id,
       label: `${member.memberName} - ${member.role}`
     }));

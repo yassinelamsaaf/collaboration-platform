@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
 import { ToastService } from '@core/services/toast.service';
-import { ProjectWorkspaceSnapshot, Team } from '@shared/models/workspace.models';
+import { ActivityLog, ProjectWorkspaceSnapshot, Team } from '@shared/models/workspace.models';
 import { WorkspaceService } from '@features/dashboard/services/workspace.service';
 import { mapHttpError } from '@shared/utils/error-mapper';
 import {
@@ -132,6 +132,44 @@ export class ProjectOverviewComponent implements OnInit {
 
   get completionRate(): number {
     return this.snapshot ? completionRateOf(statusBreakdownOf(this.snapshot.tasks)) : 0;
+  }
+
+  activitySearchQuery = '';
+  activityPage = 0;
+  readonly activityPageSize = 8;
+
+  get filteredActivity(): ActivityLog[] {
+    const q = this.activitySearchQuery.trim().toLowerCase();
+    if (!q) {
+      return this.snapshot?.activity ?? [];
+    }
+    return (this.snapshot?.activity ?? []).filter(
+      (a) =>
+        a.action.toLowerCase().includes(q) ||
+        a.details.toLowerCase().includes(q) ||
+        a.entityType.toLowerCase().includes(q)
+    );
+  }
+
+  get totalActivityPages(): number {
+    return Math.max(1, Math.ceil(this.filteredActivity.length / this.activityPageSize));
+  }
+
+  get paginatedActivity(): ActivityLog[] {
+    const start = this.activityPage * this.activityPageSize;
+    return this.filteredActivity.slice(start, start + this.activityPageSize);
+  }
+
+  prevActivityPage(): void {
+    this.activityPage = Math.max(0, this.activityPage - 1);
+  }
+
+  nextActivityPage(): void {
+    this.activityPage = Math.min(this.totalActivityPages - 1, this.activityPage + 1);
+  }
+
+  onActivityFilterChange(): void {
+    this.activityPage = 0;
   }
 
   get teamProgress(): TeamProgress[] {

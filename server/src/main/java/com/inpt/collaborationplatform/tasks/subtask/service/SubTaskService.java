@@ -12,6 +12,7 @@ import com.inpt.collaborationplatform.tasks.subtask.entity.SubTask;
 import com.inpt.collaborationplatform.tasks.subtask.mapper.SubTaskMapper;
 import com.inpt.collaborationplatform.tasks.subtask.repository.SubTaskRepository;
 import com.inpt.collaborationplatform.tasks.task.entity.Task;
+import com.inpt.collaborationplatform.tasks.task.entity.TaskStatus;
 import com.inpt.collaborationplatform.tasks.task.service.TaskLookupService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -44,10 +45,14 @@ public class SubTaskService {
             teamLookupService.requireTeamMember(team.getId(), request.getAssigneeId());
         }
 
+        TaskStatus status = request.getStatus() != null ? request.getStatus() : TaskStatus.TODO;
+
         SubTask subTask = SubTask.builder()
                 .task(task)
                 .title(request.getTitle().trim())
                 .assigneeId(request.getAssigneeId())
+                .status(status)
+                .isDone(status == TaskStatus.DONE)
                 .build();
 
         return subTaskMapper.toSubTaskResponse(subTaskRepository.save(subTask));
@@ -83,8 +88,12 @@ public class SubTaskService {
             subTask.setTitle(title);
         }
 
-        if (request.getIsDone() != null) {
+        if (request.getStatus() != null) {
+            subTask.setStatus(request.getStatus());
+            subTask.setDone(request.getStatus() == TaskStatus.DONE);
+        } else if (request.getIsDone() != null) {
             subTask.setDone(request.getIsDone());
+            subTask.setStatus(request.getIsDone() ? TaskStatus.DONE : TaskStatus.TODO);
         }
 
         if (request.getAssigneeId() != null) {

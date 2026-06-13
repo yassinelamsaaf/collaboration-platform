@@ -23,6 +23,7 @@ export class NavbarComponent {
   private readonly toast = inject(ToastService);
 
   profile: UserProfile | null = null;
+  authReady = false;
   menuOpen = false;
   mobileMenuOpen = false;
   loading = false;
@@ -33,6 +34,7 @@ export class NavbarComponent {
       this.profile = profile;
     });
 
+    this.authReady = true;
     this.authService.getProfile().pipe(takeUntilDestroyed(this.destroyRef)).subscribe();
   }
 
