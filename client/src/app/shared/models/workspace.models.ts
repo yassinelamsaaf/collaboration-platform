@@ -226,6 +226,14 @@ export interface ProjectWorkspaceSnapshot {
   labels: Label[];
 }
 
+export interface MyTaskItem {
+  task: Task;
+  projectRef: string;
+  projectName: string;
+  teamRef: string;
+  teamName: string;
+}
+
 export interface SearchResultItem {
   kind: 'project' | 'task' | 'member' | 'team';
   id: string;

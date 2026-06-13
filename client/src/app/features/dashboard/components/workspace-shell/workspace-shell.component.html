@@ -32,6 +32,10 @@
           <lucide-icon name="layout-dashboard"></lucide-icon>
           Dashboard
         </a>
+        <a class="workspace-nav__link" routerLink="/dashboard/my-tasks" routerLinkActive="is-active" (click)="closeSidebar()">
+          <lucide-icon name="list-todo"></lucide-icon>
+          My Tasks
+        </a>
         <a class="workspace-nav__link" routerLink="/dashboard/projects" routerLinkActive="is-active" [routerLinkActiveOptions]="{ exact: true }" (click)="closeSidebar()">
           <lucide-icon name="folders"></lucide-icon>
           Projects

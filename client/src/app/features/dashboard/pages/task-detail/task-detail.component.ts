@@ -23,6 +23,9 @@ export class TaskDetailComponent implements OnInit {
   project: Project | null = null;
   bundle: TaskBundle | null = null;
   loading = true;
+  showSubTaskForm = false;
+  showAttachmentForm = false;
+  showTimeForm = false;
 
   readonly commentForm = {
     content: ''
@@ -77,8 +80,10 @@ export class TaskDetailComponent implements OnInit {
     return this.bundle?.teamMembers ?? [];
   }
 
-  loadTask(): void {
-    this.loading = true;
+  loadTask(quiet = false): void {
+    if (!quiet) {
+      this.loading = true;
+    }
     forkJoin({
       project: this.workspaceService.getProject(this.projectRef),
       bundle: this.workspaceService.loadTaskBundle(this.projectRef, this.teamRef, this.taskId)
@@ -104,7 +109,7 @@ export class TaskDetailComponent implements OnInit {
     }
 
     this.workspaceService.updateTaskStatus(this.projectRef, this.teamRef, this.taskId, status).subscribe({
-      next: () => this.loadTask(),
+      next: () => this.loadTask(true),
       error: (error: unknown) => this.toast.error(mapHttpError(error, 'Unable to update the task status.'))
     });
   }
@@ -117,7 +122,7 @@ export class TaskDetailComponent implements OnInit {
     this.workspaceService.createComment(this.projectRef, this.teamRef, this.taskId, this.commentForm.content.trim()).subscribe({
       next: () => {
         this.commentForm.content = '';
-        this.loadTask();
+        this.loadTask(true);
       },
       error: (error: unknown) => this.toast.error(mapHttpError(error, 'Unable to add the comment.'))
     });
@@ -139,7 +144,8 @@ export class TaskDetailComponent implements OnInit {
           this.attachmentForm.fileName = '';
           this.attachmentForm.fileUrl = '';
           this.attachmentForm.fileSize = 0;
-          this.loadTask();
+          this.showAttachmentForm = false;
+          this.loadTask(true);
         },
         error: (error: unknown) => this.toast.error(mapHttpError(error, 'Unable to add the attachment.'))
       });
@@ -159,7 +165,8 @@ export class TaskDetailComponent implements OnInit {
         next: () => {
           this.subTaskForm.title = '';
           this.subTaskForm.assigneeId = '';
-          this.loadTask();
+          this.showSubTaskForm = false;
+          this.loadTask(true);
         },
         error: (error: unknown) => this.toast.error(mapHttpError(error, 'Unable to create the subtask.'))
       });
@@ -175,7 +182,7 @@ export class TaskDetailComponent implements OnInit {
         isDone: nextValue
       })
       .subscribe({
-        next: () => this.loadTask(),
+        next: () => this.loadTask(true),
         error: (error: unknown) => this.toast.error(mapHttpError(error, 'Unable to update the subtask.'))
       });
   }
@@ -195,7 +202,8 @@ export class TaskDetailComponent implements OnInit {
         next: () => {
           this.timeEntryForm.durationMinutes = 30;
           this.timeEntryForm.description = '';
-          this.loadTask();
+          this.showTimeForm = false;
+          this.loadTask(true);
         },
         error: (error: unknown) => this.toast.error(mapHttpError(error, 'Unable to log time for this task.'))
       });

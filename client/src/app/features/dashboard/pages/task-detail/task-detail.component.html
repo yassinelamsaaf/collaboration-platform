@@ -97,12 +97,18 @@
         </article>
 
         <article class="workspace-card workspace-stack">
-          <div>
-            <div class="workspace-page__eyebrow">Execution</div>
-            <h2 class="workspace-page__title" style="font-size: 1.45rem">Subtasks</h2>
+          <div class="workspace-section-head">
+            <div>
+              <div class="workspace-page__eyebrow">Execution</div>
+              <h2 class="workspace-page__title" style="font-size: 1.45rem">Subtasks</h2>
+            </div>
+            <button class="workspace-secondary-btn" type="button" *ngIf="canEditTaskSpace" (click)="showSubTaskForm = !showSubTaskForm">
+              <lucide-icon [name]="showSubTaskForm ? 'x' : 'plus'"></lucide-icon>
+              {{ showSubTaskForm ? 'Close' : 'Add' }}
+            </button>
           </div>
 
-          <form class="workspace-form" *ngIf="canEditTaskSpace" (ngSubmit)="addSubTask()">
+          <form class="workspace-form" *ngIf="canEditTaskSpace && showSubTaskForm" (ngSubmit)="addSubTask()">
             <div class="workspace-form__row">
               <div class="workspace-field">
                 <label for="subtask-title">Subtask title</label>
@@ -160,12 +166,18 @@
 
       <section class="workspace-stack">
         <article class="workspace-card workspace-stack">
-          <div>
-            <div class="workspace-page__eyebrow">Files</div>
-            <h2 class="workspace-page__title" style="font-size: 1.45rem">Attachments</h2>
+          <div class="workspace-section-head">
+            <div>
+              <div class="workspace-page__eyebrow">Files</div>
+              <h2 class="workspace-page__title" style="font-size: 1.45rem">Attachments</h2>
+            </div>
+            <button class="workspace-secondary-btn" type="button" *ngIf="canEditTaskSpace" (click)="showAttachmentForm = !showAttachmentForm">
+              <lucide-icon [name]="showAttachmentForm ? 'x' : 'paperclip'"></lucide-icon>
+              {{ showAttachmentForm ? 'Close' : 'Add' }}
+            </button>
           </div>
 
-          <form class="workspace-form" *ngIf="canEditTaskSpace" (ngSubmit)="addAttachment()">
+          <form class="workspace-form" *ngIf="canEditTaskSpace && showAttachmentForm" (ngSubmit)="addAttachment()">
             <div class="workspace-field">
               <label for="attachment-name">File name</label>
               <input id="attachment-name" class="workspace-input" type="text" name="attachment-name" [(ngModel)]="attachmentForm.fileName" />
@@ -203,12 +215,18 @@
         </article>
 
         <article class="workspace-card workspace-stack">
-          <div>
-            <div class="workspace-page__eyebrow">Time Tracking</div>
-            <h2 class="workspace-page__title" style="font-size: 1.45rem">Time entries</h2>
+          <div class="workspace-section-head">
+            <div>
+              <div class="workspace-page__eyebrow">Time Tracking</div>
+              <h2 class="workspace-page__title" style="font-size: 1.45rem">Time entries</h2>
+            </div>
+            <button class="workspace-secondary-btn" type="button" *ngIf="canEditTaskSpace" (click)="showTimeForm = !showTimeForm">
+              <lucide-icon [name]="showTimeForm ? 'x' : 'clock4'"></lucide-icon>
+              {{ showTimeForm ? 'Close' : 'Log time' }}
+            </button>
           </div>
 
-          <form class="workspace-form" *ngIf="canEditTaskSpace" (ngSubmit)="addTimeEntry()">
+          <form class="workspace-form" *ngIf="canEditTaskSpace && showTimeForm" (ngSubmit)="addTimeEntry()">
             <div class="workspace-form__row">
               <div class="workspace-field">
                 <label for="time-duration">Minutes</label>

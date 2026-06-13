@@ -1,0 +1,52 @@
+<section class="workspace-page">
+  <div class="workspace-page__header">
+    <div>
+      <div class="workspace-page__eyebrow">Personal</div>
+      <h1 class="workspace-page__title">My Tasks</h1>
+      <p class="workspace-page__subtitle">Every task assigned to you across all of your projects, in one place.</p>
+    </div>
+  </div>
+
+  <div class="workspace-data-chip" *ngIf="loading">
+    <lucide-icon name="refresh-cw" class="spin"></lucide-icon>
+    Collecting your tasks...
+  </div>
+
+  <ng-container *ngIf="!loading">
+    <div class="workspace-inline-actions" style="flex-wrap: wrap">
+      <button class="workspace-chip-btn" [class.is-active]="activeStatus === 'ALL'" (click)="activeStatus = 'ALL'">
+        All ({{ items.length }})
+      </button>
+      <button
+        class="workspace-chip-btn"
+        *ngFor="let status of statuses"
+        [class.is-active]="activeStatus === status"
+        (click)="activeStatus = status"
+      >
+        {{ status }} ({{ countFor(status) }})
+      </button>
+    </div>
+
+    <div class="workspace-list" *ngIf="filtered.length; else empty" style="margin-top: 16px">
+      <a class="workspace-list__item" *ngFor="let item of filtered" [routerLink]="taskRoute(item)">
+        <div style="min-width: 0">
+          <div class="workspace-list__title">{{ item.task.title }}</div>
+          <div class="workspace-list__subtitle">
+            {{ item.projectName }} · {{ item.teamName }} ·
+            <span [class.overdue-text]="isOverdue(item)">{{ isOverdue(item) ? 'Overdue ' : 'Due ' }}{{ dueLabel(item) }}</span>
+          </div>
+        </div>
+        <div class="workspace-inline-actions">
+          <span class="workspace-pill" [ngClass]="'prio-pill--' + item.task.priority">{{ item.task.priority }}</span>
+          <span class="workspace-pill" [ngClass]="'status-pill--' + item.task.status">{{ item.task.status }}</span>
+        </div>
+      </a>
+    </div>
+
+    <ng-template #empty>
+      <div class="workspace-empty" style="margin-top: 16px">
+        No tasks are assigned to you{{ activeStatus === 'ALL' ? '' : ' in this status' }} right now.
+      </div>
+    </ng-template>
+  </ng-container>
+</section>

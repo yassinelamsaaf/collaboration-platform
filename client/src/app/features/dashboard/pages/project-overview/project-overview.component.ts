@@ -33,6 +33,10 @@ export class ProjectOverviewComponent implements OnInit {
   readonly circumference = DONUT_CIRCUMFERENCE;
   snapshot: ProjectWorkspaceSnapshot | null = null;
   loading = true;
+  projectRef = '';
+  showSettings = false;
+  savingSettings = false;
+  readonly settingsForm = { name: '', description: '' };
 
   constructor(
     private readonly route: ActivatedRoute,
@@ -47,17 +51,74 @@ export class ProjectOverviewComponent implements OnInit {
         return;
       }
 
+      this.projectRef = projectRef;
+      this.load();
+    });
+  }
+
+  private load(quiet = false): void {
+    if (!quiet) {
       this.loading = true;
-      this.workspaceService.loadProjectWorkspace(projectRef).subscribe({
-        next: (snapshot) => {
-          this.snapshot = snapshot;
-          this.loading = false;
+    }
+    this.workspaceService.loadProjectWorkspace(this.projectRef).subscribe({
+      next: (snapshot) => {
+        this.snapshot = snapshot;
+        this.loading = false;
+      },
+      error: (error: unknown) => {
+        this.toast.error(mapHttpError(error, 'Unable to load the project overview.'));
+        this.loading = false;
+      }
+    });
+  }
+
+  get canManageProject(): boolean {
+    const role = this.snapshot?.project.currentUserRole;
+    return role === 'OWNER' || role === 'ADMIN';
+  }
+
+  toggleSettings(): void {
+    this.showSettings = !this.showSettings;
+    if (this.showSettings && this.snapshot) {
+      this.settingsForm.name = this.snapshot.project.name;
+      this.settingsForm.description = this.snapshot.project.description ?? '';
+    }
+  }
+
+  saveSettings(): void {
+    if (!this.canManageProject || !this.settingsForm.name.trim()) {
+      return;
+    }
+    this.savingSettings = true;
+    this.workspaceService
+      .updateProject(this.projectRef, {
+        name: this.settingsForm.name.trim(),
+        description: this.settingsForm.description.trim() || undefined
+      })
+      .subscribe({
+        next: () => {
+          this.savingSettings = false;
+          this.showSettings = false;
+          this.toast.success('Project updated.');
+          this.load(true);
         },
         error: (error: unknown) => {
-          this.toast.error(mapHttpError(error, 'Unable to load the project overview.'));
-          this.loading = false;
+          this.savingSettings = false;
+          this.toast.error(mapHttpError(error, 'Unable to update the project.'));
         }
       });
+  }
+
+  archiveProject(): void {
+    if (!this.canManageProject || this.snapshot?.project.status === 'ARCHIVED') {
+      return;
+    }
+    this.workspaceService.archiveProject(this.projectRef).subscribe({
+      next: () => {
+        this.toast.success('Project archived.');
+        this.load(true);
+      },
+      error: (error: unknown) => this.toast.error(mapHttpError(error, 'Unable to archive the project.'))
     });
   }
 

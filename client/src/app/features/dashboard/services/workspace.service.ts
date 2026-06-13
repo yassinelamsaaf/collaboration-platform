@@ -17,6 +17,7 @@ import {
   Project,
   ProjectInvitation,
   ProjectInvitationPreview,
+  MyTaskItem,
   ProjectMember,
   ProjectProgress,
   ProjectRole,
@@ -642,6 +643,75 @@ export class WorkspaceService {
 
         return [...projectResults, ...teamResults, ...memberResults, ...taskResults].slice(0, 40);
       })
+    );
+  }
+
+  /**
+   * Aggregates every task assigned to the given user across all of their
+   * projects/teams, with the project/team context needed to deep-link to each
+   * task. Fully guarded so a single failed call never breaks the whole list.
+   */
+  loadMyTasks(myUserId?: string): Observable<MyTaskItem[]> {
+    if (!myUserId) {
+      return of([]);
+    }
+    return this.safePage(this.listProjects(1, 50)).pipe(
+      switchMap((projectsPage) => {
+        const projects = projectsPage.content;
+        if (!projects.length) {
+          return of([] as MyTaskItem[]);
+        }
+        return forkJoin(projects.map((project) => this.loadProjectMyTasks(project, myUserId))).pipe(
+          map((lists) => lists.flat())
+        );
+      }),
+      timeout(15000),
+      catchError(() => of([]))
+    );
+  }
+
+  private loadProjectMyTasks(project: Project, myUserId: string): Observable<MyTaskItem[]> {
+    const ref = project.slug || project.id;
+    return this.safePage(this.listTeams(ref)).pipe(
+      switchMap((teamsPage) => {
+        const teams = teamsPage.content;
+        if (!teams.length) {
+          return of([] as MyTaskItem[]);
+        }
+        const members$ = forkJoin(
+          teams.map((team) =>
+            this.safePage(this.listTeamMembers(ref, team.slug || team.id)).pipe(map((page) => page.content))
+          )
+        ).pipe(map((lists) => lists.flat()));
+
+        return members$.pipe(
+          switchMap((members) => {
+            const myMemberIds = new Set(members.filter((m) => m.userId === myUserId).map((m) => m.id));
+            return forkJoin(
+              teams.map((team) =>
+                this.safePage(this.listTasks(ref, team.slug || team.id)).pipe(
+                  map((page) => ({ team, tasks: page.content }))
+                )
+              )
+            ).pipe(
+              map((teamTasks) =>
+                teamTasks.flatMap(({ team, tasks }) =>
+                  tasks
+                    .filter((task) => task.assigneeId && myMemberIds.has(task.assigneeId))
+                    .map<MyTaskItem>((task) => ({
+                      task,
+                      projectRef: ref,
+                      projectName: project.name,
+                      teamRef: team.slug || team.id,
+                      teamName: team.name
+                    }))
+                )
+              )
+            );
+          })
+        );
+      }),
+      catchError(() => of([] as MyTaskItem[]))
     );
   }
 

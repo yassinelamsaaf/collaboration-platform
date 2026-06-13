@@ -4,6 +4,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { WorkspaceShellComponent } from './components/workspace-shell/workspace-shell.component';
 import { DashboardComponent } from './dashboard.component';
 import { GlobalSearchComponent } from './pages/global-search/global-search.component';
+import { MyTasksComponent } from './pages/my-tasks/my-tasks.component';
 import { ProjectKanbanComponent } from './pages/project-kanban/project-kanban.component';
 import { ProjectOverviewComponent } from './pages/project-overview/project-overview.component';
 import { ProjectTeamsComponent } from './pages/project-teams/project-teams.component';
@@ -16,6 +17,7 @@ const routes: Routes = [
     component: WorkspaceShellComponent,
     children: [
       { path: '', component: DashboardComponent },
+      { path: 'my-tasks', component: MyTasksComponent },
       { path: 'projects', component: ProjectsPageComponent },
       { path: 'projects/:projectRef', component: ProjectOverviewComponent },
       { path: 'projects/:projectRef/teams', component: ProjectTeamsComponent },

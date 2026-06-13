@@ -21,8 +21,51 @@
         <span class="workspace-pill" [class.workspace-pill--success]="data.project.status === 'ACTIVE'" [class.workspace-pill--warning]="data.project.status === 'ARCHIVED'">
           {{ data.project.status }}
         </span>
+        <button class="workspace-secondary-btn" type="button" *ngIf="canManageProject" (click)="toggleSettings()">
+          <lucide-icon name="settings"></lucide-icon>
+          Settings
+        </button>
       </div>
     </div>
+
+    <article class="workspace-card workspace-stack" *ngIf="showSettings && canManageProject">
+      <div class="workspace-section-head">
+        <div>
+          <div class="workspace-page__eyebrow">Project Settings</div>
+          <h2 class="workspace-page__title" style="font-size: 1.45rem">Edit project</h2>
+        </div>
+        <button class="workspace-ghost-btn" type="button" (click)="showSettings = false">
+          <lucide-icon name="x"></lucide-icon>
+          Close
+        </button>
+      </div>
+
+      <form class="workspace-form" (ngSubmit)="saveSettings()">
+        <div class="workspace-field">
+          <label for="settings-name">Project name</label>
+          <input id="settings-name" class="workspace-input" type="text" name="settings-name" [(ngModel)]="settingsForm.name" [disabled]="savingSettings" />
+        </div>
+        <div class="workspace-field">
+          <label for="settings-description">Description</label>
+          <textarea id="settings-description" class="workspace-textarea" name="settings-description" [(ngModel)]="settingsForm.description" [disabled]="savingSettings"></textarea>
+        </div>
+        <div class="workspace-inline-actions">
+          <button class="workspace-primary-btn" type="submit" [disabled]="savingSettings">
+            <lucide-icon name="check"></lucide-icon>
+            {{ savingSettings ? 'Saving...' : 'Save changes' }}
+          </button>
+          <button
+            class="workspace-ghost-btn workspace-ghost-btn--danger"
+            type="button"
+            *ngIf="data.project.status === 'ACTIVE'"
+            (click)="archiveProject()"
+          >
+            <lucide-icon name="archive"></lucide-icon>
+            Archive project
+          </button>
+        </div>
+      </form>
+    </article>
 
     <div class="workspace-tabs">
       <a class="workspace-tabs__link is-active" [routerLink]="['/dashboard/projects', data.project.slug || data.project.id]">
