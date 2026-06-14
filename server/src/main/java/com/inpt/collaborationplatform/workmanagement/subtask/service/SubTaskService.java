@@ -1,6 +1,7 @@
 package com.inpt.collaborationplatform.workmanagement.subtask.service;
 
 import com.inpt.collaborationplatform.projects.project.entity.Project;
+import com.inpt.collaborationplatform.projects.project.entity.ProjectRole;
 import com.inpt.collaborationplatform.projects.project.service.ProjectAccessService;
 import com.inpt.collaborationplatform.projects.project.service.ProjectLookupService;
 import com.inpt.collaborationplatform.projects.team.entity.Team;
@@ -73,14 +74,15 @@ public class SubTaskService {
     @Transactional
     public SubTaskResponse updateSubTask(String projectRef, String teamRef, String taskId, String subTaskId, UpdateSubTaskRequest request, String currentUserId) {
         Project project = projectLookupService.requireProject(projectRef);
-        projectAccessService.requireViewer(project, currentUserId);
+        projectAccessService.requireContributor(project, currentUserId);
         Team team = teamLookupService.requireTeam(project.getId(), teamRef);
-        teamLookupService.requireTeamLeader(team.getId(), currentUserId);
+        teamLookupService.requireTeamMemberByUser(team.getId(), currentUserId);
         taskLookupService.requireTask(taskId, team.getId());
 
         SubTask subTask = requireSubTask(subTaskId, taskId);
 
         if (request.getTitle() != null) {
+            teamLookupService.requireTeamLeader(team.getId(), currentUserId);
             String title = request.getTitle().trim();
             if (title.isBlank()) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Sub-task title cannot be blank");
@@ -97,6 +99,7 @@ public class SubTaskService {
         }
 
         if (request.getAssigneeId() != null) {
+            teamLookupService.requireTeamLeader(team.getId(), currentUserId);
             teamLookupService.requireTeamMember(team.getId(), request.getAssigneeId());
             subTask.setAssigneeId(request.getAssigneeId());
         }
@@ -107,9 +110,11 @@ public class SubTaskService {
     @Transactional
     public void deleteSubTask(String projectRef, String teamRef, String taskId, String subTaskId, String currentUserId) {
         Project project = projectLookupService.requireProject(projectRef);
-        projectAccessService.requireViewer(project, currentUserId);
+        var projectMember = projectAccessService.requireViewer(project, currentUserId);
         Team team = teamLookupService.requireTeam(project.getId(), teamRef);
-        teamLookupService.requireTeamLeader(team.getId(), currentUserId);
+        if (projectMember.getRole() != ProjectRole.OWNER) {
+            teamLookupService.requireTeamLeader(team.getId(), currentUserId);
+        }
         taskLookupService.requireTask(taskId, team.getId());
 
         subTaskRepository.delete(requireSubTask(subTaskId, taskId));

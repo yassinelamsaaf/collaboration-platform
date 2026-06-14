@@ -530,6 +530,11 @@
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
+.workspace-grid--team-admin {
+  grid-template-columns: minmax(0, 1.75fr) minmax(360px, 0.64fr);
+  align-items: stretch;
+}
+
 .metric-card {
   display: flex;
   flex-direction: column;
@@ -1039,6 +1044,19 @@
   background: var(--workspace-surface);
 }
 
+.workspace-input.is-invalid,
+.workspace-textarea.is-invalid,
+.workspace-select.is-invalid {
+  border-color: #dc2626;
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+}
+
+.workspace-field__error {
+  color: #b91c1c;
+  font-size: 0.78rem;
+  line-height: 1.35;
+}
+
 .workspace-textarea {
   min-height: 112px;
   padding: 12px 14px;
@@ -1167,6 +1185,26 @@
   gap: 10px;
 }
 
+.workspace-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.workspace-searchbar--compact {
+  max-width: none;
+  min-height: 44px;
+}
+
+.workspace-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding-top: 4px;
+}
+
 .workspace-tabs {
   display: flex;
   flex-wrap: wrap;
@@ -1230,6 +1268,185 @@
   display: flex;
   flex-direction: column;
   gap: 20px;
+}
+
+.team-detail-panel {
+  position: sticky;
+  top: 96px;
+  gap: 16px;
+  box-shadow: 0 14px 34px rgba(15, 23, 42, 0.06);
+  align-self: stretch;
+  min-width: 0;
+}
+
+.team-detail-panel .workspace-section-head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.team-detail-panel .workspace-page__title {
+  line-height: 1.15;
+}
+
+.team-detail-panel .workspace-page__subtitle {
+  max-width: 34ch;
+}
+
+.team-detail-panel .workspace-pill {
+  flex: none;
+  white-space: nowrap;
+}
+
+.team-detail-panel .workspace-list {
+  max-height: 360px;
+  overflow: auto;
+  padding-right: 2px;
+}
+
+.team-create-form {
+  padding: 14px;
+  border: 1px solid var(--workspace-border);
+  border-radius: var(--workspace-radius-lg);
+  background: var(--workspace-surface-soft);
+}
+
+.team-member-add {
+  padding: 14px;
+  border: 1px solid var(--workspace-border);
+  border-radius: var(--workspace-radius-lg);
+  background: linear-gradient(180deg, #f8fbff 0%, #f3f7fb 100%);
+}
+
+.team-member-add__actions {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 112px;
+  gap: 12px;
+  align-items: end;
+
+  .workspace-primary-btn {
+    width: 100%;
+    min-height: 44px;
+    padding: 0 12px;
+    box-shadow: none;
+  }
+}
+
+.team-member-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  padding: 12px 14px;
+  background: #f8fafc;
+
+  .workspace-inline-actions {
+    display: grid;
+    grid-template-columns: 124px 40px;
+    width: auto;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+  }
+
+  .workspace-select--compact {
+    width: 124px;
+    min-height: 40px;
+  }
+
+  .team-member-row__remove {
+    width: 40px;
+    min-width: 40px;
+    min-height: 40px;
+    padding: 0;
+    justify-content: center;
+    border-radius: var(--workspace-radius-md);
+
+    lucide-icon {
+      width: 18px;
+      height: 18px;
+    }
+  }
+}
+
+.team-pagination {
+  margin-top: auto;
+  padding-top: 12px;
+  border-top: 1px solid var(--workspace-border);
+}
+
+.team-card-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.team-card {
+  min-width: 0;
+  min-height: 220px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 16px;
+  border: 1px solid var(--workspace-border);
+  border-radius: var(--workspace-radius-lg);
+  background: var(--workspace-surface);
+  cursor: pointer;
+  transition: border-color 0.16s ease, box-shadow 0.16s ease, transform 0.16s ease;
+}
+
+.team-card:hover,
+.team-card.is-active {
+  border-color: #93c5fd;
+  box-shadow: 0 14px 34px rgba(15, 23, 42, 0.08);
+}
+
+.team-card:hover {
+  transform: translateY(-1px);
+}
+
+.team-card.is-active {
+  background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+}
+
+.team-card__head,
+.team-card__meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.team-card__avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: var(--workspace-radius-md);
+  display: grid;
+  place-items: center;
+  background: #dbe8ff;
+  color: #1d4ed8;
+  font-weight: 800;
+}
+
+.team-card__title {
+  margin: 0;
+  font-size: 1.05rem;
+  line-height: 1.25;
+  color: var(--workspace-ink);
+}
+
+.team-card__copy {
+  min-height: 2.6em;
+  margin: 6px 0 0;
+  color: var(--workspace-muted);
+  font-size: 0.9rem;
+  line-height: 1.45;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .workspace-mobile-toggle {
@@ -1323,9 +1540,23 @@
   .workspace-grid--two,
   .workspace-grid--three,
   .workspace-grid--analytics,
+  .workspace-grid--team-admin,
   .workspace-split,
   .workspace-detail-grid {
     grid-template-columns: 1fr;
+  }
+
+  .team-detail-panel {
+    position: static;
+    min-height: auto;
+  }
+
+  .team-member-add__actions {
+    grid-template-columns: 1fr;
+  }
+
+  .team-card-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .kanban-board {
@@ -1351,6 +1582,42 @@
 
   .workspace-form__row {
     grid-template-columns: 1fr;
+  }
+
+  .workspace-toolbar,
+  .workspace-pagination {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .workspace-toolbar .workspace-secondary-btn,
+  .workspace-toolbar .workspace-ghost-btn,
+  .workspace-pagination .workspace-chip-btn {
+    width: 100%;
+  }
+
+  .team-card-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .team-detail-panel .workspace-section-head,
+  .team-member-row {
+    grid-template-columns: 1fr;
+  }
+
+  .team-detail-panel .workspace-list {
+    max-height: none;
+    overflow: visible;
+    padding-right: 0;
+  }
+
+  .team-member-row .workspace-inline-actions {
+    grid-template-columns: minmax(0, 1fr) 40px;
+    width: 100%;
+  }
+
+  .team-member-row .workspace-select--compact {
+    width: 100%;
   }
 
   .workspace-searchbar {

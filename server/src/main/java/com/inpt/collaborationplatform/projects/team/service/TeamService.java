@@ -63,23 +63,29 @@ public class TeamService {
                 .createdByUserId(currentUserId)
                 .build());
 
-        return teamMapper.toTeamResponse(team);
+        return toTeamResponse(team);
     }
 
     @Transactional(readOnly = true)
-    public PageResponse<TeamResponse> listTeams(String projectRef, String currentUserId, Pageable pageable) {
+    public PageResponse<TeamResponse> listTeams(String projectRef, String currentUserId, String query, Pageable pageable) {
         Project project = projectLookupService.requireProject(projectRef);
         projectAccessService.requireViewer(project, currentUserId);
 
-        return PageResponse.from(teamRepository.findByProject_Id(project.getId(), pageable)
-                .map(teamMapper::toTeamResponse));
+        String normalizedQuery = normalizeOptionalText(query);
+        PageResponse<TeamResponse> response = PageResponse.from(
+                (normalizedQuery == null
+                        ? teamRepository.findByProject_Id(project.getId(), pageable)
+                        : teamRepository.searchByProjectId(project.getId(), normalizedQuery, pageable))
+                        .map(this::toTeamResponse)
+        );
+        return response;
     }
 
     @Transactional(readOnly = true)
     public TeamResponse getTeam(String projectRef, String teamRef, String currentUserId) {
         Project project = projectLookupService.requireProject(projectRef);
         projectAccessService.requireViewer(project, currentUserId);
-        return teamMapper.toTeamResponse(teamLookupService.requireTeam(project.getId(), teamRef));
+        return toTeamResponse(teamLookupService.requireTeam(project.getId(), teamRef));
     }
 
     @Transactional
@@ -103,7 +109,7 @@ public class TeamService {
             team.setDescription(normalizeOptionalText(request.getDescription()));
         }
 
-        return teamMapper.toTeamResponse(teamRepository.save(team));
+        return toTeamResponse(teamRepository.save(team));
     }
 
     @Transactional
@@ -213,5 +219,9 @@ public class TeamService {
 
     private String normalizeNameKey(String value) {
         return value.trim().toLowerCase(Locale.ROOT);
+    }
+
+    private TeamResponse toTeamResponse(Team team) {
+        return teamMapper.toTeamResponse(team, teamMemberRepository.countByTeam_Id(team.getId()));
     }
 }

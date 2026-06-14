@@ -23,7 +23,7 @@
         </a>
         <a class="workspace-secondary-btn" [routerLink]="['/dashboard/projects', data.project.slug || data.project.id, 'teams']">
           <lucide-icon name="users"></lucide-icon>
-          Members & Teams
+          Team Management
         </a>
       </div>
     </div>
@@ -33,13 +33,17 @@
         <lucide-icon name="layout-dashboard"></lucide-icon>
         Overview
       </a>
+      <a class="workspace-tabs__link" [routerLink]="['/dashboard/projects', data.project.slug || data.project.id, 'members']">
+        <lucide-icon name="user"></lucide-icon>
+        Project Members
+      </a>
       <a class="workspace-tabs__link" [routerLink]="['/dashboard/projects', data.project.slug || data.project.id, 'teams']">
         <lucide-icon name="users"></lucide-icon>
-        Members & Teams
+        Team Management
       </a>
       <a class="workspace-tabs__link is-active" [routerLink]="['/dashboard/projects', data.project.slug || data.project.id, 'kanban']">
         <lucide-icon name="square-kanban"></lucide-icon>
-        Kanban
+        Kanban Tasks
       </a>
     </div>
 
@@ -73,30 +77,44 @@
             <option *ngFor="let task of subTaskTaskOptions" [value]="task.id">{{ task.title }}</option>
           </select>
 
-          <button class="workspace-primary-btn" type="button" *ngIf="canEditTasks && viewMode === 'tasks'" (click)="showTaskForm = !showTaskForm">
+          <button class="workspace-primary-btn" type="button" *ngIf="canCreateTasks && viewMode === 'tasks'" (click)="showTaskForm = !showTaskForm">
             <lucide-icon [name]="showTaskForm ? 'x' : 'badge-plus'"></lucide-icon>
             {{ showTaskForm ? 'Close' : 'New Task' }}
           </button>
 
-          <button class="workspace-primary-btn" type="button" *ngIf="canEditTasks && viewMode === 'subtasks' && selectedSubTaskTaskId" (click)="showSubTaskForm = !showSubTaskForm">
+          <button class="workspace-primary-btn" type="button" *ngIf="canManageSelectedSubTasks && viewMode === 'subtasks' && selectedSubTaskTaskId" (click)="showSubTaskForm = !showSubTaskForm">
             <lucide-icon [name]="showSubTaskForm ? 'x' : 'badge-plus'"></lucide-icon>
             {{ showSubTaskForm ? 'Close' : 'New Sub-task' }}
           </button>
         </div>
       </div>
 
-      <div class="workspace-empty" *ngIf="!canEditTasks">
+      <div class="workspace-empty" *ngIf="viewMode === 'tasks' && !canUpdateTaskStatus">
         Your current role is read-only in this project, so task creation is disabled.
+      </div>
+      <div class="workspace-empty" *ngIf="viewMode === 'tasks' && canUpdateTaskStatus && !canCreateTasks">
+        You can update task status and collaborate, but only project owners/admins can create tasks.
+      </div>
+      <div class="workspace-empty" *ngIf="viewMode === 'subtasks' && selectedSubTaskTaskId && !canManageSelectedSubTasks">
+        Project members in the selected task's team can move subtasks. Creating or deleting subtasks is limited to the team leader.
       </div>
 
       <!-- Task creation form -->
-      <form class="workspace-form" *ngIf="canEditTasks && showTaskForm && viewMode === 'tasks'" (ngSubmit)="createTask()">
+      <form class="workspace-form" *ngIf="canCreateTasks && showTaskForm && viewMode === 'tasks'" (ngSubmit)="createTask()">
         <div class="workspace-form__row">
           <div class="workspace-field">
             <label for="task-team">Team</label>
-            <select id="task-team" class="workspace-select" name="task-team" [(ngModel)]="taskForm.teamRef" (ngModelChange)="onTaskTeamChange()">
+            <select
+              id="task-team"
+              class="workspace-select"
+              [class.is-invalid]="taskFormErrors.teamRef"
+              name="task-team"
+              [(ngModel)]="taskForm.teamRef"
+              (ngModelChange)="taskFormErrors.teamRef = ''; onTaskTeamChange()"
+            >
               <option *ngFor="let team of teamOptions()" [value]="team.slug || team.id">{{ team.name }}</option>
             </select>
+            <span class="workspace-field__error" *ngIf="taskFormErrors.teamRef">{{ taskFormErrors.teamRef }}</span>
           </div>
 
           <div class="workspace-field">
@@ -114,11 +132,14 @@
             <input
               id="task-title"
               class="workspace-input"
+              [class.is-invalid]="taskFormErrors.title"
               type="text"
               name="task-title"
               [(ngModel)]="taskForm.title"
+              (ngModelChange)="taskFormErrors.title = ''"
               placeholder="Implement invitation acceptance page"
             />
+            <span class="workspace-field__error" *ngIf="taskFormErrors.title">{{ taskFormErrors.title }}</span>
           </div>
 
           <div class="workspace-field">
@@ -154,18 +175,21 @@
       </form>
 
       <!-- Sub-task creation form -->
-      <form class="workspace-form" *ngIf="canEditTasks && showSubTaskForm && viewMode === 'subtasks' && selectedSubTaskTask" (ngSubmit)="createSubTask()">
+      <form class="workspace-form" *ngIf="canManageSelectedSubTasks && showSubTaskForm && viewMode === 'subtasks' && selectedSubTaskTask" (ngSubmit)="createSubTask()">
         <div class="workspace-form__row">
           <div class="workspace-field">
             <label for="subtask-title">Title</label>
             <input
               id="subtask-title"
               class="workspace-input"
+              [class.is-invalid]="subTaskTitleError"
               type="text"
               name="subtask-title"
               [(ngModel)]="subTaskForm.title"
+              (ngModelChange)="subTaskTitleError = ''"
               placeholder="Write a concise sub-task title"
             />
+            <span class="workspace-field__error" *ngIf="subTaskTitleError">{{ subTaskTitleError }}</span>
           </div>
 
           <div class="workspace-field">
@@ -218,7 +242,7 @@
             *ngFor="let task of tasksForStatus(status)"
             [class.kanban-card--focused]="isFocused(task)"
             [class.kanban-card--dragging]="draggedTask === task"
-            [attr.draggable]="canEditTasks ? true : null"
+            [attr.draggable]="canUpdateTaskStatus ? true : null"
             (dragstart)="onDragStart(task)"
             (dragend)="draggedTask = null; dragOverStatus = null"
           >
@@ -239,7 +263,7 @@
 
               <select
                 class="workspace-select workspace-select--compact"
-                [disabled]="!canEditTasks"
+                [disabled]="!canUpdateTaskStatus"
                 [value]="task.status"
                 (change)="moveTask(task, $any($event.target).value)"
               >
@@ -281,7 +305,7 @@
               class="kanban-card"
               *ngFor="let subTask of subTasksForStatus(status)"
               [class.kanban-card--dragging]="draggedSubTask === subTask"
-              [attr.draggable]="canEditTasks ? true : null"
+              [attr.draggable]="canMoveSelectedSubTasks ? true : null"
               (dragstart)="onSubTaskDragStart(subTask); draggedTask = null"
               (dragend)="draggedSubTask = null; dragOverStatus = null"
             >
@@ -295,14 +319,14 @@
               <div class="workspace-inline-actions">
                 <select
                   class="workspace-select workspace-select--compact"
-                  [disabled]="!canEditTasks"
+                  [disabled]="!canMoveSelectedSubTasks"
                   [value]="subTask.status"
                   (change)="moveSubTask(subTask, $any($event.target).value)"
                 >
                   <option *ngFor="let nextStatus of statuses" [value]="nextStatus">{{ nextStatus }}</option>
                 </select>
 
-                <button class="workspace-ghost-btn" type="button" (click)="deleteSubTask(subTask)">
+                <button class="workspace-ghost-btn" type="button" [disabled]="!canDeleteSelectedSubTasks" (click)="deleteSubTask(subTask)">
                   <lucide-icon name="trash-2"></lucide-icon>
                 </button>
               </div>

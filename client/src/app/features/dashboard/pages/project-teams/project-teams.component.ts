@@ -1,15 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { forkJoin } from 'rxjs';
 
 import { ToastService } from '@core/services/toast.service';
-import {
-  ProjectMember,
-  ProjectRole,
-  ProjectWorkspaceSnapshot,
-  Team,
-  TeamMember,
-  TeamRole
-} from '@shared/models/workspace.models';
+import { PageResponse, ProjectMember, ProjectWorkspaceSnapshot, Team, TeamMember, TeamRole } from '@shared/models/workspace.models';
 import { WorkspaceService } from '@features/dashboard/services/workspace.service';
 import { mapHttpError } from '@shared/utils/error-mapper';
 
@@ -20,8 +14,8 @@ import { mapHttpError } from '@shared/utils/error-mapper';
   standalone: false
 })
 export class ProjectTeamsComponent implements OnInit {
-  readonly projectRoles: ProjectRole[] = ['ADMIN', 'MEMBER', 'VIEWER'];
   readonly teamRoles: TeamRole[] = ['LEADER', 'MEMBER'];
+  readonly teamsPageSize = 4;
 
   projectRef = '';
   snapshot: ProjectWorkspaceSnapshot | null = null;
@@ -29,96 +23,11 @@ export class ProjectTeamsComponent implements OnInit {
   loading = true;
   saving = false;
   showTeamForm = false;
-  showInviteForm = false;
-
-  memberSearchQuery = '';
-  memberTeamFilter = '';
-  membersPage = 0;
-  readonly membersPageSize = 4;
-
-  private get userIdsByTeam(): Record<string, Set<string>> {
-    const map: Record<string, Set<string>> = {};
-    for (const [teamId, members] of Object.entries(this.snapshotTeamMembers)) {
-      map[teamId] = new Set(members.map((m) => m.userId));
-    }
-    return map;
-  }
-
-  get filteredMembers(): ProjectMember[] {
-    let members = this.snapshot?.members ?? [];
-
-    const teamFilter = this.memberTeamFilter;
-    if (teamFilter) {
-      if (teamFilter === '__none__') {
-        const inAnyTeam = new Set(
-          Object.values(this.snapshotTeamMembers).flatMap((m) => m.map((tm) => tm.userId))
-        );
-        members = members.filter((m) => !inAnyTeam.has(m.userId));
-      } else {
-        const teamUserIds = this.userIdsByTeam[teamFilter];
-        if (teamUserIds) {
-          members = members.filter((m) => teamUserIds.has(m.userId));
-        }
-      }
-    }
-
-    const q = this.memberSearchQuery.trim().toLowerCase();
-    if (q) {
-      members = members.filter(
-        (m) => m.memberName.toLowerCase().includes(q) || m.memberEmail.toLowerCase().includes(q)
-      );
-    }
-
-    return members;
-  }
-
-  get totalMembersPages(): number {
-    return Math.max(1, Math.ceil(this.filteredMembers.length / this.membersPageSize));
-  }
-
-  get paginatedMembers(): ProjectMember[] {
-    const start = this.membersPage * this.membersPageSize;
-    return this.filteredMembers.slice(start, start + this.membersPageSize);
-  }
-
-  prevMembersPage(): void {
-    this.membersPage = Math.max(0, this.membersPage - 1);
-  }
-
-  nextMembersPage(): void {
-    this.membersPage = Math.min(this.totalMembersPages - 1, this.membersPage + 1);
-  }
-
-  onMemberFilterChange(): void {
-    this.membersPage = 0;
-  }
-
-  memberTeamNames(userId: string): string[] {
-    const teams = this.snapshot?.teams ?? [];
-    const names: string[] = [];
-    for (const team of teams) {
-      const teamMembers = this.snapshotTeamMembers[team.id];
-      if (teamMembers?.some((tm) => tm.userId === userId)) {
-        names.push(team.name);
-      }
-    }
-    return names;
-  }
-
-  get memberTeamOptions(): { id: string; name: string }[] {
-    const teams = (this.snapshot?.teams ?? []).map((t) => ({ id: t.id, name: t.name }));
-    const totalMembers = this.snapshot?.members.length ?? 0;
-    const inAnyTeam = new Set(
-      Object.values(this.snapshotTeamMembers).flatMap((m) => m.map((tm) => tm.userId))
-    );
-    const noTeamCount = totalMembers - inAnyTeam.size;
-    return [{ id: '', name: 'All members' }, ...teams, { id: '__none__', name: `No team (${noTeamCount})` }];
-  }
-
-  readonly inviteForm = {
-    email: '',
-    role: 'MEMBER' as ProjectRole
-  };
+  teamsLoading = false;
+  teamsPage = 1;
+  teamsPageInfo: PageResponse<Team> | null = null;
+  teamSearchQuery = '';
+  readonly snapshotTeamMembers: Record<string, TeamMember[]> = {};
 
   readonly teamForm = {
     name: '',
@@ -129,6 +38,8 @@ export class ProjectTeamsComponent implements OnInit {
     userId: '',
     role: 'MEMBER' as TeamRole
   };
+  teamNameError = '';
+  teamMemberError = '';
 
   constructor(
     private readonly route: ActivatedRoute,
@@ -153,10 +64,6 @@ export class ProjectTeamsComponent implements OnInit {
     return role === 'OWNER' || role === 'ADMIN';
   }
 
-  get canManageRoles(): boolean {
-    return this.snapshot?.project.currentUserRole === 'OWNER';
-  }
-
   get selectedTeam(): Team | undefined {
     return this.snapshot?.teams.find((team) => team.id === this.selectedTeamId);
   }
@@ -169,29 +76,108 @@ export class ProjectTeamsComponent implements OnInit {
     return this.snapshotTeamMembers[this.selectedTeam.id] ?? [];
   }
 
-  readonly snapshotTeamMembers: Record<string, TeamMember[]> = {};
+  get teamsTotalPages(): number {
+    return Math.max(1, this.teamsPageInfo?.totalPages ?? 1);
+  }
+
+  get teamsTotalElements(): number {
+    return this.teamsPageInfo?.totalElements ?? this.snapshot?.teams.length ?? 0;
+  }
 
   loadWorkspace(): void {
     this.loading = true;
-    this.workspaceService.loadProjectStructureSnapshot(this.projectRef).subscribe({
-      next: (snapshot) => {
-        this.snapshot = snapshot;
-        this.selectedTeamId = this.pickSelectedTeam(snapshot);
-        this.loadTeamMembers(snapshot.teams);
+    forkJoin({
+      project: this.workspaceService.getProject(this.projectRef),
+      membersPage: this.workspaceService.listProjectMembers(this.projectRef, 1, 100)
+    }).subscribe({
+      next: ({ project, membersPage }) => {
+        this.snapshot = {
+          project,
+          members: membersPage.content,
+          teams: [],
+          invitations: [],
+          activity: [],
+          tasks: [],
+          labels: []
+        };
         this.loading = false;
+        this.loadTeamsPage(true);
       },
       error: (error: unknown) => {
-        this.toast.error(mapHttpError(error, 'Unable to load the project structure.'));
+        this.toast.error(mapHttpError(error, 'Unable to load team management.'));
         this.loading = false;
       }
     });
   }
 
-  createTeam(): void {
-    if (!this.canManageProject || !this.teamForm.name.trim()) {
+  loadTeamsPage(selectFirst = false): void {
+    if (!this.projectRef) {
       return;
     }
 
+    this.teamsLoading = true;
+    this.workspaceService
+      .listTeams(this.projectRef, this.teamsPage, this.teamsPageSize, this.teamSearchQuery)
+      .subscribe({
+        next: (page) => {
+          this.teamsPageInfo = page;
+          if (this.snapshot) {
+            this.snapshot = { ...this.snapshot, teams: page.content };
+          }
+
+          const selectedStillVisible = page.content.some((team) => team.id === this.selectedTeamId);
+          if (selectFirst || !selectedStillVisible) {
+            this.selectedTeamId = page.content[0]?.id ?? '';
+            this.teamMemberForm.userId = '';
+            this.teamMemberForm.role = 'MEMBER';
+          }
+
+          this.loadTeamMembers(page.content);
+          this.teamsLoading = false;
+        },
+        error: (error: unknown) => {
+          this.toast.error(mapHttpError(error, 'Unable to load teams.'));
+          this.teamsLoading = false;
+        }
+      });
+  }
+
+  applyTeamSearch(): void {
+    this.teamsPage = 1;
+    this.loadTeamsPage(true);
+  }
+
+  clearTeamSearch(): void {
+    this.teamSearchQuery = '';
+    this.applyTeamSearch();
+  }
+
+  prevTeamsPage(): void {
+    if (this.teamsPage <= 1) {
+      return;
+    }
+
+    this.teamsPage -= 1;
+    this.loadTeamsPage(true);
+  }
+
+  nextTeamsPage(): void {
+    if (this.teamsPage >= this.teamsTotalPages) {
+      return;
+    }
+
+    this.teamsPage += 1;
+    this.loadTeamsPage(true);
+  }
+
+  createTeam(): void {
+    if (!this.canManageProject || !this.teamForm.name.trim()) {
+      this.teamNameError = 'Team name is required.';
+      this.toast.warning('Please enter a team name.');
+      return;
+    }
+
+    this.teamNameError = '';
     this.saving = true;
     this.workspaceService
       .createTeam(this.projectRef, {
@@ -202,10 +188,13 @@ export class ProjectTeamsComponent implements OnInit {
         next: () => {
           this.teamForm.name = '';
           this.teamForm.description = '';
+          this.teamNameError = '';
           this.saving = false;
           this.showTeamForm = false;
+          this.teamsPage = 1;
+          this.teamSearchQuery = '';
           this.toast.success('Team created successfully.');
-          this.loadWorkspace();
+          this.loadTeamsPage(true);
         },
         error: (error: unknown) => {
           this.toast.error(mapHttpError(error, 'Unable to create the team.'));
@@ -214,77 +203,10 @@ export class ProjectTeamsComponent implements OnInit {
       });
   }
 
-  inviteMember(): void {
-    if (!this.canManageProject || !this.inviteForm.email.trim()) {
-      return;
-    }
-
-    this.saving = true;
-    this.workspaceService
-      .inviteMember(this.projectRef, {
-        email: this.inviteForm.email.trim(),
-        role: this.inviteForm.role
-      })
-      .subscribe({
-        next: () => {
-          this.inviteForm.email = '';
-          this.inviteForm.role = 'MEMBER';
-          this.saving = false;
-          this.showInviteForm = false;
-          this.toast.success('Invitation sent successfully.');
-          this.loadWorkspace();
-        },
-        error: (error: unknown) => {
-          this.toast.error(mapHttpError(error, 'Unable to send the invitation.'));
-          this.saving = false;
-        }
-      });
-  }
-
-  changeProjectRole(member: ProjectMember, role: ProjectRole): void {
-    if (!this.canManageRoles || member.role === role) {
-      return;
-    }
-
-    this.workspaceService.updateProjectMemberRole(this.projectRef, member.userId, role).subscribe({
-      next: () => {
-        this.toast.success(`Project role updated to ${role}.`);
-        this.loadWorkspace();
-      },
-      error: (error: unknown) => this.toast.error(mapHttpError(error, 'Unable to update the project role.'))
-    });
-  }
-
-  removeProjectMember(member: ProjectMember): void {
-    if (!this.canRemoveMember(member)) {
-      return;
-    }
-
-    this.workspaceService.removeProjectMember(this.projectRef, member.userId).subscribe({
-      next: () => {
-        this.toast.success('Project member removed.');
-        this.loadWorkspace();
-      },
-      error: (error: unknown) => this.toast.error(mapHttpError(error, 'Unable to remove the project member.'))
-    });
-  }
-
-  cancelInvitation(invitationId: string): void {
-    if (!this.canManageProject) {
-      return;
-    }
-
-    this.workspaceService.cancelInvitation(this.projectRef, invitationId).subscribe({
-      next: () => {
-        this.toast.success('Invitation cancelled.');
-        this.loadWorkspace();
-      },
-      error: (error: unknown) => this.toast.error(mapHttpError(error, 'Unable to cancel the invitation.'))
-    });
-  }
-
   selectTeam(teamId: string): void {
     this.selectedTeamId = teamId;
+    this.teamMemberForm.userId = '';
+    this.teamMemberForm.role = 'MEMBER';
     if (!this.snapshotTeamMembers[teamId]) {
       this.loadTeamMembersForId(teamId);
     }
@@ -292,9 +214,12 @@ export class ProjectTeamsComponent implements OnInit {
 
   addTeamMember(): void {
     if (!this.canManageProject || !this.selectedTeam || !this.teamMemberForm.userId) {
+      this.teamMemberError = 'Select a project member first.';
+      this.toast.warning('Please select a project member.');
       return;
     }
 
+    this.teamMemberError = '';
     this.workspaceService
       .addTeamMember(this.projectRef, this.selectedTeam.slug || this.selectedTeam.id, {
         userId: this.teamMemberForm.userId,
@@ -304,8 +229,10 @@ export class ProjectTeamsComponent implements OnInit {
         next: () => {
           this.teamMemberForm.userId = '';
           this.teamMemberForm.role = 'MEMBER';
+          this.teamMemberError = '';
           this.toast.success(`Member added to ${this.selectedTeam?.name}.`);
           this.loadTeamMembersForId(this.selectedTeamId);
+          this.loadTeamsPage(false);
         },
         error: (error: unknown) => {
           this.toast.error(mapHttpError(error, 'Unable to add the team member.'));
@@ -340,6 +267,7 @@ export class ProjectTeamsComponent implements OnInit {
         next: () => {
           this.toast.success('Team member removed.');
           this.loadTeamMembersForId(this.selectedTeamId);
+          this.loadTeamsPage(false);
         },
         error: (error: unknown) => this.toast.error(mapHttpError(error, 'Unable to remove the team member.'))
       });
@@ -350,29 +278,12 @@ export class ProjectTeamsComponent implements OnInit {
     return (this.snapshot?.members ?? []).filter((member) => !assignedIds.has(member.userId));
   }
 
-  canRemoveMember(member: ProjectMember): boolean {
-    const currentRole = this.snapshot?.project.currentUserRole;
-    if (!currentRole) {
-      return false;
+  teamSummary(team: Team): string {
+    const count = team.memberCount ?? 0;
+    if (count === 0) {
+      return 'No participants yet';
     }
-
-    if (member.role === 'OWNER') {
-      return false;
-    }
-
-    return currentRole === 'OWNER' || currentRole === 'ADMIN';
-  }
-
-  pendingInvitationCount(): number {
-    return (this.snapshot?.invitations ?? []).filter((invitation) => invitation.status === 'PENDING').length;
-  }
-
-  private pickSelectedTeam(snapshot: ProjectWorkspaceSnapshot): string {
-    if (snapshot.teams.some((team) => team.id === this.selectedTeamId)) {
-      return this.selectedTeamId;
-    }
-
-    return snapshot.teams[0]?.id ?? '';
+    return count === 1 ? '1 participant' : `${count} participants`;
   }
 
   private loadTeamMembers(teams: Team[]): void {

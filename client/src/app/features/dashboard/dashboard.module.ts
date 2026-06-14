@@ -10,6 +10,7 @@ import { WorkspaceShellComponent } from './components/workspace-shell/workspace-
 import { GlobalSearchComponent } from './pages/global-search/global-search.component';
 import { MyTasksComponent } from './pages/my-tasks/my-tasks.component';
 import { ProjectKanbanComponent } from './pages/project-kanban/project-kanban.component';
+import { ProjectMembersComponent } from './pages/project-members/project-members.component';
 import { ProjectOverviewComponent } from './pages/project-overview/project-overview.component';
 import { ProjectTeamsComponent } from './pages/project-teams/project-teams.component';
 import { SettingsPageComponent } from './pages/settings/settings-page.component';
@@ -24,6 +25,7 @@ import { TaskDetailComponent } from './pages/task-detail/task-detail.component';
     WorkspaceShellComponent,
     ProjectsPageComponent,
     ProjectOverviewComponent,
+    ProjectMembersComponent,
     ProjectTeamsComponent,
     ProjectKanbanComponent,
     TaskDetailComponent,

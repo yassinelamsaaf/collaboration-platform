@@ -40,13 +40,17 @@
           </div>
 
           <div class="project-card__actions">
+            <a class="workspace-secondary-btn" [routerLink]="['/dashboard/projects', project.slug || project.id, 'members']">
+              <lucide-icon name="user"></lucide-icon>
+              Members
+            </a>
             <a class="workspace-secondary-btn" [routerLink]="['/dashboard/projects', project.slug || project.id, 'teams']">
               <lucide-icon name="users"></lucide-icon>
               Teams
             </a>
             <a class="workspace-secondary-btn" [routerLink]="['/dashboard/projects', project.slug || project.id, 'kanban']">
               <lucide-icon name="square-kanban"></lucide-icon>
-              Kanban
+              Tasks
             </a>
             <button
               class="workspace-ghost-btn project-card__archive"
@@ -78,11 +82,14 @@
           <input
             id="project-name"
             class="workspace-input"
+            [class.is-invalid]="errors.name"
             type="text"
             name="project-name"
             [(ngModel)]="form.name"
+            (ngModelChange)="errors.name = ''"
             placeholder="Platform redesign, Mobile release, Internal tooling..."
           />
+          <span class="workspace-field__error" *ngIf="errors.name">{{ errors.name }}</span>
         </div>
 
         <div class="workspace-field">

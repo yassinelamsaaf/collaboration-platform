@@ -37,6 +37,7 @@ export class ProjectOverviewComponent implements OnInit {
   showSettings = false;
   savingSettings = false;
   readonly settingsForm = { name: '', description: '' };
+  settingsNameError = '';
 
   constructor(
     private readonly route: ActivatedRoute,
@@ -87,8 +88,11 @@ export class ProjectOverviewComponent implements OnInit {
 
   saveSettings(): void {
     if (!this.canManageProject || !this.settingsForm.name.trim()) {
+      this.settingsNameError = 'Project name is required.';
+      this.toast.warning('Please enter a project name.');
       return;
     }
+    this.settingsNameError = '';
     this.savingSettings = true;
     this.workspaceService
       .updateProject(this.projectRef, {

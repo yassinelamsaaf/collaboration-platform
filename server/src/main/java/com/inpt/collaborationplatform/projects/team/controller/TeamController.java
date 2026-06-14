@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 
@@ -49,9 +50,10 @@ public class TeamController {
     public ResponseEntity<PageResponse<TeamResponse>> listTeams(
             @PathVariable String projectRef,
             Authentication authentication,
+            @RequestParam(required = false) String q,
             @PageableDefault(size = 20, sort = "name", direction = Sort.Direction.ASC) Pageable pageable
     ) {
-        return ResponseEntity.ok(teamService.listTeams(projectRef, SecurityUtils.currentUserId(authentication), pageable));
+        return ResponseEntity.ok(teamService.listTeams(projectRef, SecurityUtils.currentUserId(authentication), q, pageable));
     }
 
     @GetMapping("/{teamRef}")

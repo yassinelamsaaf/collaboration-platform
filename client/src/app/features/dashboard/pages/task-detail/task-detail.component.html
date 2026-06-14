@@ -70,10 +70,13 @@
               <textarea
                 id="comment-content"
                 class="workspace-textarea"
+                [class.is-invalid]="commentError"
                 name="comment-content"
                 [(ngModel)]="commentForm.content"
+                (ngModelChange)="commentError = ''"
                 placeholder="Write the update, blocker, or decision."
               ></textarea>
+              <span class="workspace-field__error" *ngIf="commentError">{{ commentError }}</span>
             </div>
             <button class="workspace-primary-btn" type="submit">
               <lucide-icon name="send"></lucide-icon>
@@ -102,24 +105,31 @@
               <div class="workspace-page__eyebrow">Execution</div>
               <h2 class="workspace-page__title" style="font-size: 1.45rem">Subtasks</h2>
             </div>
-            <button class="workspace-secondary-btn" type="button" *ngIf="canEditTaskSpace" (click)="showSubTaskForm = !showSubTaskForm">
+            <button class="workspace-secondary-btn" type="button" *ngIf="canManageSubTasks" (click)="showSubTaskForm = !showSubTaskForm">
               <lucide-icon [name]="showSubTaskForm ? 'x' : 'plus'"></lucide-icon>
               {{ showSubTaskForm ? 'Close' : 'Add' }}
             </button>
           </div>
 
-          <form class="workspace-form" *ngIf="canEditTaskSpace && showSubTaskForm" (ngSubmit)="addSubTask()">
+          <div class="workspace-empty" *ngIf="canEditTaskSpace && !canManageSubTasks">
+            Team members can complete subtasks. Creating new subtasks is limited to this team's leader.
+          </div>
+
+          <form class="workspace-form" *ngIf="canManageSubTasks && showSubTaskForm" (ngSubmit)="addSubTask()">
             <div class="workspace-form__row">
               <div class="workspace-field">
                 <label for="subtask-title">Subtask title</label>
                 <input
                   id="subtask-title"
                   class="workspace-input"
+                  [class.is-invalid]="subTaskTitleError"
                   type="text"
                   name="subtask-title"
                   [(ngModel)]="subTaskForm.title"
+                  (ngModelChange)="subTaskTitleError = ''"
                   placeholder="Design final invitation page"
                 />
+                <span class="workspace-field__error" *ngIf="subTaskTitleError">{{ subTaskTitleError }}</span>
               </div>
 
               <div class="workspace-field">
@@ -132,9 +142,9 @@
                 </select>
               </div>
             </div>
-            <button class="workspace-primary-btn" type="submit">
+            <button class="workspace-primary-btn" type="submit" [disabled]="savingSubTask">
               <lucide-icon name="plus"></lucide-icon>
-              Add Subtask
+              {{ savingSubTask ? 'Adding...' : 'Add Subtask' }}
             </button>
           </form>
 
@@ -144,8 +154,8 @@
                   <input
                     type="checkbox"
                     [checked]="subTask.isDone"
-                  [disabled]="!canEditTaskSpace"
-                  (change)="toggleSubTask(subTask.id, $any($event.target).checked)"
+                  [disabled]="!canMoveSubTasks"
+                  (change)="toggleSubTask(subTask.id, $any($event.target).checked, $event)"
                 />
                 <div>
                   <div class="workspace-list__title">{{ subTask.title }}</div>
@@ -180,22 +190,50 @@
           <form class="workspace-form" *ngIf="canEditTaskSpace && showAttachmentForm" (ngSubmit)="addAttachment()">
             <div class="workspace-field">
               <label for="attachment-name">File name</label>
-              <input id="attachment-name" class="workspace-input" type="text" name="attachment-name" [(ngModel)]="attachmentForm.fileName" />
+              <input
+                id="attachment-name"
+                class="workspace-input"
+                [class.is-invalid]="attachmentErrors.fileName"
+                type="text"
+                name="attachment-name"
+                [(ngModel)]="attachmentForm.fileName"
+                (ngModelChange)="attachmentErrors.fileName = ''"
+              />
+              <span class="workspace-field__error" *ngIf="attachmentErrors.fileName">{{ attachmentErrors.fileName }}</span>
             </div>
 
             <div class="workspace-field">
               <label for="attachment-url">File URL</label>
-              <input id="attachment-url" class="workspace-input" type="url" name="attachment-url" [(ngModel)]="attachmentForm.fileUrl" />
+              <input
+                id="attachment-url"
+                class="workspace-input"
+                [class.is-invalid]="attachmentErrors.fileUrl"
+                type="url"
+                name="attachment-url"
+                [(ngModel)]="attachmentForm.fileUrl"
+                (ngModelChange)="attachmentErrors.fileUrl = ''"
+              />
+              <span class="workspace-field__error" *ngIf="attachmentErrors.fileUrl">{{ attachmentErrors.fileUrl }}</span>
             </div>
 
             <div class="workspace-field">
               <label for="attachment-size">Size in bytes</label>
-              <input id="attachment-size" class="workspace-input" type="number" name="attachment-size" [(ngModel)]="attachmentForm.fileSize" />
+              <input
+                id="attachment-size"
+                class="workspace-input"
+                [class.is-invalid]="attachmentErrors.fileSize"
+                type="number"
+                min="1"
+                name="attachment-size"
+                [(ngModel)]="attachmentForm.fileSize"
+                (ngModelChange)="attachmentErrors.fileSize = ''"
+              />
+              <span class="workspace-field__error" *ngIf="attachmentErrors.fileSize">{{ attachmentErrors.fileSize }}</span>
             </div>
 
-            <button class="workspace-primary-btn" type="submit">
+            <button class="workspace-primary-btn" type="submit" [disabled]="savingAttachment">
               <lucide-icon name="paperclip"></lucide-icon>
-              Add Attachment
+              {{ savingAttachment ? 'Adding...' : 'Add Attachment' }}
             </button>
           </form>
 
@@ -230,12 +268,31 @@
             <div class="workspace-form__row">
               <div class="workspace-field">
                 <label for="time-duration">Minutes</label>
-                <input id="time-duration" class="workspace-input" type="number" name="time-duration" [(ngModel)]="timeEntryForm.durationMinutes" />
+                <input
+                  id="time-duration"
+                  class="workspace-input"
+                  [class.is-invalid]="timeEntryErrors.durationMinutes"
+                  type="number"
+                  min="1"
+                  name="time-duration"
+                  [(ngModel)]="timeEntryForm.durationMinutes"
+                  (ngModelChange)="timeEntryErrors.durationMinutes = ''"
+                />
+                <span class="workspace-field__error" *ngIf="timeEntryErrors.durationMinutes">{{ timeEntryErrors.durationMinutes }}</span>
               </div>
 
               <div class="workspace-field">
                 <label for="time-date">Date</label>
-                <input id="time-date" class="workspace-input" type="date" name="time-date" [(ngModel)]="timeEntryForm.date" />
+                <input
+                  id="time-date"
+                  class="workspace-input"
+                  [class.is-invalid]="timeEntryErrors.date"
+                  type="date"
+                  name="time-date"
+                  [(ngModel)]="timeEntryForm.date"
+                  (ngModelChange)="timeEntryErrors.date = ''"
+                />
+                <span class="workspace-field__error" *ngIf="timeEntryErrors.date">{{ timeEntryErrors.date }}</span>
               </div>
             </div>
 

@@ -140,8 +140,11 @@ export class WorkspaceService {
     return this.api.post<MessageResponse>(`projects/${projectRef}/invitations/${invitationId}/cancel`, {});
   }
 
-  listTeams(projectRef: string, page = 1, size = 100): Observable<PageResponse<Team>> {
-    return this.api.get<PageResponse<Team>>(`projects/${projectRef}/teams`, this.pageParams(page, size));
+  listTeams(projectRef: string, page = 1, size = 100, query?: string): Observable<PageResponse<Team>> {
+    return this.api.get<PageResponse<Team>>(
+      `projects/${projectRef}/teams`,
+      this.pageParams(page, size, { q: query?.trim() || undefined })
+    );
   }
 
   createTeam(projectRef: string, payload: { name: string; description?: string }): Observable<Team> {
@@ -627,7 +630,7 @@ export class WorkspaceService {
             title: member.memberName,
             subtitle: member.memberEmail,
             meta: member.role,
-            route: `/dashboard/projects/${projectRef}/teams`
+            route: `/dashboard/projects/${projectRef}/members`
           }));
 
         const taskResults = snapshot.tasks

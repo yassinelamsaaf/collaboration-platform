@@ -20,6 +20,9 @@ export class ProjectsPageComponent implements OnInit {
     name: '',
     description: ''
   };
+  errors = {
+    name: ''
+  };
 
   constructor(
     private readonly workspaceService: WorkspaceService,
@@ -47,9 +50,12 @@ export class ProjectsPageComponent implements OnInit {
 
   submit(): void {
     if (!this.form.name.trim()) {
+      this.errors.name = 'Project name is required.';
+      this.toast.warning('Please enter a project name.');
       return;
     }
 
+    this.errors.name = '';
     this.creating = true;
     this.workspaceService
       .createProject({
@@ -59,9 +65,10 @@ export class ProjectsPageComponent implements OnInit {
       .subscribe({
         next: (project) => {
           this.form = { name: '', description: '' };
+          this.errors.name = '';
           this.creating = false;
-          this.toast.success('Project created. You can now define teams and invite members.');
-          void this.router.navigate(['/dashboard/projects', project.slug || project.id, 'teams']);
+          this.toast.success('Project created. You can now invite members and define access.');
+          void this.router.navigate(['/dashboard/projects', project.slug || project.id, 'members']);
         },
         error: (error: unknown) => {
           this.toast.error(mapHttpError(error, 'Unable to create the project.'));

@@ -43,7 +43,17 @@
       <form class="workspace-form" (ngSubmit)="saveSettings()">
         <div class="workspace-field">
           <label for="settings-name">Project name</label>
-          <input id="settings-name" class="workspace-input" type="text" name="settings-name" [(ngModel)]="settingsForm.name" [disabled]="savingSettings" />
+          <input
+            id="settings-name"
+            class="workspace-input"
+            [class.is-invalid]="settingsNameError"
+            type="text"
+            name="settings-name"
+            [(ngModel)]="settingsForm.name"
+            (ngModelChange)="settingsNameError = ''"
+            [disabled]="savingSettings"
+          />
+          <span class="workspace-field__error" *ngIf="settingsNameError">{{ settingsNameError }}</span>
         </div>
         <div class="workspace-field">
           <label for="settings-description">Description</label>
@@ -72,13 +82,17 @@
         <lucide-icon name="layout-dashboard"></lucide-icon>
         Overview
       </a>
+      <a class="workspace-tabs__link" [routerLink]="['/dashboard/projects', data.project.slug || data.project.id, 'members']">
+        <lucide-icon name="user"></lucide-icon>
+        Project Members
+      </a>
       <a class="workspace-tabs__link" [routerLink]="['/dashboard/projects', data.project.slug || data.project.id, 'teams']">
         <lucide-icon name="users"></lucide-icon>
-        Members & Teams
+        Team Management
       </a>
       <a class="workspace-tabs__link" [routerLink]="['/dashboard/projects', data.project.slug || data.project.id, 'kanban']">
         <lucide-icon name="square-kanban"></lucide-icon>
-        Kanban
+        Kanban Tasks
       </a>
     </div>
 

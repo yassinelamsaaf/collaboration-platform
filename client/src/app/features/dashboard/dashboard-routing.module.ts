@@ -6,6 +6,7 @@ import { DashboardComponent } from './dashboard.component';
 import { GlobalSearchComponent } from './pages/global-search/global-search.component';
 import { MyTasksComponent } from './pages/my-tasks/my-tasks.component';
 import { ProjectKanbanComponent } from './pages/project-kanban/project-kanban.component';
+import { ProjectMembersComponent } from './pages/project-members/project-members.component';
 import { ProjectOverviewComponent } from './pages/project-overview/project-overview.component';
 import { ProjectTeamsComponent } from './pages/project-teams/project-teams.component';
 import { ProjectsPageComponent } from './pages/projects-page/projects-page.component';
@@ -21,6 +22,7 @@ const routes: Routes = [
       { path: 'my-tasks', component: MyTasksComponent },
       { path: 'projects', component: ProjectsPageComponent },
       { path: 'projects/:projectRef', component: ProjectOverviewComponent },
+      { path: 'projects/:projectRef/members', component: ProjectMembersComponent },
       { path: 'projects/:projectRef/teams', component: ProjectTeamsComponent },
       { path: 'projects/:projectRef/kanban', component: ProjectKanbanComponent },
       { path: 'projects/:projectRef/tasks/:teamRef/:taskId', component: TaskDetailComponent },

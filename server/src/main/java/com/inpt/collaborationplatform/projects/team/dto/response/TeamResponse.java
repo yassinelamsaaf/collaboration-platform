@@ -8,6 +8,7 @@ public record TeamResponse(
         String slug,
         String name,
         String description,
+        long memberCount,
         String createdByUserId,
         LocalDateTime createdAt,
         LocalDateTime updatedAt

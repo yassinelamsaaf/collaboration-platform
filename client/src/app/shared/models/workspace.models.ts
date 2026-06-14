@@ -50,6 +50,7 @@ export interface Team {
   slug: string;
   name: string;
   description: string | null;
+  memberCount: number;
   createdByUserId: string;
   createdAt: string;
   updatedAt: string;

@@ -1,0 +1,263 @@
+<section class="workspace-page">
+  <div class="workspace-empty" *ngIf="loading && !snapshot">Loading project members...</div>
+
+  <div class="workspace-data-chip" *ngIf="loading && snapshot">
+    <lucide-icon name="refresh-cw"></lucide-icon>
+    Refreshing project members...
+  </div>
+
+  <ng-container *ngIf="snapshot as data">
+    <div class="workspace-page__header">
+      <div>
+        <div class="workspace-page__eyebrow">Project Access</div>
+        <h1 class="workspace-page__title">Project Members</h1>
+        <p class="workspace-page__subtitle">
+          Control who can access {{ data.project.name }} and what they are allowed to manage inside the project.
+        </p>
+      </div>
+
+      <div class="workspace-inline-actions">
+        <span class="workspace-pill workspace-pill--neutral">{{ data.project.currentUserRole }}</span>
+        <button class="workspace-primary-btn" type="button" *ngIf="canManageProject" (click)="showInviteForm = !showInviteForm">
+          <lucide-icon [name]="showInviteForm ? 'x' : 'user-plus'"></lucide-icon>
+          {{ showInviteForm ? 'Close' : 'Invite Member' }}
+        </button>
+      </div>
+    </div>
+
+    <div class="workspace-tabs">
+      <a class="workspace-tabs__link" [routerLink]="['/dashboard/projects', data.project.slug || data.project.id]">
+        <lucide-icon name="layout-dashboard"></lucide-icon>
+        Overview
+      </a>
+      <a class="workspace-tabs__link is-active" [routerLink]="['/dashboard/projects', data.project.slug || data.project.id, 'members']">
+        <lucide-icon name="user"></lucide-icon>
+        Project Members
+      </a>
+      <a class="workspace-tabs__link" [routerLink]="['/dashboard/projects', data.project.slug || data.project.id, 'teams']">
+        <lucide-icon name="users"></lucide-icon>
+        Team Management
+      </a>
+      <a class="workspace-tabs__link" [routerLink]="['/dashboard/projects', data.project.slug || data.project.id, 'kanban']">
+        <lucide-icon name="square-kanban"></lucide-icon>
+        Kanban Tasks
+      </a>
+    </div>
+
+    <div class="workspace-grid workspace-grid--stats">
+      <article class="workspace-card metric-card">
+        <div class="metric-card__label">Members</div>
+        <div class="metric-card__value">{{ data.members.length }}</div>
+        <div class="metric-card__hint">Accepted project access</div>
+      </article>
+      <article class="workspace-card metric-card">
+        <div class="metric-card__label">Pending Invitations</div>
+        <div class="metric-card__value">{{ canManageProject ? pendingInvitationCount() : '-' }}</div>
+        <div class="metric-card__hint">{{ canManageProject ? 'People not onboarded yet' : 'Visible to managers only' }}</div>
+      </article>
+      <article class="workspace-card metric-card">
+        <div class="metric-card__label">Teams</div>
+        <div class="metric-card__value">{{ data.teams.length }}</div>
+        <div class="metric-card__hint">Groups members can belong to</div>
+      </article>
+      <article class="workspace-card metric-card">
+        <div class="metric-card__label">Your Access</div>
+        <div class="metric-card__value" style="font-size: 1.35rem">{{ data.project.currentUserRole }}</div>
+        <div class="metric-card__hint">Project-level permission</div>
+      </article>
+    </div>
+
+    <form class="workspace-card workspace-form" *ngIf="showInviteForm && canManageProject" (ngSubmit)="inviteMember()">
+      <div class="workspace-section-head">
+        <div>
+          <div class="workspace-page__eyebrow">Invitation</div>
+          <h2 class="workspace-page__title" style="font-size: 1.45rem">Invite project member</h2>
+        </div>
+      </div>
+
+      <div class="workspace-form__row">
+        <div class="workspace-field">
+          <label for="invite-email">Email address</label>
+          <input
+            id="invite-email"
+            class="workspace-input"
+            [class.is-invalid]="inviteEmailError"
+            type="email"
+            name="invite-email"
+            [(ngModel)]="inviteForm.email"
+            (ngModelChange)="inviteEmailError = ''"
+            [disabled]="saving"
+            placeholder="collaborator@example.com"
+          />
+          <span class="workspace-field__error" *ngIf="inviteEmailError">{{ inviteEmailError }}</span>
+        </div>
+
+        <div class="workspace-field">
+          <label for="invite-role">Project role</label>
+          <select id="invite-role" class="workspace-select" name="invite-role" [(ngModel)]="inviteForm.role" [disabled]="saving">
+            <option *ngFor="let role of projectRoles" [value]="role">{{ role }}</option>
+          </select>
+        </div>
+      </div>
+
+      <button class="workspace-primary-btn" type="submit" [disabled]="saving">
+        <lucide-icon name="send"></lucide-icon>
+        {{ saving ? 'Sending...' : 'Send Invitation' }}
+      </button>
+    </form>
+
+    <div class="workspace-grid workspace-grid--two">
+      <section class="workspace-card workspace-stack">
+        <div class="workspace-section-head">
+          <div>
+            <div class="workspace-page__eyebrow">Directory</div>
+            <h2 class="workspace-page__title" style="font-size: 1.45rem">Member list</h2>
+            <p class="workspace-page__subtitle">Search, review roles, and see the teams attached to each project member.</p>
+          </div>
+        </div>
+
+        <div class="workspace-toolbar">
+          <div class="workspace-searchbar workspace-searchbar--compact">
+            <lucide-icon name="search"></lucide-icon>
+            <input
+              type="text"
+              name="member-search"
+              [(ngModel)]="memberSearchQuery"
+              (ngModelChange)="onMemberFilterChange()"
+              placeholder="Search by name, email, or role..."
+            />
+          </div>
+
+          <select
+            class="workspace-select workspace-select--compact"
+            [(ngModel)]="memberTeamFilter"
+            (ngModelChange)="onMemberFilterChange()"
+          >
+            <option *ngFor="let opt of memberTeamOptions" [value]="opt.id">{{ opt.name }}</option>
+          </select>
+        </div>
+
+        <div class="workspace-list" *ngIf="filteredMembers.length; else noMembers">
+          <div class="workspace-list__item" *ngFor="let member of paginatedMembers">
+            <div style="min-width: 0">
+              <div class="workspace-list__title">{{ member.memberName }}</div>
+              <div class="workspace-list__subtitle">{{ member.memberEmail }}</div>
+              <div class="workspace-inline-actions" style="margin-top: 6px" *ngIf="memberTeamNames(member.userId).length">
+                <span
+                  class="workspace-pill workspace-pill--neutral"
+                  style="font-size: 0.72rem; min-height: 22px; padding: 0 7px"
+                  *ngFor="let teamName of memberTeamNames(member.userId)"
+                >
+                  {{ teamName }}
+                </span>
+              </div>
+            </div>
+
+            <div class="workspace-inline-actions">
+              <select
+                class="workspace-select workspace-select--compact"
+                [value]="member.role"
+                [disabled]="!canManageRoles || member.role === 'OWNER'"
+                (change)="changeProjectRole(member, $any($event.target).value)"
+              >
+                <option value="OWNER" [disabled]="true">OWNER</option>
+                <option *ngFor="let role of projectRoles" [value]="role">{{ role }}</option>
+              </select>
+
+              <button
+                class="workspace-ghost-btn workspace-ghost-btn--danger"
+                type="button"
+                (click)="removeProjectMember(member)"
+                [disabled]="!canRemoveMember(member)"
+              >
+                <lucide-icon name="x"></lucide-icon>
+                Remove
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="workspace-pagination" *ngIf="filteredMembers.length > membersPageSize">
+          <button class="workspace-chip-btn" type="button" (click)="prevMembersPage()" [disabled]="membersPage === 0">
+            <lucide-icon name="chevron-left"></lucide-icon>
+            Prev
+          </button>
+          <span class="workspace-data-chip">Page {{ membersPage + 1 }} of {{ totalMembersPages }}</span>
+          <button class="workspace-chip-btn" type="button" (click)="nextMembersPage()" [disabled]="membersPage >= totalMembersPages - 1">
+            Next
+            <lucide-icon name="chevron-right"></lucide-icon>
+          </button>
+        </div>
+
+        <ng-template #noMembers>
+          <div class="workspace-empty">
+            {{ memberSearchQuery.trim() ? 'No members match your search.' : 'No project members found.' }}
+          </div>
+        </ng-template>
+      </section>
+
+      <section class="workspace-card workspace-stack">
+        <ng-container *ngIf="canManageProject; else readOnlyRoleInfo">
+          <div>
+            <div class="workspace-page__eyebrow">Pending Access</div>
+            <h2 class="workspace-page__title" style="font-size: 1.45rem">Invitation queue</h2>
+            <p class="workspace-page__subtitle">Track invited users before they accept and become project members.</p>
+          </div>
+
+          <div class="workspace-list" *ngIf="data.invitations.length; else noInvitations">
+            <div class="workspace-list__item" *ngFor="let invitation of data.invitations">
+              <div>
+                <div class="workspace-list__title">{{ invitation.email }}</div>
+                <div class="workspace-list__subtitle">
+                  {{ invitation.role }} · {{ invitation.status }} · expires {{ invitation.expiresAt | date: 'mediumDate' }}
+                </div>
+              </div>
+
+              <div class="workspace-inline-actions">
+                <span class="workspace-pill workspace-pill--neutral">{{ invitation.status }}</span>
+                <button
+                  class="workspace-ghost-btn workspace-ghost-btn--danger"
+                  type="button"
+                  *ngIf="invitation.status === 'PENDING'"
+                  (click)="cancelInvitation(invitation.id)"
+                >
+                  <lucide-icon name="x"></lucide-icon>
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <ng-template #noInvitations>
+            <div class="workspace-empty">No invitations are currently in flight.</div>
+          </ng-template>
+        </ng-container>
+
+        <ng-template #readOnlyRoleInfo>
+          <div>
+            <div class="workspace-page__eyebrow">Access Rules</div>
+            <h2 class="workspace-page__title" style="font-size: 1.45rem">Read-only management</h2>
+            <p class="workspace-page__subtitle">
+              Your current project role can view members and teams, but cannot invite users, remove members, or change project roles.
+            </p>
+          </div>
+
+          <div class="workspace-list">
+            <div class="workspace-list__item">
+              <div>
+                <div class="workspace-list__title">OWNER / ADMIN</div>
+                <div class="workspace-list__subtitle">Invite users, manage teams, and maintain project structure.</div>
+              </div>
+            </div>
+            <div class="workspace-list__item">
+              <div>
+                <div class="workspace-list__title">MEMBER / VIEWER</div>
+                <div class="workspace-list__subtitle">Read project context. VIEWER remains read-only across the work screens.</div>
+              </div>
+            </div>
+          </div>
+        </ng-template>
+      </section>
+    </div>
+  </ng-container>
+</section>

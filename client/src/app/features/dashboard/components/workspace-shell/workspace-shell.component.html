@@ -57,13 +57,17 @@
             <lucide-icon name="layout-dashboard"></lucide-icon>
             <span class="workspace-nav__label">Overview</span>
           </a>
+          <a class="workspace-nav__link" [routerLink]="['/dashboard/projects', currentProjectRef, 'members']" routerLinkActive="is-active" (click)="closeSidebar()">
+            <lucide-icon name="user"></lucide-icon>
+            <span class="workspace-nav__label">Project Members</span>
+          </a>
           <a class="workspace-nav__link" [routerLink]="['/dashboard/projects', currentProjectRef, 'teams']" routerLinkActive="is-active" (click)="closeSidebar()">
             <lucide-icon name="users"></lucide-icon>
-            <span class="workspace-nav__label">Members &amp; Teams</span>
+            <span class="workspace-nav__label">Team Management</span>
           </a>
           <a class="workspace-nav__link" [routerLink]="['/dashboard/projects', currentProjectRef, 'kanban']" routerLinkActive="is-active" (click)="closeSidebar()">
             <lucide-icon name="square-kanban"></lucide-icon>
-            <span class="workspace-nav__label">Kanban</span>
+            <span class="workspace-nav__label">Kanban Tasks</span>
           </a>
         </div>
 

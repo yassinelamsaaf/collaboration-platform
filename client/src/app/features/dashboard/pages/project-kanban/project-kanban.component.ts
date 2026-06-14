@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
+import { AuthService } from '@core/services/auth.service';
 import { ToastService } from '@core/services/toast.service';
 import { mapHttpError } from '@shared/utils/error-mapper';
 import {
@@ -25,6 +26,7 @@ export class ProjectKanbanComponent implements OnInit {
   readonly priorities: Priority[] = ['LOW', 'MEDIUM', 'HIGH', 'URGENT'];
 
   projectRef = '';
+  currentUserId = '';
   snapshot: ProjectWorkspaceSnapshot | null = null;
   loading = true;
   creating = false;
@@ -43,6 +45,10 @@ export class ProjectKanbanComponent implements OnInit {
     dueDate: '',
     assigneeId: ''
   };
+  taskFormErrors = {
+    teamRef: '',
+    title: ''
+  };
 
   viewMode: 'tasks' | 'subtasks' = 'tasks';
   selectedSubTaskTaskId = '';
@@ -56,14 +62,20 @@ export class ProjectKanbanComponent implements OnInit {
     title: '',
     assigneeId: ''
   };
+  subTaskTitleError = '';
 
   constructor(
     private readonly route: ActivatedRoute,
+    private readonly authService: AuthService,
     private readonly workspaceService: WorkspaceService,
     private readonly toast: ToastService
   ) {}
 
   ngOnInit(): void {
+    this.authService.getProfile().subscribe((profile) => {
+      this.currentUserId = profile?.id ?? '';
+    });
+
     this.route.paramMap.subscribe((params) => {
       const projectRef = params.get('projectRef');
       if (!projectRef) {
@@ -86,9 +98,39 @@ export class ProjectKanbanComponent implements OnInit {
     this.subTasks = [];
   }
 
-  get canEditTasks(): boolean {
+  get canCreateTasks(): boolean {
+    const role = this.snapshot?.project.currentUserRole;
+    return role === 'OWNER' || role === 'ADMIN';
+  }
+
+  get canUpdateTaskStatus(): boolean {
     const role = this.snapshot?.project.currentUserRole;
     return role === 'OWNER' || role === 'ADMIN' || role === 'MEMBER';
+  }
+
+  get canManageSelectedSubTasks(): boolean {
+    const task = this.selectedSubTaskTask;
+    if (!task || !this.currentUserId) {
+      return false;
+    }
+
+    return (this.teamMembersByTeamId[task.teamId] ?? []).some(
+      (member) => member.userId === this.currentUserId && member.role === 'LEADER'
+    );
+  }
+
+  get canDeleteSelectedSubTasks(): boolean {
+    return this.snapshot?.project.currentUserRole === 'OWNER' || this.canManageSelectedSubTasks;
+  }
+
+  get canMoveSelectedSubTasks(): boolean {
+    const task = this.selectedSubTaskTask;
+    const role = this.snapshot?.project.currentUserRole;
+    if (!task || !this.currentUserId || role === 'VIEWER') {
+      return false;
+    }
+
+    return (this.teamMembersByTeamId[task.teamId] ?? []).some((member) => member.userId === this.currentUserId);
   }
 
   get projectRefForLinks(): string {
@@ -117,13 +159,13 @@ export class ProjectKanbanComponent implements OnInit {
 
   // --- Task drag & drop ---
   onDragStart(task: Task): void {
-    if (this.canEditTasks) {
+    if (this.canUpdateTaskStatus) {
       this.draggedTask = task;
     }
   }
 
   onSubTaskDragStart(subTask: SubTask): void {
-    if (this.canEditTasks) {
+    if (this.canMoveSelectedSubTasks) {
       this.draggedSubTask = subTask;
     }
   }
@@ -174,7 +216,13 @@ export class ProjectKanbanComponent implements OnInit {
   }
 
   createTask(): void {
-    if (!this.canEditTasks || !this.taskForm.teamRef || !this.taskForm.title.trim()) {
+    this.taskFormErrors = {
+      teamRef: this.taskForm.teamRef ? '' : 'Select a team.',
+      title: this.taskForm.title.trim() ? '' : 'Task title is required.'
+    };
+
+    if (!this.canCreateTasks || this.taskFormErrors.teamRef || this.taskFormErrors.title) {
+      this.toast.warning(this.taskFormErrors.title || this.taskFormErrors.teamRef || 'Please complete the task form.');
       return;
     }
 
@@ -194,6 +242,7 @@ export class ProjectKanbanComponent implements OnInit {
           this.taskForm.priority = 'MEDIUM';
           this.taskForm.dueDate = '';
           this.taskForm.assigneeId = '';
+          this.taskFormErrors = { teamRef: '', title: '' };
           this.creating = false;
           this.showTaskForm = false;
           this.toast.success('Task created successfully.');
@@ -207,7 +256,7 @@ export class ProjectKanbanComponent implements OnInit {
   }
 
   moveTask(task: Task, status: TaskStatus): void {
-    if (!this.canEditTasks || task.status === status) {
+    if (!this.canUpdateTaskStatus || task.status === status) {
       return;
     }
 
@@ -284,7 +333,10 @@ export class ProjectKanbanComponent implements OnInit {
   createSubTask(): void {
     const task = this.selectedSubTaskTask;
     const teamRef = this.selectedSubTaskTeamRef;
-    if (!this.canEditTasks || !task || !teamRef || !this.subTaskForm.title.trim()) {
+    this.subTaskTitleError = this.subTaskForm.title.trim() ? '' : 'Sub-task title is required.';
+
+    if (!this.canManageSelectedSubTasks || !task || !teamRef || this.subTaskTitleError) {
+      this.toast.warning(this.subTaskTitleError || 'Please select a task before creating a sub-task.');
       return;
     }
 
@@ -298,6 +350,7 @@ export class ProjectKanbanComponent implements OnInit {
         next: () => {
           this.subTaskForm.title = '';
           this.subTaskForm.assigneeId = '';
+          this.subTaskTitleError = '';
           this.creatingSubTask = false;
           this.showSubTaskForm = false;
           this.toast.success('Sub-task created.');
@@ -313,7 +366,7 @@ export class ProjectKanbanComponent implements OnInit {
   moveSubTask(subTask: SubTask, status: TaskStatus): void {
     const task = this.selectedSubTaskTask;
     const teamRef = this.selectedSubTaskTeamRef;
-    if (!this.canEditTasks || !task || !teamRef || subTask.status === status) {
+    if (!this.canMoveSelectedSubTasks || !task || !teamRef || subTask.status === status) {
       return;
     }
 
@@ -336,7 +389,7 @@ export class ProjectKanbanComponent implements OnInit {
   deleteSubTask(subTask: SubTask): void {
     const task = this.selectedSubTaskTask;
     const teamRef = this.selectedSubTaskTeamRef;
-    if (!this.canEditTasks || !task || !teamRef) {
+    if (!this.canDeleteSelectedSubTasks || !task || !teamRef) {
       return;
     }
 

@@ -59,6 +59,7 @@ Implemented:
 - Project creation.
 - Project and team slugs for readable frontend URLs while keeping UUIDs as internal database identities.
 - Listing projects for the current user.
+- Team listing supports backend search with `q` and returns `memberCount` for each team.
 - Reading/updating/archiving a project with access checks.
 - Listing project members with pagination, role-updating, and removing accepted project members.
 - Inviting users by email and accepting invitations.
@@ -81,14 +82,14 @@ Backend endpoints:
 - `POST /api/projects/invitations/{token}/accept` accepts an invitation for the logged-in user with the invited email.
 - `POST /api/projects/{projectRef}/invitations/{invitationId}/cancel` cancels a pending invitation for `OWNER` or `ADMIN`.
 - `POST /api/projects/{projectRef}/teams` creates a team for `OWNER` or `ADMIN`.
-- `GET /api/projects/{projectRef}/teams` lists teams for any project member, using pagination.
+- `GET /api/projects/{projectRef}/teams` lists teams for any project member, using pagination and optional `q` search by name/description.
 - `GET /api/projects/{projectRef}/teams/{teamRef}` returns one team for any project member; `teamRef` can be the UUID or slug.
 - `PATCH /api/projects/{projectRef}/teams/{teamRef}` updates team name/description for `OWNER` or `ADMIN`.
 - `DELETE /api/projects/{projectRef}/teams/{teamRef}` deletes a team for `OWNER` or `ADMIN`.
 - `GET /api/projects/{projectRef}/teams/{teamRef}/members` lists team members for any project member, using pagination.
 - `POST /api/projects/{projectRef}/teams/{teamRef}/members` adds an existing project member to a team for `OWNER` or `ADMIN`.
 - `PATCH /api/projects/{projectRef}/teams/{teamRef}/members/{memberUserId}/role` changes a team member role for `OWNER` or `ADMIN`.
-- `DELETE /api/projects/{projectRef}/teams/{memberUserId}` removes a team member for `OWNER` or `ADMIN`.
+- `DELETE /api/projects/{projectRef}/teams/{teamRef}/members/{memberUserId}` removes a team member for `OWNER` or `ADMIN`.
 
 Current boundaries:
 - Projects owns `projects` and `project_members`.
@@ -125,9 +126,16 @@ Implemented:
 - Responsive auth and landing polish for mobile navigation, footer layout, and form spacing.
 - Runtime frontend API configuration through `public/assets/env.js` so the same Angular build can target local or Docker environments.
 - Frontend Docker image with Nginx static serving and SPA fallback routing.
+- Dashboard workspace shell with responsive sidebar, project navigation, and protected project routes.
+- Projects page for creating/listing/archive actions.
+- Project overview, dedicated Project Members, Team Management, Kanban, task detail, and search screens.
+- Project Members screen owns member search/filtering, invitations, project-role changes, member removal, and role-aware read-only states.
+- Team Management screen uses backend team pagination/search, displays team participant counts, and focuses only on team creation plus selected-team membership with a compact selected-team inspector.
+- Project workspace tabs are now split into `Overview`, `Project Members`, `Team Management`, and `Kanban Tasks`.
+- Task detail and Kanban RBAC mirrors the backend: project contributors can comment, attach files, log time, and update task status; project contributors who are also members of the task's team can move/complete subtasks; subtask creation and metadata edits stay limited to the selected team leader; project owner can delete subtasks as an override.
+- Dashboard write forms now show inline validation errors and warning toasts instead of silently ignoring invalid submissions.
 
 Known gaps:
-- Projects frontend is not implemented yet.
 - API service is still auth-centric and should be generalized before adding project screens.
 
 Auth guard:
